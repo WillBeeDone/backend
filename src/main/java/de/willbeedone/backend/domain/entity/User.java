@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Data
@@ -47,5 +48,5 @@ public class User {
     private String phoneNumber;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Offer> offers;
+    private Set<Offer> offers;
 }

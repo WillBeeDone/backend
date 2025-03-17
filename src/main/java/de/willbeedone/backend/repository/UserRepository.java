@@ -1,6 +1,7 @@
 package de.willbeedone.backend.repository;
 
-import ait.cohort52.final_project.domain.entity.User;
+
+import de.willbeedone.backend.domain.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
