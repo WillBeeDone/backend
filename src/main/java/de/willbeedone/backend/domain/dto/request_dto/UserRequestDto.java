@@ -13,9 +13,7 @@ import lombok.NoArgsConstructor;
 @Builder
 
 public class UserRequestDto {
-//    @NotBlank
-//    private String username;
-//    @Email
+
     private String email;
     private String firstName;
     private String lastName;
