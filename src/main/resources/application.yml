@@ -6,7 +6,7 @@ spring:
     url: jdbc:mysql://localhost:3306/tasker_db
     driver-class-name: com.mysql.cj.jdbc.Driver
     username: root
-    password: Gucci112327!
+    password: sql77777
 
   jpa:
     database-platform: org.hibernate.dialect.MySQLDialect
