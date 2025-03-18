@@ -1,14 +1,10 @@
 package de.willbeedone.backend.domain.dto.request_dto;
 import de.willbeedone.backend.domain.entity.Category;
 import de.willbeedone.backend.domain.entity.enums.Location;
-import lombok.*;
-
-
 
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Objects;
-
 
 public class OfferRequestDto {
 
@@ -23,18 +19,6 @@ public class OfferRequestDto {
     private Location location;
 
     private List<String> gallery;
-
-    @Override
-    public boolean equals(Object o) {
-        if (o == null || getClass() != o.getClass()) return false;
-        OfferRequestDto that = (OfferRequestDto) o;
-        return Objects.equals(pricePerHour, that.pricePerHour) && Objects.equals(description, that.description) && Objects.equals(category, that.category) && Objects.equals(title, that.title) && location == that.location && Objects.equals(gallery, that.gallery);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(pricePerHour, description, category, title, location, gallery);
-    }
 
     public OfferRequestDto() {
     }
@@ -85,6 +69,18 @@ public class OfferRequestDto {
 
     public void setGallery(List<String> gallery) {
         this.gallery = gallery;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        OfferRequestDto that = (OfferRequestDto) o;
+        return Objects.equals(pricePerHour, that.pricePerHour) && Objects.equals(description, that.description) && Objects.equals(category, that.category) && Objects.equals(title, that.title) && location == that.location && Objects.equals(gallery, that.gallery);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(pricePerHour, description, category, title, location, gallery);
     }
 
     @Override

@@ -4,13 +4,12 @@ package de.willbeedone.backend.service;
 import de.willbeedone.backend.domain.dto.request_dto.OfferRequestDto;
 import de.willbeedone.backend.domain.dto.response_dto.OfferResponseDto;
 import de.willbeedone.backend.domain.entity.Offer;
-import de.willbeedone.backend.exceptions.AlreadyExistException;
 import de.willbeedone.backend.exceptions.OfferNotFoundException;
 import de.willbeedone.backend.repository.OfferRepository;
 import de.willbeedone.backend.service.interfaces.OfferService;
 
-import de.willbeedone.backend.service.mapping.MappingService;
-import lombok.RequiredArgsConstructor;
+
+import de.willbeedone.backend.service.mapping.OfferMappingService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -22,9 +21,9 @@ public class OfferServiceImpl implements OfferService {
 
 
     private final OfferRepository repository;
-    private final MappingService mappingService;
+    private final OfferMappingService mappingService;
 
-    public OfferServiceImpl(OfferRepository repository, MappingService mappingService) {
+    public OfferServiceImpl(OfferRepository repository, OfferMappingService mappingService) {
         this.repository = repository;
         this.mappingService = mappingService;
     }
@@ -32,7 +31,7 @@ public class OfferServiceImpl implements OfferService {
     @Override
     public Offer addNewOffer(OfferRequestDto request) {
 
-            Offer newOffer = mappingService.getOfferFromDto(request);
+            Offer newOffer = mappingService.mapRequestDtoToEntity(request);
             return repository.save(newOffer);
     }
 
@@ -47,7 +46,7 @@ public class OfferServiceImpl implements OfferService {
             throw new IllegalArgumentException("Title cannot be empty or null");
         }
         return repository.findOfferByTitleAndActiveIsTrue(title).stream()
-                .map(mappingService::getOfferDtoFromEntity)
+                .map(mappingService::mapEntityToResponseDto)
                 .toList();
 
     }
@@ -58,7 +57,7 @@ public class OfferServiceImpl implements OfferService {
             throw new IllegalArgumentException("Id cannot be empty or null");
         }
         return repository.findById(id)
-                .map(mappingService::getOfferDtoFromEntity)
+                .map(mappingService::mapEntityToResponseDto)
                 .or(
                         () -> {
                             throw new OfferNotFoundException("Offer not found with id: " + id);

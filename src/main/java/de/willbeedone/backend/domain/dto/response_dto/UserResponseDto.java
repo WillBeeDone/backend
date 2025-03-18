@@ -1,8 +1,6 @@
 package de.willbeedone.backend.domain.dto.response_dto;
 
 import jakarta.validation.constraints.NotBlank;
-import lombok.*;
-
 import java.util.Objects;
 
 
@@ -15,11 +13,6 @@ public class UserResponseDto {
     private String firstName;
     private String lastName;
     private boolean blocked;
-
-    public UserResponseDto(Long id, @NotBlank(message = "Email cannot be empty or null") String email) {
-        this.id = id;
-        this.email = email;
-    }
 
     public Long getId() {
         return id;

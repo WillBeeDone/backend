@@ -1,28 +1,21 @@
 package de.willbeedone.backend.domain.dto.response_dto;
 
-
-
-
 import de.willbeedone.backend.domain.entity.Category;
-import lombok.*;
 
 import java.math.BigDecimal;
 import java.util.Objects;
 
 
 public class OfferResponseDto {
-    public OfferResponseDto() {
-    }
 
     private Long id;
-
     private BigDecimal pricePerHour;
-
     private String description;
-
     private Category category;
-
     private String title;
+
+    public OfferResponseDto() {
+    }
 
     public Long getId() {
         return id;

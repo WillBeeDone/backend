@@ -22,5 +22,5 @@ public interface UserService {
 
     void deleteUserById(Long id);
 
-    Optional<UserResponseDto> registration(String email, String password);
+//    Optional<UserResponseDto> registration(String email);
 }

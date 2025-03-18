@@ -9,30 +9,27 @@ import de.willbeedone.backend.exceptions.UserNotFoundException;
 import de.willbeedone.backend.repository.UserRepository;
 import de.willbeedone.backend.service.interfaces.UserService;
 
-import de.willbeedone.backend.service.mapping.MappingService;
-import lombok.RequiredArgsConstructor;
+import de.willbeedone.backend.service.mapping.UserMappingService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 
 @Service
-
 public class UserServiceImpl implements UserService {
 
-    public UserServiceImpl(MappingService mappingService, UserRepository repository) {
+    private final UserMappingService mappingService;
+    private final UserRepository repository;
+
+    public UserServiceImpl(UserMappingService mappingService, UserRepository repository) {
         this.mappingService = mappingService;
         this.repository = repository;
     }
 
-    private final MappingService mappingService;
-    private final UserRepository repository;
-
-
     @Override
     public User addNewUser(UserRequestDto request) {
         if (checkIfUserExists(request.getEmail())) {
-            User newUser = mappingService.getUserFromDto(request);
+            User newUser = mappingService.mapRequestDtoToEntity(request);
             return repository.save(newUser);
         } else {
             throw new AlreadyExistException(
@@ -61,7 +58,7 @@ public class UserServiceImpl implements UserService {
     public Optional<UserResponseDto> getUserByEmail(String email) {
 
         return repository.findUserByEmail(email)
-                .map(mappingService::getUserDtoFromEntity)
+                .map(mappingService::mapEntityToResponseDto)
                 .or(
                         () -> {
                             throw new UserNotFoundException("User not found with email: " + email);
@@ -74,7 +71,7 @@ public class UserServiceImpl implements UserService {
             throw new IllegalArgumentException("Id cannot be empty or null");
         }
         return repository.findById(id)
-                .map(mappingService::getUserDtoFromEntity)
+                .map(mappingService::mapEntityToResponseDto)
                 .or(
                         () -> {
                             throw new UserNotFoundException("User not found with id: " + id);
@@ -116,19 +113,18 @@ public class UserServiceImpl implements UserService {
     }
 
 
-    @Override
-    public Optional<UserResponseDto> registration(String email, String password) {
-        if (email == null || email.trim().isEmpty() || password == null || password.trim().isEmpty()) {
-            throw new IllegalArgumentException("Email and password cannot be empty or null");
-        }
-
-        return repository.findUserByEmail(email)
-                .filter(user -> user.getPassword().equals(password))
-                .map(mappingService::getUserDtoFromEntity)
-                .or(() -> {
-                    throw new UserNotFoundException("Invalid email or password");
-                });
-    }
+//    @Override
+//    public Optional<UserResponseDto> registration(String email) {
+//        if (email == null || email.trim().isEmpty()) {
+//            throw new IllegalArgumentException("Email cannot be empty or null");
+//        }
+//
+//        return repository.findUserByEmail(email)
+//                .or(() -> {
+//                    throw new UserNotFoundException("Invalid email or password");
+//                })
+//                .map(mappingService::getUserDtoFromEntity);
+//    }
 
 
 }
