@@ -14,7 +14,6 @@ public class RoleServiceImpl {
 
     private final RoleRepository repository;
 
-
     public Role addRole(Role role) {
 
         return repository.save(role);
