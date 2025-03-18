@@ -9,11 +9,13 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-@RequiredArgsConstructor
 public class RoleServiceImpl {
 
     private final RoleRepository repository;
 
+    public RoleServiceImpl(RoleRepository repository) {
+        this.repository = repository;
+    }
 
     public Role addRole(Role role) {
 

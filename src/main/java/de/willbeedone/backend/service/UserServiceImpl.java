@@ -4,30 +4,32 @@ package de.willbeedone.backend.service;
 import de.willbeedone.backend.domain.dto.request_dto.UserRequestDto;
 import de.willbeedone.backend.domain.dto.response_dto.UserResponseDto;
 import de.willbeedone.backend.domain.entity.User;
-import de.willbeedone.backend.exception.AlreadyExistException;
-import de.willbeedone.backend.exception.UserNotFoundException;
+import de.willbeedone.backend.exceptions.AlreadyExistException;
+import de.willbeedone.backend.exceptions.UserNotFoundException;
 import de.willbeedone.backend.repository.UserRepository;
 import de.willbeedone.backend.service.interfaces.UserService;
+
 import de.willbeedone.backend.service.mapping.UserMappingService;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 
 @Service
-@RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
-
 
     private final UserMappingService mappingService;
     private final UserRepository repository;
 
+    public UserServiceImpl(UserMappingService mappingService, UserRepository repository) {
+        this.mappingService = mappingService;
+        this.repository = repository;
+    }
 
     @Override
     public User addNewUser(UserRequestDto request) {
         if (checkIfUserExists(request.getEmail())) {
-            User newUser = mappingService.mapDtoToRequestEntity(request);
+            User newUser = mappingService.mapRequestDtoToEntity(request);
             return repository.save(newUser);
         } else {
             throw new AlreadyExistException(
@@ -54,11 +56,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Optional<UserResponseDto> getUserByEmail(String email) {
-        if (email == null || email.trim().isEmpty()) {
-            throw new IllegalArgumentException("Email cannot be empty or null");
-        }
+
         return repository.findUserByEmail(email)
-                .map(mappingService::mapResponseEntityToDto)
+                .map(mappingService::mapEntityToResponseDto)
                 .or(
                         () -> {
                             throw new UserNotFoundException("User not found with email: " + email);
@@ -71,7 +71,7 @@ public class UserServiceImpl implements UserService {
             throw new IllegalArgumentException("Id cannot be empty or null");
         }
         return repository.findById(id)
-                .map(mappingService::mapResponseEntityToDto)
+                .map(mappingService::mapEntityToResponseDto)
                 .or(
                         () -> {
                             throw new UserNotFoundException("User not found with id: " + id);
@@ -80,18 +80,23 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User updateUser(Long id, UserRequestDto dto) {
-
-        return repository.findById(id)
-                .map(existingUser -> {
-//                    existingUser.setUsername(dto.getUsername());
-                    existingUser.setEmail(dto.getEmail());
-                    existingUser.setPassword(dto.getPassword());
-
-                    return repository.save(existingUser);
-                })
-                .orElseThrow(() -> new UserNotFoundException("User not found with id: " + id));
+    public User updateUser(Long id, UserRequestDto user) {
+        return null;
     }
+
+//    @Override
+//    public User updateUser(Long id, UserRequestDto dto) {
+//
+//        return repository.findById(id)
+//                .map(existingUser -> {
+////                    existingUser.setUsername(dto.getUsername());
+//                    existingUser.setEmail(dto.getEmail());
+//                    existingUser.setPassword(dto.getPassword());
+//
+//                    return repository.save(existingUser);
+//                })
+//                .orElseThrow(() -> new UserNotFoundException("User not found with id: " + id));
+//    }
 
     @Override
     public void deleteUserById(Long id) {
@@ -108,19 +113,18 @@ public class UserServiceImpl implements UserService {
     }
 
 
-    @Override
-    public Optional<UserResponseDto> registration(String email, String password) {
-        if (email == null || email.trim().isEmpty() || password == null || password.trim().isEmpty()) {
-            throw new IllegalArgumentException("Email and password cannot be empty or null");
-        }
-
-        return repository.findUserByEmail(email)
-                .filter(user -> user.getPassword().equals(password))
-                .map(mappingService::mapResponseEntityToDto)
-                .or(() -> {
-                    throw new UserNotFoundException("Invalid email or password");
-                });
-    }
+//    @Override
+//    public Optional<UserResponseDto> registration(String email) {
+//        if (email == null || email.trim().isEmpty()) {
+//            throw new IllegalArgumentException("Email cannot be empty or null");
+//        }
+//
+//        return repository.findUserByEmail(email)
+//                .or(() -> {
+//                    throw new UserNotFoundException("Invalid email or password");
+//                })
+//                .map(mappingService::getUserDtoFromEntity);
+//    }
 
 
 }

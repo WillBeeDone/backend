@@ -9,18 +9,10 @@ import org.mapstruct.Mapping;
 @Mapper(componentModel = "spring")
 public interface UserMappingService {
 
-    UserRequestDto mapRequestEntityToDto(User entity);
-
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "blocked", constant = "false")
-    User mapDtoToRequestEntity(UserRequestDto dto);
+    User mapRequestDtoToEntity(UserRequestDto dto);
 
+    UserResponseDto mapEntityToResponseDto(User entity);
 
-    UserResponseDto mapResponseEntityToDto(User entity);
-    @Mapping(target = "id", ignore = true)
-    @Mapping(target = "blocked", constant = "false")
-    User mapDtoToResponseEntity(UserResponseDto dto);
-
-
-
-    }
+}
