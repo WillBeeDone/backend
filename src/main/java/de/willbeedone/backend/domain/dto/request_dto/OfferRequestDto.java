@@ -1,6 +1,8 @@
 package de.willbeedone.backend.domain.dto.request_dto;
 import de.willbeedone.backend.domain.entity.Category;
-import de.willbeedone.backend.domain.entity.enums.Location;
+import de.willbeedone.backend.domain.entity.ImageGallery;
+import de.willbeedone.backend.domain.entity.Location;
+
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -16,9 +18,7 @@ public class OfferRequestDto {
 
     private String title;
 
-    private Location location;
-
-    private List<String> gallery;
+    private ImageGallery gallery;
 
     public OfferRequestDto() {
     }
@@ -55,32 +55,23 @@ public class OfferRequestDto {
         this.title = title;
     }
 
-    public Location getLocation() {
-        return location;
-    }
-
-    public void setLocation(Location location) {
-        this.location = location;
-    }
-
-    public List<String> getGallery() {
+    public ImageGallery getGallery() {
         return gallery;
     }
 
-    public void setGallery(List<String> gallery) {
+    public void setGallery(ImageGallery gallery) {
         this.gallery = gallery;
     }
 
     @Override
     public boolean equals(Object o) {
-        if (o == null || getClass() != o.getClass()) return false;
-        OfferRequestDto that = (OfferRequestDto) o;
-        return Objects.equals(pricePerHour, that.pricePerHour) && Objects.equals(description, that.description) && Objects.equals(category, that.category) && Objects.equals(title, that.title) && location == that.location && Objects.equals(gallery, that.gallery);
+        if (!(o instanceof OfferRequestDto that)) return false;
+        return Objects.equals(pricePerHour, that.pricePerHour) && Objects.equals(description, that.description) && Objects.equals(category, that.category) && Objects.equals(title, that.title) && Objects.equals(gallery, that.gallery);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(pricePerHour, description, category, title, location, gallery);
+        return Objects.hash(pricePerHour, description, category, title, gallery);
     }
 
     @Override

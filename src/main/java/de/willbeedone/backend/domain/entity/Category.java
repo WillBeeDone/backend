@@ -1,5 +1,6 @@
 package de.willbeedone.backend.domain.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -21,6 +22,7 @@ public class Category {
     @Column(name = "name", nullable = false)
     private String name;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Offer> offers = new ArrayList<>();
 
