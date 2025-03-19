@@ -42,8 +42,9 @@ public class User {
     @JoinColumn(name = "role_id", nullable = false)
     private Role role;
 
-//    @Enumerated(EnumType.STRING)
-//    private Location location;
+    @ManyToOne
+    @JoinColumn(name = "location_id", nullable = false)
+    private Location location;
 
     @Column(name = "profilePicture")
     private String profilePicture;

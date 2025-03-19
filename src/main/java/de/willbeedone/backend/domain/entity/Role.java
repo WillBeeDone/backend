@@ -1,5 +1,6 @@
 package de.willbeedone.backend.domain.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -19,9 +20,13 @@ public class Role {
     @Column(name = "id")
     private Long id;
 
-
     @Column(name = "title", unique = true, nullable = false)
     private String title;
+
+    @JsonIgnore
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 
     @Override
     public boolean equals(Object o) {

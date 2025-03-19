@@ -25,6 +25,7 @@ public class Offer {
     @Column(name = "name", nullable = false)
     private String title;
 
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
@@ -39,9 +40,8 @@ public class Offer {
     @JoinColumn(name = "category_id", nullable = false)
     private Category category;
 
-    @ElementCollection
-    @JsonIgnore
-    private List<String> gallery;
+    @OneToOne(mappedBy = "offer", cascade = CascadeType.ALL)
+    private ImageGallery gallery;
 
     public Offer() {
     }
@@ -115,11 +115,11 @@ public class Offer {
         this.category = category;
     }
 
-    public List<String> getGallery() {
+    public ImageGallery getGallery() {
         return gallery;
     }
 
-    public void setGallery(List<String> gallery) {
+    public void setGallery(ImageGallery gallery) {
         this.gallery = gallery;
     }
 
