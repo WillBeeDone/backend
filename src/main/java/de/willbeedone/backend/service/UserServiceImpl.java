@@ -4,11 +4,10 @@ package de.willbeedone.backend.service;
 import de.willbeedone.backend.domain.dto.request_dto.UserRequestDto;
 import de.willbeedone.backend.domain.dto.response_dto.UserResponseDto;
 import de.willbeedone.backend.domain.entity.User;
-import de.willbeedone.backend.exceptions.AlreadyExistException;
-import de.willbeedone.backend.exceptions.UserNotFoundException;
+import de.willbeedone.backend.exceptions.custom_exceptions.AlreadyExistException;
+import de.willbeedone.backend.exceptions.custom_exceptions.UserNotFoundException;
 import de.willbeedone.backend.repository.UserRepository;
 import de.willbeedone.backend.service.interfaces.UserService;
-
 import de.willbeedone.backend.service.mapping.UserMappingService;
 import org.springframework.stereotype.Service;
 
@@ -32,8 +31,7 @@ public class UserServiceImpl implements UserService {
             User newUser = mappingService.mapRequestDtoToEntity(request);
             return repository.save(newUser);
         } else {
-            throw new AlreadyExistException(
-                    "User with Email " + request.getEmail() + " already exists");
+            throw new AlreadyExistException(request.getEmail());
         }
     }
 
@@ -56,27 +54,19 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Optional<UserResponseDto> getUserByEmail(String email) {
-
-        return repository.findUserByEmail(email)
+        return Optional.ofNullable(repository.findUserByEmail(email)
                 .map(mappingService::mapEntityToResponseDto)
-                .or(
-                        () -> {
-                            throw new UserNotFoundException("User not found with email: " + email);
-                        });
+                .orElseThrow(
+                        () -> new UserNotFoundException(email)
+                ));
     }
 
     @Override
     public Optional<UserResponseDto> getUserById(Long id) {
-        if (id == null) {
-            throw new IllegalArgumentException("Id cannot be empty or null");
-        }
-        return repository.findById(id)
+        return Optional.ofNullable(repository.findById(id)
                 .map(mappingService::mapEntityToResponseDto)
-                .or(
-                        () -> {
-                            throw new UserNotFoundException("User not found with id: " + id);
-                        }
-                );
+                .orElseThrow(
+                        () -> new UserNotFoundException(id)));
     }
 
     @Override
@@ -89,7 +79,8 @@ public class UserServiceImpl implements UserService {
 //
 //        return repository.findById(id)
 //                .map(existingUser -> {
-////                    existingUser.setUsername(dto.getUsername());
+
+    /// /                    existingUser.setUsername(dto.getUsername());
 //                    existingUser.setEmail(dto.getEmail());
 //                    existingUser.setPassword(dto.getPassword());
 //
@@ -97,11 +88,10 @@ public class UserServiceImpl implements UserService {
 //                })
 //                .orElseThrow(() -> new UserNotFoundException("User not found with id: " + id));
 //    }
-
     @Override
     public void deleteUserById(Long id) {
         if (!repository.existsById(id)) {
-            throw new UserNotFoundException("User not found with id: " + id);
+            throw new UserNotFoundException(id);
         } else {
             repository.deleteById(id);
         }
@@ -109,9 +99,12 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<User> getAllUsers() {
-        return repository.findAll();
+        List<User> users = repository.findAll();
+        if (users.isEmpty()) {
+            throw new UserNotFoundException();
+        }
+        return users;
     }
-
 
 //    @Override
 //    public Optional<UserResponseDto> registration(String email) {

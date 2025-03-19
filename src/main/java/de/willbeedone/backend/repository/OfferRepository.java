@@ -10,8 +10,10 @@ import java.util.Optional;
 
 
 public interface OfferRepository extends JpaRepository<Offer, Long> {
-   List<Offer> findOfferByTitle(String title);
+    List<Offer> findOfferByTitle(String title);
+
     List<Offer> findOfferByTitleAndActiveIsTrue(String title);
+
     Optional<List<Offer>> findOffersByCategory(Category category);
 
     Optional<List<Offer>> findOffersByUser(User user);

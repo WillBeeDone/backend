@@ -4,11 +4,9 @@ package de.willbeedone.backend.service;
 import de.willbeedone.backend.domain.dto.request_dto.OfferRequestDto;
 import de.willbeedone.backend.domain.dto.response_dto.OfferResponseDto;
 import de.willbeedone.backend.domain.entity.Offer;
-import de.willbeedone.backend.exceptions.OfferNotFoundException;
+import de.willbeedone.backend.exceptions.custom_exceptions.OfferNotFoundException;
 import de.willbeedone.backend.repository.OfferRepository;
 import de.willbeedone.backend.service.interfaces.OfferService;
-
-
 import de.willbeedone.backend.service.mapping.OfferMappingService;
 import org.springframework.stereotype.Service;
 
@@ -28,11 +26,12 @@ public class OfferServiceImpl implements OfferService {
         this.mappingService = mappingService;
     }
 
+    // Доработать обработчик, спросить у Артема про случай с Уже существующим оффером
     @Override
     public Offer addNewOffer(OfferRequestDto request) {
 
-            Offer newOffer = mappingService.mapRequestDtoToEntity(request);
-            return repository.save(newOffer);
+        Offer newOffer = mappingService.mapRequestDtoToEntity(request);
+        return repository.save(newOffer);
     }
 
 //        Optional<Offer> foundOffer = repository.findOfferByTitle(title);
@@ -41,28 +40,24 @@ public class OfferServiceImpl implements OfferService {
 //        }
 
     @Override
-    public List<OfferResponseDto> getOfferByTitle(String title) {
-        if (title == null || title.trim().isEmpty()) {
-            throw new IllegalArgumentException("Title cannot be empty or null");
-        }
-        return repository.findOfferByTitleAndActiveIsTrue(title).stream()
+    public Optional<List<OfferResponseDto>> getOfferByTitle(String title) {
+        List<OfferResponseDto> offers = repository.findOfferByTitleAndActiveIsTrue(title)
+                .stream()
                 .map(mappingService::mapEntityToResponseDto)
                 .toList();
+        if (offers.isEmpty()) {
+            throw new OfferNotFoundException(title);
+        }
 
+        return Optional.of(offers);
     }
 
     @Override
     public Optional<OfferResponseDto> getOfferById(Long id) {
-        if (id == null) {
-            throw new IllegalArgumentException("Id cannot be empty or null");
-        }
-        return repository.findById(id)
+        return Optional.ofNullable(repository.findById(id)
                 .map(mappingService::mapEntityToResponseDto)
-                .or(
-                        () -> {
-                            throw new OfferNotFoundException("Offer not found with id: " + id);
-                        }
-                );
+                .orElseThrow(
+                        () -> new OfferNotFoundException(id)));
     }
 
     @Override
@@ -96,7 +91,7 @@ public class OfferServiceImpl implements OfferService {
     @Override
     public void deleteOfferById(Long id) {
         if (!repository.existsById(id)) {
-            throw new OfferNotFoundException("Offer not found with id: " + id);
+            throw new OfferNotFoundException(id);
         } else {
             repository.deleteById(id);
         }
@@ -104,6 +99,11 @@ public class OfferServiceImpl implements OfferService {
 
     @Override
     public List<Offer> findAllOffers() {
-        return repository.findAll();
+
+        List<Offer> offers = repository.findAll();
+        if (offers.isEmpty()) {
+            throw new OfferNotFoundException();
+        }
+        return offers;
     }
 }
