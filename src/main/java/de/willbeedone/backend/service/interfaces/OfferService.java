@@ -12,7 +12,7 @@ import java.util.Optional;
 public interface OfferService {
     Offer addNewOffer(OfferRequestDto request);
 
-    List<OfferResponseDto> getOfferByTitle(String title);
+    Optional<List<OfferResponseDto>> getOfferByTitle(String title);
 
     Optional<OfferResponseDto> getOfferById(Long id);
 

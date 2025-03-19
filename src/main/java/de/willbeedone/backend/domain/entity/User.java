@@ -1,7 +1,10 @@
 package de.willbeedone.backend.domain.entity;
+
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 
 import java.util.Objects;
 import java.util.Set;
@@ -9,34 +12,47 @@ import java.util.Set;
 @Entity
 @Table(name = "user")
 public class User {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
 
     @Column(name = "firstName", nullable = false)
+    @NotBlank(message = "First name cannot be empty")
     @Pattern(
-            regexp = "[A-Z][a-z]{1,}",
-            message = "Product title should be at least three characters length and start with Capital letter"
+            regexp = "^[A-Z][a-zA-Z]{1,}$",
+            message = "First name should start with a capital letter and contain only letters"
     )
     private String firstName;
 
-    @Column(name = "blocked")
-    private boolean blocked;
-
     @Column(name = "lastName", nullable = false)
+    @NotBlank(message = "Last name cannot be empty")
     @Pattern(
-            regexp = "[A-Z][a-z]{1,}",
-            message = "Product title should be at least three characters length and start with Capital letter"
+            regexp = "^[A-Z][a-zA-Z]{1,}$",
+            message = "Last name should start with a capital letter and contain only letters"
     )
     private String lastName;
 
-    @Column(name = "email", unique = true)
-    @NotBlank(message = "Email cannot be empty or null")
+    @Column(name = "email", unique = true, nullable = false)
+    @NotBlank(message = "Email cannot be empty")
+    @Email(message = "Invalid email format")
     private String email;
 
     @Column(name = "password", nullable = false)
+    @NotBlank(message = "Password cannot be empty")
+    @Size(min = 8, message = "Password must be at least 8 characters long")
     private String password;
+
+    @Column(name = "phoneNumber")
+    @Pattern(
+            regexp = "^\\+?[0-9]{7,15}$",
+            message = "Phone number should contain only digits and can start with +"
+    )
+    private String phoneNumber;
+
+    @Column(name = "blocked")
+    private boolean blocked;
 
     @ManyToOne
     @JoinColumn(name = "role_id", nullable = false)
@@ -48,9 +64,6 @@ public class User {
 
     @Column(name = "profilePicture")
     private String profilePicture;
-
-    @Column(name = "phoneNumber")
-    private String phoneNumber;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Offer> offers;
@@ -71,10 +84,11 @@ public class User {
         this.id = id;
     }
 
-    public @Pattern(
+
+    public String getFirstName(@Pattern(
             regexp = "[A-Z][a-z]{1,}",
-            message = "Product title should be at least three characters length and start with Capital letter"
-    ) String getFirstName() {
+            message = "User name should be at least two characters length and start with Capital letter"
+    ) String firstName) {
         return firstName;
     }
 
