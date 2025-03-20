@@ -1,7 +1,5 @@
 package de.willbeedone.backend.domain.dto.response_dto;
 
-import de.willbeedone.backend.domain.entity.Category;
-
 import java.math.BigDecimal;
 import java.util.Objects;
 
@@ -11,7 +9,7 @@ public class OfferResponseDto {
     private Long id;
     private BigDecimal pricePerHour;
     private String description;
-    private Category category;
+//    private Category category;
     private String title;
 
     public OfferResponseDto() {
@@ -41,13 +39,13 @@ public class OfferResponseDto {
         this.description = description;
     }
 
-    public Category getCategory() {
-        return category;
-    }
-
-    public void setCategory(Category category) {
-        this.category = category;
-    }
+//    public Category getCategory() {
+//        return category;
+//    }
+//
+//    public void setCategory(Category category) {
+//        this.category = category;
+//    }
 
     public String getTitle() {
         return title;
@@ -67,12 +65,12 @@ public class OfferResponseDto {
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
         OfferResponseDto that = (OfferResponseDto) o;
-        return Objects.equals(id, that.id) && Objects.equals(pricePerHour, that.pricePerHour) && Objects.equals(description, that.description) && Objects.equals(category, that.category) && Objects.equals(title, that.title);
+        return Objects.equals(id, that.id) && Objects.equals(pricePerHour, that.pricePerHour) && Objects.equals(description, that.description) && Objects.equals(title, that.title);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, pricePerHour, description, category, title);
+        return Objects.hash(id, pricePerHour, description, title);
     }
 
     @Override
@@ -81,7 +79,7 @@ public class OfferResponseDto {
                 "id=" + id +
                 ", pricePerHour=" + pricePerHour +
                 ", description='" + description + '\'' +
-                ", category=" + category +
+//                ", category=" + category +
                 ", title='" + title + '\'' +
                 '}';
     }

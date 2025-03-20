@@ -1,9 +1,9 @@
-package de.willbeedone.backend.exceptions.GlobalExceptionHandler;
+package de.willbeedone.backend.exceptions.global_exception_handler;
 
-import de.willbeedone.backend.exceptions.AlreadyExistException;
-import de.willbeedone.backend.exceptions.OfferNotFoundException;
+import de.willbeedone.backend.exceptions.custom_exceptions.AlreadyExistException;
+import de.willbeedone.backend.exceptions.custom_exceptions.OfferNotFoundException;
 import de.willbeedone.backend.exceptions.Response;
-import de.willbeedone.backend.exceptions.UserNotFoundException;
+import de.willbeedone.backend.exceptions.custom_exceptions.UserNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -27,6 +27,5 @@ public class GlobalExceptionHandler {
     public ResponseEntity<Response> handleException(AlreadyExistException e) {
         Response response = new Response(e.getMessage());
         return new ResponseEntity<>(response, HttpStatus.CONFLICT);
-
     }
 }

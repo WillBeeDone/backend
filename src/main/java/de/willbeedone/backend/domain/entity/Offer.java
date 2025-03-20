@@ -2,7 +2,7 @@ package de.willbeedone.backend.domain.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-
+import jakarta.validation.constraints.*;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Objects;
@@ -19,9 +19,13 @@ public class Offer {
     @Column(name = "active")
     private boolean active;
 
+    @NotBlank(message = "Location cannot be null")
+    @Size(min = 3, max = 255, message = "Location must be between 3 and 255 characters")
     @Column(name = "location")
     private String location;
 
+    @NotBlank(message = "Title cannot be empty")
+    @Size(min = 3, max = 255, message = "Title must be between 3 and 255 characters")
     @Column(name = "name", nullable = false)
     private String title;
 
@@ -30,9 +34,13 @@ public class Offer {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
+    @NotBlank(message = "Price per hour cannot be empty")
+    @DecimalMin(value = "0.0", inclusive = false, message = "Price per hour must be greater than 0")
     @Column(nullable = false)
     private BigDecimal pricePerHour;
 
+    @NotBlank(message = "Description cannot be empty")
+    @Size(min = 10, max = 1000, message = "Description must be between 10 and 1000 characters")
     @Column(nullable = false, length = 1000)
     private String description;
 
