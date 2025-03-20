@@ -24,21 +24,28 @@ public class CategoryController {
         return categoryService.getAllCategories();
     }
 
-    @GetMapping("/{id}")
-    public Category getCategoryById(@PathVariable Long id) {
-        return categoryService.getCategoryById(id);
-    }
-
-    //@PreAuthorize("hasRole('ADMIN')")
-    @PostMapping("/new")
-    public Category addNewCategory(@RequestBody Category category) {
-        return categoryService.addNewCategory(category);
-    }
-    //@PreAuthorize("hasRole('ADMIN')")
-    @DeleteMapping("/{id}")
-    public void deleteCategory(@PathVariable Long id) {
-        categoryService.deleteCategory(id);
-    }
+//    @GetMapping("/{id}")
+//    public Category getCategoryById(@PathVariable Long id) {
+//        return categoryService.getCategoryById(id);
+//    }
+//
+//    //@PreAuthorize("hasRole('ADMIN')")
+//    @PostMapping("/new")
+//    public Category addNewCategory(@RequestBody Category category) {
+//        return categoryService.addNewCategory(category);
+//    }
+//
+//    @PutMapping("/{id}")
+//    @PreAuthorize("hasRole('ADMIN')")
+//    public Category updateCategory(@PathVariable Long id, @RequestBody Category category) {
+//        return categoryService.updateCategory(id, category);
+//    }
+//
+//    //@PreAuthorize("hasRole('ADMIN')")
+//    @DeleteMapping("/{id}")
+//    public void deleteCategory(@PathVariable Long id) {
+//        categoryService.deleteCategory(id);
+//    }
 
 
 
