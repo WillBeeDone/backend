@@ -1,6 +1,8 @@
 package de.willbeedone.backend.domain.dto.user_dto.response_dto;
 
 import de.willbeedone.backend.domain.entity.Location;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 import lombok.*;
 
 import java.util.Objects;
@@ -10,9 +12,20 @@ import java.util.Objects;
 @NoArgsConstructor
 public class UserFilterResponseDto {
 
+    @NotBlank(message = "First name cannot be empty")
+    @Pattern(
+            regexp = "^[A-Z][a-zA-Z]{1,}$",
+            message = "First name should start with a capital letter and contain only letters")
     private String firstName;
+
+    @NotBlank(message = "Last name cannot be empty")
+    @Pattern(
+            regexp = "^[A-Z][a-zA-Z]{1,}$",
+            message = "Last name should start with a capital letter and contain only letters")
     private String lastName;
+
     private String profilePicture;
+
     private Location location;
 
     @Override

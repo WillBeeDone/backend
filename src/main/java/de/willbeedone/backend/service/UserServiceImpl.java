@@ -6,6 +6,7 @@ import de.willbeedone.backend.domain.dto.user_dto.response_dto.UserFilterRespons
 import de.willbeedone.backend.domain.entity.User;
 import de.willbeedone.backend.exceptions.custom_exceptions.AlreadyExistException;
 import de.willbeedone.backend.exceptions.custom_exceptions.UserNotFoundException;
+import de.willbeedone.backend.exceptions.custom_validation_exceptions.UserValidationException;
 import de.willbeedone.backend.repository.UserRepository;
 import de.willbeedone.backend.service.interfaces.UserService;
 import de.willbeedone.backend.service.mapping.UserMappingService;
@@ -27,11 +28,15 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User addNewUser(UserRequestDto request) {
-        if (checkIfUserExists(request.getEmail())) {
-            User newUser = mappingService.mapRequestDtoToEntity(request);
-            return repository.save(newUser);
-        } else {
-            throw new AlreadyExistException(request.getEmail());
+        try {
+            if (checkIfUserExists(request.getEmail())) {
+                User newUser = mappingService.mapRequestDtoToEntity(request);
+                return repository.save(newUser);
+            } else {
+                throw new AlreadyExistException(request.getEmail());
+            }
+        } catch (Exception e) {
+            throw new UserValidationException(e);
         }
     }
 
@@ -40,71 +45,61 @@ public class UserServiceImpl implements UserService {
         return foundUser.isEmpty();
     }
 
-//    @Override
-//    public Optional<UserResponseDto> getUserByUsername(String username) {
-//        if (username == null || username.trim().isEmpty()) {
-//            throw new IllegalArgumentException("Username cannot be empty or null");
-//        }
-//        return repository.findUserByUsername(username)
-//                .map(mappingService::getUserDtoFromEntity)
-//                .or(() -> {
-//                    throw new UserNotFoundException("User not found with username: " + username);
-//                });
-//    }
 
     @Override
     public Optional<UserFilterResponseDto> getUserByEmail(String email) {
-        return Optional.ofNullable(repository.findUserByEmail(email)
-                .map(mappingService::mapEntityToFilterResponseDto)
-                .orElseThrow(
-                        () -> new UserNotFoundException(email)
-                ));
+        try {
+            return repository.findUserByEmail(email)
+                    .map(mappingService::mapEntityToFilterResponseDto);
+        } catch (Exception e) {
+            throw new UserValidationException(e);
+        }
     }
 
     @Override
     public Optional<UserFilterResponseDto> getUserById(Long id) {
-        return Optional.ofNullable(repository.findById(id)
-                .map(mappingService::mapEntityToFilterResponseDto)
-                .orElseThrow(
-                        () -> new UserNotFoundException(id)));
+        try {
+            return Optional.ofNullable(repository.findById(id)
+                    .map(mappingService::mapEntityToFilterResponseDto)
+                    .orElseThrow(
+                            () -> new UserNotFoundException(id)));
+        } catch (Exception e) {
+            throw new UserValidationException(e);
+        }
     }
 
     @Override
-    public User updateUser(Long id, UserRequestDto user) {
-        return null;
+    public User updateUser(UserRequestDto dto, Long id) {
+        try {
+            return repository.findById(id)
+                    .map(existingUser -> {
+                        if (dto.getEmail() != null) existingUser.setEmail(dto.getEmail());
+                        if (dto.getPassword() != null) existingUser.setPassword(dto.getPassword());
+                        return repository.save(existingUser);
+                    }).orElseThrow(() -> new UserNotFoundException(id));
+        } catch (Exception e) {
+            throw new UserValidationException(e);
+        }
     }
 
-//    @Override
-//    public User updateUser(Long id, UserRequestDto dto) {
-//
-//        return repository.findById(id)
-//                .map(existingUser -> {
-
-    /// /                    existingUser.setUsername(dto.getUsername());
-//                    existingUser.setEmail(dto.getEmail());
-//                    existingUser.setPassword(dto.getPassword());
-//
-//                    return repository.save(existingUser);
-//                })
-//                .orElseThrow(() -> new UserNotFoundException("User not found with id: " + id));
-//    }
     @Override
     public void deleteUserById(Long id) {
-        if (!repository.existsById(id)) {
-            throw new UserNotFoundException(id);
-        } else {
-            repository.deleteById(id);
+        try {
+            if (!repository.existsById(id)) {
+                throw new UserNotFoundException(id);
+            } else {
+                repository.deleteById(id);
+            }
+        } catch (Exception e) {
+            throw new UserValidationException(e);
         }
     }
 
     @Override
     public List<User> getAllUsers() {
-        List<User> users = repository.findAll();
-        if (users.isEmpty()) {
-            throw new UserNotFoundException();
-        }
-        return users;
+        return repository.findAll();
     }
+
 
 //    @Override
 //    public Optional<UserResponseDto> registration(String email) {

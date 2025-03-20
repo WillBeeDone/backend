@@ -4,6 +4,8 @@ import de.willbeedone.backend.exceptions.custom_exceptions.AlreadyExistException
 import de.willbeedone.backend.exceptions.custom_exceptions.OfferNotFoundException;
 import de.willbeedone.backend.exceptions.Response;
 import de.willbeedone.backend.exceptions.custom_exceptions.UserNotFoundException;
+import de.willbeedone.backend.exceptions.custom_validation_exceptions.OfferValidationException;
+import de.willbeedone.backend.exceptions.custom_validation_exceptions.UserValidationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -27,5 +29,16 @@ public class GlobalExceptionHandler {
     public ResponseEntity<Response> handleException(AlreadyExistException e) {
         Response response = new Response(e.getMessage());
         return new ResponseEntity<>(response, HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(UserValidationException.class)
+    public ResponseEntity<Response> handleException(UserValidationException e) {
+        Response response = new Response(e.getMessage());
+        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+    }
+    @ExceptionHandler(OfferValidationException.class)
+    public ResponseEntity<Response> handleException(OfferValidationException e) {
+        Response response = new Response(e.getMessage());
+        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
     }
 }

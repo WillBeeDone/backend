@@ -3,6 +3,10 @@ package de.willbeedone.backend.domain.dto.offer_dto.request_dto;
 import de.willbeedone.backend.domain.entity.Category;
 import de.willbeedone.backend.domain.entity.ImageGallery;
 import lombok.*;
+import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
 import java.math.BigDecimal;
 import java.util.Objects;
@@ -12,10 +16,20 @@ import java.util.Objects;
 @NoArgsConstructor
 public class OfferRequestDto {
 
+    @NotNull(message = "Price per hour cannot be empty")
+    @DecimalMin(value = "0.0", inclusive = false, message = "Price per hour must be greater than 0")
     private BigDecimal pricePerHour;
+
+    @NotBlank(message = "Description cannot be empty")
+    @Size(min = 10, max = 1000, message = "Description must be between 10 and 1000 characters")
     private String description;
+
     private Category category;
+
+    @NotBlank(message = "Title cannot be empty")
+    @Size(min = 3, max = 255, message = "Title must be between 3 and 255 characters")
     private String title;
+
     private ImageGallery gallery;
 
     @Override

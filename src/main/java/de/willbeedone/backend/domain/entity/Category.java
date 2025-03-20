@@ -2,6 +2,7 @@ package de.willbeedone.backend.domain.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Pattern;
 import lombok.*;
 
 import java.util.ArrayList;
@@ -22,6 +23,7 @@ public class Category {
     private Long id;
 
     @Column(name = "name", nullable = false)
+    @Pattern(regexp = "^[A-Za-zА-Яа-я0-9\\s-]{3,50}$", message = "Name must be between 3 and 50 characters and contain only letters, numbers, spaces, or hyphens")
     private String name;
 
     @JsonIgnore
