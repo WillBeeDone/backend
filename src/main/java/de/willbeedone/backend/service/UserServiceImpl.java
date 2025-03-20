@@ -6,6 +6,7 @@ import de.willbeedone.backend.domain.dto.response_dto.UserResponseDto;
 import de.willbeedone.backend.domain.entity.User;
 import de.willbeedone.backend.exceptions.custom_exceptions.AlreadyExistException;
 import de.willbeedone.backend.exceptions.custom_exceptions.UserNotFoundException;
+import de.willbeedone.backend.exceptions.custom_validation_exceptions.UserValidationException;
 import de.willbeedone.backend.repository.UserRepository;
 import de.willbeedone.backend.service.interfaces.UserService;
 import de.willbeedone.backend.service.mapping.UserMappingService;
@@ -27,11 +28,15 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User addNewUser(UserRequestDto request) {
-        if (checkIfUserExists(request.getEmail())) {
-            User newUser = mappingService.mapRequestDtoToEntity(request);
-            return repository.save(newUser);
-        } else {
-            throw new AlreadyExistException(request.getEmail());
+        try {
+            if (checkIfUserExists(request.getEmail())) {
+                User newUser = mappingService.mapRequestDtoToEntity(request);
+                return repository.save(newUser);
+            } else {
+                throw new AlreadyExistException(request.getEmail());
+            }
+        } catch (Exception e) {
+            throw new UserValidationException(e);
         }
     }
 
@@ -54,24 +59,33 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Optional<UserResponseDto> getUserByEmail(String email) {
-        return Optional.ofNullable(repository.findUserByEmail(email)
-                .map(mappingService::mapEntityToResponseDto)
-                .orElseThrow(
-                        () -> new UserNotFoundException(email)
-                ));
+        try {
+            return repository.findUserByEmail(email)
+                    .map(mappingService::mapEntityToResponseDto);
+        } catch (Exception e) {
+            throw new UserValidationException(e);
+        }
     }
 
     @Override
     public Optional<UserResponseDto> getUserById(Long id) {
-        return Optional.ofNullable(repository.findById(id)
-                .map(mappingService::mapEntityToResponseDto)
-                .orElseThrow(
-                        () -> new UserNotFoundException(id)));
+        try {
+            return Optional.ofNullable(repository.findById(id)
+                    .map(mappingService::mapEntityToResponseDto)
+                    .orElseThrow(
+                            () -> new UserNotFoundException(id)));
+        } catch (Exception e) {
+            throw new UserValidationException(e);
+        }
     }
 
     @Override
     public User updateUser(Long id, UserRequestDto user) {
-        return null;
+        try {
+            return null;
+        } catch (Exception e) {
+            throw new UserValidationException(e);
+        }
     }
 
 //    @Override
@@ -90,20 +104,28 @@ public class UserServiceImpl implements UserService {
 //    }
     @Override
     public void deleteUserById(Long id) {
-        if (!repository.existsById(id)) {
-            throw new UserNotFoundException(id);
-        } else {
-            repository.deleteById(id);
+        try {
+            if (!repository.existsById(id)) {
+                throw new UserNotFoundException(id);
+            } else {
+                repository.deleteById(id);
+            }
+        } catch (Exception e) {
+            throw new UserValidationException(e);
         }
     }
 
     @Override
     public List<User> getAllUsers() {
-        List<User> users = repository.findAll();
-        if (users.isEmpty()) {
-            throw new UserNotFoundException();
+        try {
+            List<User> users = repository.findAll();
+            if (users.isEmpty()) {
+                throw new UserNotFoundException();
+            }
+            return users;
+        } catch (Exception e) {
+            throw new UserValidationException(e);
         }
-        return users;
     }
 
 //    @Override

@@ -5,6 +5,7 @@ import de.willbeedone.backend.domain.dto.request_dto.OfferRequestDto;
 import de.willbeedone.backend.domain.dto.response_dto.OfferResponseDto;
 import de.willbeedone.backend.domain.entity.Offer;
 import de.willbeedone.backend.exceptions.custom_exceptions.OfferNotFoundException;
+import de.willbeedone.backend.exceptions.custom_validation_exceptions.OfferValidationException;
 import de.willbeedone.backend.repository.OfferRepository;
 import de.willbeedone.backend.service.interfaces.OfferService;
 import de.willbeedone.backend.service.mapping.OfferMappingService;
@@ -26,12 +27,14 @@ public class OfferServiceImpl implements OfferService {
         this.mappingService = mappingService;
     }
 
-    // Доработать обработчик, спросить у Артема про случай с Уже существующим оффером
     @Override
     public Offer addNewOffer(OfferRequestDto request) {
-
-        Offer newOffer = mappingService.mapRequestDtoToEntity(request);
-        return repository.save(newOffer);
+        try {
+            Offer newOffer = mappingService.mapRequestDtoToEntity(request);
+            return repository.save(newOffer);
+        } catch (Exception e) {
+            throw new OfferValidationException(e);
+        }
     }
 
 //        Optional<Offer> foundOffer = repository.findOfferByTitle(title);
@@ -41,28 +44,40 @@ public class OfferServiceImpl implements OfferService {
 
     @Override
     public Optional<List<OfferResponseDto>> getOfferByTitle(String title) {
-        List<OfferResponseDto> offers = repository.findOfferByTitleAndActiveIsTrue(title)
-                .stream()
-                .map(mappingService::mapEntityToResponseDto)
-                .toList();
-        if (offers.isEmpty()) {
-            throw new OfferNotFoundException(title);
-        }
+        try {
+            List<OfferResponseDto> offers = repository.findOfferByTitleAndActiveIsTrue(title)
+                    .stream()
+                    .map(mappingService::mapEntityToResponseDto)
+                    .toList();
+            if (offers.isEmpty()) {
+                throw new OfferNotFoundException(title);
+            }
 
-        return Optional.of(offers);
+            return Optional.of(offers);
+        } catch (Exception e) {
+            throw new OfferValidationException(e);
+        }
     }
 
     @Override
     public Optional<OfferResponseDto> getOfferById(Long id) {
-        return Optional.ofNullable(repository.findById(id)
-                .map(mappingService::mapEntityToResponseDto)
-                .orElseThrow(
-                        () -> new OfferNotFoundException(id)));
+        try {
+            return Optional.ofNullable(repository.findById(id)
+                    .map(mappingService::mapEntityToResponseDto)
+                    .orElseThrow(
+                            () -> new OfferNotFoundException(id)));
+        } catch (Exception e) {
+            throw new OfferValidationException(e);
+        }
     }
 
     @Override
     public Offer updateOffer(OfferRequestDto dto, Long id) {
-        return null;
+        try {
+            return null;
+        } catch (Exception e) {
+            throw new OfferValidationException(e);
+        }
     }
 
 //    @Override
@@ -90,20 +105,27 @@ public class OfferServiceImpl implements OfferService {
 
     @Override
     public void deleteOfferById(Long id) {
-        if (!repository.existsById(id)) {
-            throw new OfferNotFoundException(id);
-        } else {
-            repository.deleteById(id);
+        try {
+            if (!repository.existsById(id)) {
+                throw new OfferNotFoundException(id);
+            } else {
+                repository.deleteById(id);
+            }
+        } catch (Exception e) {
+            throw new OfferValidationException(e);
         }
     }
 
     @Override
     public List<Offer> findAllOffers() {
-
-        List<Offer> offers = repository.findAll();
-        if (offers.isEmpty()) {
-            throw new OfferNotFoundException();
+        try {
+            List<Offer> offers = repository.findAll();
+            if (offers.isEmpty()) {
+                throw new OfferNotFoundException();
+            }
+            return offers;
+        } catch (Exception e) {
+            throw new OfferValidationException(e);
         }
-        return offers;
     }
 }

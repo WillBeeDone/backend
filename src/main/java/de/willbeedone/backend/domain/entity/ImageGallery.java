@@ -2,6 +2,7 @@ package de.willbeedone.backend.domain.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Pattern;
 import lombok.*;
 
 import java.util.List;
@@ -20,6 +21,10 @@ public class ImageGallery {
 
     @ElementCollection
     @Column(name = "image_url", nullable = false)
+    @Pattern(
+            regexp = "^(https?|ftp)://[^\\s/$.?#].[^\\s]*$",
+            message = "Each image URL must be a valid URL"
+    )
     private List<String> imageUrl;
 
     @JsonIgnore

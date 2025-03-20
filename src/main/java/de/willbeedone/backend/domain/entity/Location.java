@@ -2,6 +2,8 @@ package de.willbeedone.backend.domain.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 import lombok.*;
 
 import java.util.ArrayList;
@@ -24,6 +26,8 @@ public class Location {
     private List<User> users = new ArrayList<>();
 
     @Column(name = "city_name", nullable = false)
+    @Size(min = 2, max = 50, message = "City name must be between 2 and 50 characters")
+    @Pattern(regexp = "^[A-Za-zÀ-ÖØ-öø-ÿ\\s-]+$", message = "City name can only contain letters, spaces, and hyphens")
     private String cityName;
 
     @Override

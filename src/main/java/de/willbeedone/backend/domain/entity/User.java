@@ -85,10 +85,7 @@ public class User {
     }
 
 
-    public String getFirstName(@Pattern(
-            regexp = "[A-Z][a-z]{1,}",
-            message = "User name should be at least two characters length and start with Capital letter"
-    ) String firstName) {
+    public String getFirstName() {
         return firstName;
     }
 
