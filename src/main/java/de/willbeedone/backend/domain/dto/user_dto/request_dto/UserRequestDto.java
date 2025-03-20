@@ -1,36 +1,17 @@
 package de.willbeedone.backend.domain.dto.user_dto.request_dto;
 
+import lombok.*;
+
 import java.util.Objects;
 
+@Getter
+@Setter
+@NoArgsConstructor
 public class UserRequestDto {
 
     private String email;
     private String password;
     private boolean blocked;
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public boolean isBlocked() {
-        return blocked;
-    }
-
-    public void setBlocked(boolean blocked) {
-        this.blocked = blocked;
-    }
 
     @Override
     public boolean equals(Object o) {
