@@ -2,6 +2,7 @@ package de.willbeedone.backend.service.interfaces;
 
 import de.willbeedone.backend.domain.dto.offer_dto.request_dto.OfferRequestDto;
 import de.willbeedone.backend.domain.dto.offer_dto.response_dto.OfferFilterResponseDto;
+import de.willbeedone.backend.domain.dto.offer_dto.response_dto.OfferProfileGuestResponseDto;
 import de.willbeedone.backend.domain.entity.Offer;
 
 import java.util.List;
@@ -17,7 +18,9 @@ public interface OfferService {
 
     Optional<List<OfferFilterResponseDto>> getOfferByTitle(String title);
 
-    Optional<OfferFilterResponseDto> getOfferById(Long id);
+    OfferProfileGuestResponseDto getActiveOfferById(Long id);
+
+    Offer getActiveOfferEntityById(Long id);
 
     Offer updateOffer(OfferRequestDto dto, Long id);
 
