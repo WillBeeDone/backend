@@ -1,0 +1,43 @@
+package de.willbeedone.backend.service;
+
+import de.willbeedone.backend.domain.entity.Location;
+import de.willbeedone.backend.repository.LocationRepository;
+import de.willbeedone.backend.service.interfaces.LocationService;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+
+@Service
+public class LocationServiceImpl  implements LocationService {
+
+    private final LocationRepository locationRepository;
+
+    public LocationServiceImpl(LocationRepository locationRepository) {
+        this.locationRepository = locationRepository;
+    }
+
+    @Override
+    public List<Location> getAllLocations() {
+        return locationRepository.findAll();
+    }
+
+    @Override
+    public Location getLocationById(Long id) {
+        return locationRepository.findById(id).orElseThrow(() -> new RuntimeException("Location not found"));
+    }
+
+    @Override
+    public List<Location> getLocationByCity(String cityName) {
+        return locationRepository.findByCityName(cityName);
+    }
+
+    @Override
+    public Location addNewLocation(Location location) {
+        return locationRepository.save(location);
+    }
+
+    @Override
+    public void deleteLocation(Long id) {
+        locationRepository.deleteById(id);
+    }
+}
