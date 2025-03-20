@@ -2,6 +2,10 @@ package de.willbeedone.backend.domain.dto.user_dto.request_dto;
 
 import lombok.*;
 
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
+
 import java.util.Objects;
 
 @Getter
@@ -9,8 +13,14 @@ import java.util.Objects;
 @NoArgsConstructor
 public class UserRequestDto {
 
+    @Email(message = "Invalid email format")
     private String email;
+
+    @NotBlank(message = "Password cannot be empty")
+    @Size(min = 8, message = "Password must be at least 8 characters long")
+
     private String password;
+
     private boolean blocked;
 
     @Override

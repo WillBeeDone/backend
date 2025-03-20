@@ -17,7 +17,9 @@ public interface UserService {
 
     Optional<UserFilterResponseDto> getUserById(Long id);
 
-    User updateUser(Long id, UserRequestDto user);
+
+
+    User updateUser(UserRequestDto dto, Long id);
 
     void deleteUserById(Long id);
 
