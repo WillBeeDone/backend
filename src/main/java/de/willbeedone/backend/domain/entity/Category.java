@@ -15,8 +15,10 @@ import java.util.Objects;
 @NoArgsConstructor
 @Table(name = "category")
 public class Category {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Setter(AccessLevel.NONE)
     @Column(name = "id")
     private Long id;
 
@@ -30,21 +32,18 @@ public class Category {
 
     @Override
     public boolean equals(Object o) {
-        if (o == null || getClass() != o.getClass()) return false;
-        Category category = (Category) o;
-        return Objects.equals(id, category.id) && Objects.equals(name, category.name);
+        if (this == o) return true;
+        if (!(o instanceof Category category)) return false;
+        return Objects.equals(id, category.id) && Objects.equals(name, category.name) && Objects.equals(offers, category.offers);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name);
+        return Objects.hash(id, name, offers);
     }
 
     @Override
     public String toString() {
-        return "Category{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                '}';
+        return String.format("Category: id - %d, name - %s", id, name);
     }
 }

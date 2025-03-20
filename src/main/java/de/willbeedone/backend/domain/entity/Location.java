@@ -11,11 +11,9 @@ import java.util.List;
 import java.util.Objects;
 
 @Entity
-@Setter
-@Getter
-@NoArgsConstructor
 @Table(name = "location")
 public class Location {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
@@ -30,8 +28,32 @@ public class Location {
     @Pattern(regexp = "^[A-Za-zÀ-ÖØ-öø-ÿ\\s-]+$", message = "City name can only contain letters, spaces, and hyphens")
     private String cityName;
 
+    public Location() {
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public List<User> getUsers() {
+        return users;
+    }
+
+    public void setUsers(List<User> users) {
+        this.users = users;
+    }
+
+    public @Size(min = 3, max = 255, message = "City name must be between 3 and 255 characters") String getCityName() {
+        return cityName;
+    }
+
+    public void setCityName(@Size(min = 3, max = 255, message = "City name must be between 3 and 255 characters") String cityName) {
+        this.cityName = cityName;
+    }
+
     @Override
     public boolean equals(Object o) {
+        if (this == o) return true;
         if (!(o instanceof Location location)) return false;
         return Objects.equals(id, location.id) && Objects.equals(users, location.users) && Objects.equals(cityName, location.cityName);
     }
@@ -43,11 +65,6 @@ public class Location {
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder("Location{");
-        sb.append("id=").append(id);
-        sb.append(", users=").append(users);
-        sb.append(", cityName='").append(cityName).append('\'');
-        sb.append('}');
-        return sb.toString();
+        return String.format("Location: id - %d, cityName - %s", id, cityName);
     }
 }

@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import java.math.BigDecimal;
-import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -16,23 +15,10 @@ public class Offer {
     @Column(name = "id")
     private Long id;
 
-    @Column(name = "active")
-    private boolean active;
-
-    @NotBlank(message = "Location cannot be null")
-    @Size(min = 3, max = 255, message = "Location must be between 3 and 255 characters")
-    @Column(name = "location")
-    private String location;
-
     @NotBlank(message = "Title cannot be empty")
     @Size(min = 3, max = 255, message = "Title must be between 3 and 255 characters")
     @Column(name = "name", nullable = false)
     private String title;
-
-    @JsonIgnore
-    @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
 
     @NotBlank(message = "Price per hour cannot be empty")
     @DecimalMin(value = "0.0", inclusive = false, message = "Price per hour must be greater than 0")
@@ -51,6 +37,14 @@ public class Offer {
     @OneToOne(mappedBy = "offer", cascade = CascadeType.ALL)
     private ImageGallery gallery;
 
+    @Column(name = "active")
+    private boolean active;
+
+    @JsonIgnore
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
+
     public Offer() {
     }
 
@@ -63,24 +57,12 @@ public class Offer {
         return id;
     }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
-
     public boolean isActive() {
         return active;
     }
 
     public void setActive(boolean active) {
         this.active = active;
-    }
-
-    public String getLocation() {
-        return location;
-    }
-
-    public void setLocation(String location) {
-        this.location = location;
     }
 
     public String getTitle() {
@@ -133,28 +115,18 @@ public class Offer {
 
     @Override
     public boolean equals(Object o) {
-        if (o == null || getClass() != o.getClass()) return false;
-        Offer offer = (Offer) o;
-        return active == offer.active && Objects.equals(id, offer.id) && Objects.equals(location, offer.location) && Objects.equals(title, offer.title) && Objects.equals(user, offer.user) && Objects.equals(pricePerHour, offer.pricePerHour) && Objects.equals(description, offer.description) && Objects.equals(category, offer.category) && Objects.equals(gallery, offer.gallery);
+        if (this == o) return true;
+        if (!(o instanceof Offer offer)) return false;
+        return active == offer.active && Objects.equals(id, offer.id) && Objects.equals(title, offer.title) && Objects.equals(pricePerHour, offer.pricePerHour) && Objects.equals(description, offer.description) && Objects.equals(category, offer.category) && Objects.equals(gallery, offer.gallery) && Objects.equals(user, offer.user);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, active, location, title, user, pricePerHour, description, category, gallery);
+        return Objects.hash(id, title, pricePerHour, description, category, gallery, active, user);
     }
 
     @Override
     public String toString() {
-        return "Offer{" +
-                "id=" + id +
-                ", active=" + active +
-                ", location='" + location + '\'' +
-                ", title='" + title + '\'' +
-                ", user=" + user +
-                ", pricePerHour=" + pricePerHour +
-                ", description='" + description + '\'' +
-                ", category=" + category +
-                ", gallery=" + gallery +
-                '}';
+        return String.format("Offer: id - %d, title - %s, pricePerHour - %.2f, category - %s, gallery - %s, description - %s, active - %s", id, title, pricePerHour, category, gallery, description, active ? "Yes" : "No");
     }
 }

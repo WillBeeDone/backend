@@ -1,8 +1,7 @@
 package de.willbeedone.backend.service;
 
-
-import de.willbeedone.backend.domain.dto.request_dto.OfferRequestDto;
-import de.willbeedone.backend.domain.dto.response_dto.OfferResponseDto;
+import de.willbeedone.backend.domain.dto.offer_dto.request_dto.OfferRequestDto;
+import de.willbeedone.backend.domain.dto.offer_dto.response_dto.OfferFilterResponseDto;
 import de.willbeedone.backend.domain.entity.Offer;
 import de.willbeedone.backend.exceptions.custom_exceptions.OfferNotFoundException;
 import de.willbeedone.backend.exceptions.custom_validation_exceptions.OfferValidationException;
@@ -11,6 +10,7 @@ import de.willbeedone.backend.service.interfaces.OfferService;
 import de.willbeedone.backend.service.mapping.OfferMappingService;
 import org.springframework.stereotype.Service;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
@@ -27,6 +27,7 @@ public class OfferServiceImpl implements OfferService {
         this.mappingService = mappingService;
     }
 
+    // Доработать обработчик, спросить у Артема про случай с Уже существующим оффером
     @Override
     public Offer addNewOffer(OfferRequestDto request) {
         try {
@@ -43,11 +44,38 @@ public class OfferServiceImpl implements OfferService {
 //        }
 
     @Override
-    public Optional<List<OfferResponseDto>> getOfferByTitle(String title) {
+    public List<OfferFilterResponseDto> getAllOffers() {
+        List<OfferFilterResponseDto> offers = repository
+                .findAll()
+                .stream()
+                .sorted(Comparator.comparing(Offer::getPricePerHour))
+                .map(mappingService::mapEntityToFilterResponseDto)
+                .toList();
+        if (offers.isEmpty()) {
+            throw new OfferNotFoundException();
+        }
+        return offers;
+    }
+
+    @Override
+    public List<OfferFilterResponseDto> getFilteredOffers(String cityName, String category, String keyPhrase) {
+        return repository
+                .findAll()
+                .stream()
+                .filter(Offer::isActive)
+                .filter(offer -> offer == null || "all".equals(cityName) || offer.getUser().getLocation().getCityName().equals(cityName))
+                .filter(offer -> offer == null || "all".equals(category) || offer.getCategory().equals(category))
+                .filter(offer -> offer == null || "all".equals(keyPhrase) || offer.getUser().getFirstName().contains(keyPhrase) || offer.getUser().getLastName().contains(keyPhrase) || offer.getTitle().contains(keyPhrase) || offer.getDescription().contains(keyPhrase))
+                .map(mappingService::mapEntityToFilterResponseDto)
+                .toList();
+    }
+
+    @Override
+    public Optional<List<OfferFilterResponseDto>> getOfferByTitle(String title) {
         try {
-            List<OfferResponseDto> offers = repository.findOfferByTitleAndActiveIsTrue(title)
+            List<OfferFilterResponseDto> offers = repository.findOfferByTitleAndActiveIsTrue(title)
                     .stream()
-                    .map(mappingService::mapEntityToResponseDto)
+                    .map(mappingService::mapEntityToFilterResponseDto)
                     .toList();
             if (offers.isEmpty()) {
                 throw new OfferNotFoundException(title);
@@ -60,10 +88,10 @@ public class OfferServiceImpl implements OfferService {
     }
 
     @Override
-    public Optional<OfferResponseDto> getOfferById(Long id) {
+    public Optional<OfferFilterResponseDto> getOfferById(Long id) {
         try {
             return Optional.ofNullable(repository.findById(id)
-                    .map(mappingService::mapEntityToResponseDto)
+                    .map(mappingService::mapEntityToFilterResponseDto)
                     .orElseThrow(
                             () -> new OfferNotFoundException(id)));
         } catch (Exception e) {
@@ -102,7 +130,6 @@ public class OfferServiceImpl implements OfferService {
 //                .orElseThrow(() -> new OfferNotFoundException("Offer not found with id: " + id));
 //    }
 
-
     @Override
     public void deleteOfferById(Long id) {
         try {
@@ -116,16 +143,4 @@ public class OfferServiceImpl implements OfferService {
         }
     }
 
-    @Override
-    public List<Offer> findAllOffers() {
-        try {
-            List<Offer> offers = repository.findAll();
-            if (offers.isEmpty()) {
-                throw new OfferNotFoundException();
-            }
-            return offers;
-        } catch (Exception e) {
-            throw new OfferValidationException(e);
-        }
-    }
 }
