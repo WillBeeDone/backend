@@ -2,11 +2,14 @@ package de.willbeedone.backend.domain.dto.offer_dto.response_dto;
 
 import de.willbeedone.backend.domain.dto.user_dto.response_dto.UserFilterResponseDto;
 import de.willbeedone.backend.domain.entity.Category;
+import lombok.*;
 
 import java.math.BigDecimal;
 import java.util.Objects;
 
-
+@Getter
+@Setter
+@NoArgsConstructor
 public class OfferFilterResponseDto {
 
     private Long id;
@@ -15,57 +18,6 @@ public class OfferFilterResponseDto {
     private BigDecimal pricePerHour;
     private String description;
     private UserFilterResponseDto userFilterResponseDto;
-
-    public OfferFilterResponseDto() {
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public Category getCategory() {
-        return category;
-    }
-
-    public void setCategory(Category category) {
-        this.category = category;
-    }
-
-    public BigDecimal getPricePerHour() {
-        return pricePerHour;
-    }
-
-    public void setPricePerHour(BigDecimal pricePerHour) {
-        this.pricePerHour = pricePerHour;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public UserFilterResponseDto getUserFilterResponseDto() {
-        return userFilterResponseDto;
-    }
-
-    public void setUserFilterResponseDto(UserFilterResponseDto userFilterResponseDto) {
-        this.userFilterResponseDto = userFilterResponseDto;
-    }
 
     @Override
     public boolean equals(Object o) {

@@ -5,11 +5,15 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
+import lombok.*;
 
 import java.util.Objects;
 import java.util.Set;
 
 @Entity
+@Getter
+@Setter
+@NoArgsConstructor
 @Table(name = "user")
 public class User {
 
@@ -68,114 +72,9 @@ public class User {
     @Column(name = "blocked")
     private boolean blocked;
 
-    public User() {
-    }
-
     public User(String email, String password) {
         this.email = email;
         this.password = password;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public @NotBlank(message = "First name cannot be empty") @Pattern(
-            regexp = "^[A-Z][a-zA-Z]{1,}$",
-            message = "First name should start with a capital letter and contain only letters"
-    ) String getFirstName() {
-        return firstName;
-    }
-
-    public void setFirstName(@NotBlank(message = "First name cannot be empty") @Pattern(
-            regexp = "^[A-Z][a-zA-Z]{1,}$",
-            message = "First name should start with a capital letter and contain only letters"
-    ) String firstName) {
-        this.firstName = firstName;
-    }
-
-    public @NotBlank(message = "Last name cannot be empty") @Pattern(
-            regexp = "^[A-Z][a-zA-Z]{1,}$",
-            message = "Last name should start with a capital letter and contain only letters"
-    ) String getLastName() {
-        return lastName;
-    }
-
-    public void setLastName(@NotBlank(message = "Last name cannot be empty") @Pattern(
-            regexp = "^[A-Z][a-zA-Z]{1,}$",
-            message = "Last name should start with a capital letter and contain only letters"
-    ) String lastName) {
-        this.lastName = lastName;
-    }
-
-    public @NotBlank(message = "Email cannot be empty") @Email(message = "Invalid email format") String getEmail() {
-        return email;
-    }
-
-    public void setEmail(@NotBlank(message = "Email cannot be empty") @Email(message = "Invalid email format") String email) {
-        this.email = email;
-    }
-
-    public @NotBlank(message = "Password cannot be empty") @Size(min = 8, message = "Password must be at least 8 characters long") String getPassword() {
-        return password;
-    }
-
-    public void setPassword(@NotBlank(message = "Password cannot be empty") @Size(min = 8, message = "Password must be at least 8 characters long") String password) {
-        this.password = password;
-    }
-
-    public @Pattern(
-            regexp = "^\\+?[0-9]{7,15}$",
-            message = "Phone number should contain only digits and can start with +"
-    ) String getPhoneNumber() {
-        return phoneNumber;
-    }
-
-    public void setPhoneNumber(@Pattern(
-            regexp = "^\\+?[0-9]{7,15}$",
-            message = "Phone number should contain only digits and can start with +"
-    ) String phoneNumber) {
-        this.phoneNumber = phoneNumber;
-    }
-
-    public Location getLocation() {
-        return location;
-    }
-
-    public void setLocation(Location location) {
-        this.location = location;
-    }
-
-    public String getProfilePicture() {
-        return profilePicture;
-    }
-
-    public void setProfilePicture(String profilePicture) {
-        this.profilePicture = profilePicture;
-    }
-
-    public Role getRole() {
-        return role;
-    }
-
-    public void setRole(Role role) {
-        this.role = role;
-    }
-
-    public Set<Offer> getOffers() {
-        return offers;
-    }
-
-    public void setOffers(Set<Offer> offers) {
-        this.offers = offers;
-    }
-
-    public boolean isBlocked() {
-        return blocked;
-    }
-
-    public void setBlocked(boolean blocked) {
-        this.blocked = blocked;
     }
 
     @Override
