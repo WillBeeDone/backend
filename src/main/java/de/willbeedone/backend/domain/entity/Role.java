@@ -14,9 +14,9 @@ import java.util.Objects;
 @Table(name = "role")
 public class Role {
 
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Setter(AccessLevel.NONE)
     @Column(name = "id")
     private Long id;
 
@@ -30,21 +30,18 @@ public class Role {
 
     @Override
     public boolean equals(Object o) {
-        if (o == null || getClass() != o.getClass()) return false;
-        Role role = (Role) o;
-        return Objects.equals(id, role.id) && Objects.equals(title, role.title);
+        if (this == o) return true;
+        if (!(o instanceof Role role)) return false;
+        return Objects.equals(id, role.id) && Objects.equals(title, role.title) && Objects.equals(user, role.user);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, title);
+        return Objects.hash(id, title, user);
     }
 
     @Override
     public String toString() {
-        return "Role{" +
-                "id=" + id +
-                ", title='" + title + '\'' +
-                '}';
+        return String.format("Role: id - %d, title - %s", id, title);
     }
 }

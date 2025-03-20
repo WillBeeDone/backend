@@ -1,11 +1,8 @@
-package de.willbeedone.backend.domain.dto.request_dto;
+package de.willbeedone.backend.domain.dto.offer_dto.request_dto;
 import de.willbeedone.backend.domain.entity.Category;
 import de.willbeedone.backend.domain.entity.ImageGallery;
-import de.willbeedone.backend.domain.entity.Location;
-
 
 import java.math.BigDecimal;
-import java.util.List;
 import java.util.Objects;
 
 public class OfferRequestDto {
@@ -65,6 +62,7 @@ public class OfferRequestDto {
 
     @Override
     public boolean equals(Object o) {
+        if (this == o) return true;
         if (!(o instanceof OfferRequestDto that)) return false;
         return Objects.equals(pricePerHour, that.pricePerHour) && Objects.equals(description, that.description) && Objects.equals(category, that.category) && Objects.equals(title, that.title) && Objects.equals(gallery, that.gallery);
     }

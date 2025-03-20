@@ -1,4 +1,4 @@
-package de.willbeedone.backend.domain.dto.request_dto;
+package de.willbeedone.backend.domain.dto.user_dto.request_dto;
 
 import java.util.Objects;
 

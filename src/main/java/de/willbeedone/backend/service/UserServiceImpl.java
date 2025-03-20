@@ -1,8 +1,8 @@
 package de.willbeedone.backend.service;
 
 
-import de.willbeedone.backend.domain.dto.request_dto.UserRequestDto;
-import de.willbeedone.backend.domain.dto.response_dto.UserResponseDto;
+import de.willbeedone.backend.domain.dto.user_dto.request_dto.UserRequestDto;
+import de.willbeedone.backend.domain.dto.user_dto.response_dto.UserFilterResponseDto;
 import de.willbeedone.backend.domain.entity.User;
 import de.willbeedone.backend.exceptions.custom_exceptions.AlreadyExistException;
 import de.willbeedone.backend.exceptions.custom_exceptions.UserNotFoundException;
@@ -53,18 +53,18 @@ public class UserServiceImpl implements UserService {
 //    }
 
     @Override
-    public Optional<UserResponseDto> getUserByEmail(String email) {
+    public Optional<UserFilterResponseDto> getUserByEmail(String email) {
         return Optional.ofNullable(repository.findUserByEmail(email)
-                .map(mappingService::mapEntityToResponseDto)
+                .map(mappingService::mapEntityToFilterResponseDto)
                 .orElseThrow(
                         () -> new UserNotFoundException(email)
                 ));
     }
 
     @Override
-    public Optional<UserResponseDto> getUserById(Long id) {
+    public Optional<UserFilterResponseDto> getUserById(Long id) {
         return Optional.ofNullable(repository.findById(id)
-                .map(mappingService::mapEntityToResponseDto)
+                .map(mappingService::mapEntityToFilterResponseDto)
                 .orElseThrow(
                         () -> new UserNotFoundException(id)));
     }
@@ -118,6 +118,5 @@ public class UserServiceImpl implements UserService {
 //                })
 //                .map(mappingService::getUserDtoFromEntity);
 //    }
-
 
 }

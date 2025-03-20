@@ -1,8 +1,7 @@
 package de.willbeedone.backend.service.interfaces;
 
-
-import de.willbeedone.backend.domain.dto.request_dto.UserRequestDto;
-import de.willbeedone.backend.domain.dto.response_dto.UserResponseDto;
+import de.willbeedone.backend.domain.dto.user_dto.request_dto.UserRequestDto;
+import de.willbeedone.backend.domain.dto.user_dto.response_dto.UserFilterResponseDto;
 import de.willbeedone.backend.domain.entity.User;
 
 import java.util.List;
@@ -14,9 +13,9 @@ public interface UserService {
 
     List<User> getAllUsers();
 
-    Optional<UserResponseDto> getUserByEmail(String email);
+    Optional<UserFilterResponseDto> getUserByEmail(String email);
 
-    Optional<UserResponseDto> getUserById(Long id);
+    Optional<UserFilterResponseDto> getUserById(Long id);
 
     User updateUser(Long id, UserRequestDto user);
 
