@@ -2,6 +2,7 @@ package de.willbeedone.backend.domain.dto.offer_dto.request_dto;
 
 import de.willbeedone.backend.domain.entity.Category;
 import de.willbeedone.backend.domain.entity.ImageGallery;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotBlank;

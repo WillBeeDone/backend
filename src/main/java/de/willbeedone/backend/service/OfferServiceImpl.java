@@ -42,6 +42,7 @@ public class OfferServiceImpl implements OfferService {
         return repository
                 .findAll()
                 .stream()
+                .filter(Offer::isActive)
                 .sorted(Comparator.comparing(Offer::getPricePerHour))
                 .map(mappingService::mapEntityToFilterResponseDto)
                 .toList();

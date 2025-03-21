@@ -17,8 +17,11 @@ public class LocationServiceImpl  implements LocationService {
     }
 
     @Override
-    public List<Location> getAllLocations() {
-        return locationRepository.findAll();
+    public List<String> getAllLocationsCityNames() {
+        return locationRepository.findAll()
+                .stream()
+                .map(Location::getCityName)
+                .toList();
     }
 
     @Override

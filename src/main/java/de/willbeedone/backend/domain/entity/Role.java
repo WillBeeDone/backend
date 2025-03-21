@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.Objects;
+import java.util.Set;
 
 
 @Entity
@@ -24,20 +25,19 @@ public class Role {
     private String title;
 
     @JsonIgnore
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User user;
+    @OneToMany(mappedBy = "role", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<User> users;
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof Role role)) return false;
-        return Objects.equals(id, role.id) && Objects.equals(title, role.title) && Objects.equals(user, role.user);
+        return Objects.equals(id, role.id) && Objects.equals(title, role.title) && Objects.equals(users, role.users);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, title, user);
+        return Objects.hash(id, title, users);
     }
 
     @Override

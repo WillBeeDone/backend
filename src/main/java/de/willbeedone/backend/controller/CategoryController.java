@@ -2,26 +2,28 @@ package de.willbeedone.backend.controller;
 
 import de.willbeedone.backend.domain.entity.Category;
 import de.willbeedone.backend.service.interfaces.CategoryService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/categories")
+@Tag(name = "Category controller", description = "Controller for various operations with Offers' categories")
 public class CategoryController {
 
-
-
     private final CategoryService categoryService;
-
 
     public CategoryController(CategoryService categoryService) {
         this.categoryService = categoryService;
     }
 
-    @GetMapping
-    public List<Category> getAllCategories() {
-        return categoryService.getAllCategories();
+    @Operation(summary = "Getting all category names",
+            description = "Returns the list of all category names (e.g. for dropdown on the Home Page.")
+    @GetMapping("/list")
+    public List<String> getAllCategoriesNames() {
+        return categoryService.getAllCategoriesNames();
     }
 
 //    @GetMapping("/{id}")
