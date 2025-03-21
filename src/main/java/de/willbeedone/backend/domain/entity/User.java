@@ -69,7 +69,7 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Offer> offers;
 
-    @Column(name = "blocked")
+    @Column(name = "blocked", nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
     private boolean blocked;
 
     public User(String email, String password) {

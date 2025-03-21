@@ -7,13 +7,14 @@ import de.willbeedone.backend.domain.entity.User;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", uses = {LocationMappingService.class})
 public interface UserMappingService {
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "blocked", constant = "false")
     User mapRequestDtoToEntity(UserRequestDto dto);
 
+    @Mapping(source = "location", target = "locationResponseDto")
     UserFilterResponseDto mapEntityToFilterResponseDto(User entity);
 
 }
