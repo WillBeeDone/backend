@@ -23,7 +23,7 @@ public class Offer {
 
     @NotBlank(message = "Title cannot be empty")
     @Size(min = 3, max = 255, message = "Title must be between 3 and 255 characters")
-    @Column(name = "name", nullable = false)
+    @Column(name = "title", nullable = false)
     private String title;
 
     @NotNull(message = "Price per hour cannot be empty")
@@ -43,7 +43,7 @@ public class Offer {
     @OneToOne(mappedBy = "offer", cascade = CascadeType.ALL)
     private ImageGallery gallery;
 
-    @Column(name = "active")
+    @Column(name = "active", nullable = false, columnDefinition = "BOOLEAN DEFAULT TRUE")
     private boolean active;
 
     @JsonIgnore
