@@ -68,5 +68,4 @@ public class OfferProfileGuestResponseDto {
 
         return String.format("OfferProfileGuestResponseDto: id - %d, title - %s, categoryResponseDto - %s, pricePerHour - %.2f, description - %s, images - %s, userFilterResponseDto - %s", id, title, categoryResponseDto, pricePerHour, description, images, userFilterResponseDto);
     }
-
 }
