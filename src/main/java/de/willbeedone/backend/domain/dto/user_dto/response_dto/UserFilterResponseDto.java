@@ -15,14 +15,12 @@ import java.util.Objects;
 @Schema(description = "A class that defines the User DTO for responses.")
 public class UserFilterResponseDto {
 
-    @NotBlank(message = "First name cannot be empty")
     @Pattern(
             regexp = "^[A-Z][a-zA-Z]{1,}$",
             message = "First name should start with a capital letter and contain only letters")
     @Schema(description = "User's first name", example = "John")
     private String firstName;
 
-    @NotBlank(message = "Last name cannot be empty")
     @Pattern(
             regexp = "^[A-Z][a-zA-Z]{1,}$",
             message = "Last name should start with a capital letter and contain only letters")

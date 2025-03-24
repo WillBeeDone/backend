@@ -5,8 +5,12 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
-import lombok.*;
-
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+import java.util.Collection;
 import java.util.Objects;
 import java.util.Set;
 
@@ -15,23 +19,21 @@ import java.util.Set;
 @Setter
 @NoArgsConstructor
 @Table(name = "user")
-public class User {
+public class User implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
 
-    @Column(name = "firstName", nullable = false)
-    @NotBlank(message = "First name cannot be empty")
+    @Column(name = "first_name", nullable = true)
     @Pattern(
             regexp = "^[A-Z][a-zA-Z]{1,}$",
             message = "First name should start with a capital letter and contain only letters"
     )
     private String firstName;
 
-    @Column(name = "lastName", nullable = false)
-    @NotBlank(message = "Last name cannot be empty")
+    @Column(name = "last_name", nullable = true)
     @Pattern(
             regexp = "^[A-Z][a-zA-Z]{1,}$",
             message = "Last name should start with a capital letter and contain only letters"
@@ -48,7 +50,7 @@ public class User {
     @Size(min = 8, message = "Password must be at least 8 characters long")
     private String password;
 
-    @Column(name = "phoneNumber")
+    @Column(name = "phone_number")
     @Pattern(
             regexp = "^\\+?[0-9]{7,15}$",
             message = "Phone number should contain only digits and can start with +"
@@ -59,7 +61,7 @@ public class User {
     @JoinColumn(name = "location_id", nullable = false)
     private Location location;
 
-    @Column(name = "profilePicture")
+    @Column(name = "profile_picture")
     private String profilePicture;
 
     @ManyToMany(fetch = FetchType.EAGER)
@@ -96,6 +98,16 @@ public class User {
     @Override
     public String toString() {
         return String.format("User: id - %d, firstName - %s, lastName - %s, email - %s, phoneNumber - %s, location - %s, profilePicture - %s, roles - %s, offers - %s, blocked - %s", id, firstName, lastName, email, phoneNumber, location, profilePicture, roles, offers, blocked ? "Yes" : "No");
+    }
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return roles;
+    }
+
+    @Override
+    public String getUsername() {
+        return email;
     }
 }
 

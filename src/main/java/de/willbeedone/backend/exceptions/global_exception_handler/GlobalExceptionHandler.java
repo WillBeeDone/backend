@@ -5,6 +5,7 @@ import de.willbeedone.backend.exceptions.custom_exceptions.OfferNotFoundExceptio
 import de.willbeedone.backend.exceptions.Response;
 import de.willbeedone.backend.exceptions.custom_exceptions.UserNotFoundException;
 import de.willbeedone.backend.exceptions.custom_validation_exceptions.OfferValidationException;
+import de.willbeedone.backend.exceptions.custom_exceptions.TokenValidationException;
 import de.willbeedone.backend.exceptions.custom_validation_exceptions.UserValidationException;
 import io.swagger.v3.oas.annotations.Hidden;
 import org.springframework.http.HttpStatus;

@@ -1,6 +1,5 @@
 package de.willbeedone.backend.service;
 
-
 import de.willbeedone.backend.domain.dto.user_dto.request_dto.UserRequestDto;
 import de.willbeedone.backend.domain.dto.user_dto.response_dto.UserFilterResponseDto;
 import de.willbeedone.backend.domain.entity.User;
@@ -10,6 +9,9 @@ import de.willbeedone.backend.exceptions.custom_validation_exceptions.UserValida
 import de.willbeedone.backend.repository.UserRepository;
 import de.willbeedone.backend.service.interfaces.UserService;
 import de.willbeedone.backend.service.mapping.UserMappingService;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -17,34 +19,39 @@ import java.util.Optional;
 
 @Service
 public class UserServiceImpl implements UserService {
-
-    private final UserMappingService mappingService;
     private final UserRepository repository;
+    private final UserMappingService mappingService;
+    private final BCryptPasswordEncoder encoder;
 
-    public UserServiceImpl(UserMappingService mappingService, UserRepository repository) {
-        this.mappingService = mappingService;
+    public UserServiceImpl(UserRepository repository, UserMappingService mappingService, BCryptPasswordEncoder encoder) {
         this.repository = repository;
+        this.mappingService = mappingService;
+        this.encoder = encoder;
     }
 
     @Override
     public User addNewUser(UserRequestDto request) {
         try {
             if (checkIfUserExists(request.getEmail())) {
-                User newUser = mappingService.mapRequestDtoToEntity(request);
-                return repository.save(newUser);
-            } else {
                 throw new AlreadyExistException(request.getEmail());
             }
+            User user = mappingService.mapRequestDtoToEntity(request);
+            user.setPassword(encoder.encode(request.getPassword()));
+            User savedUser = repository.save(user);
+            return savedUser;
         } catch (Exception e) {
-            throw new UserValidationException(e);
+            throw new UserValidationException(e.getMessage());
         }
     }
 
     private boolean checkIfUserExists(String email) {
-        Optional<User> foundUser = repository.findUserByEmail(email);
-        return foundUser.isEmpty();
+        return repository.findUserByEmail(email).isPresent();
     }
 
+    @Override
+    public List<User> getAllUsers() {
+        return repository.findAll();
+    }
 
     @Override
     public Optional<UserFilterResponseDto> getUserByEmail(String email) {
@@ -69,13 +76,18 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User updateUser(UserRequestDto dto, Long id) {
+    public UserFilterResponseDto updateUser(UserRequestDto dto, Long id) {
         try {
             return repository.findById(id)
                     .map(existingUser -> {
-                        if (dto.getEmail() != null) existingUser.setEmail(dto.getEmail());
-                        if (dto.getPassword() != null) existingUser.setPassword(dto.getPassword());
-                        return repository.save(existingUser);
+                        if (dto.getEmail() != null && !dto.getEmail().isBlank()) {
+                            existingUser.setEmail(dto.getEmail());
+                        }
+                        if (dto.getPassword() != null && !dto.getPassword().isBlank()) {
+                            existingUser.setPassword(encoder.encode(dto.getPassword())); // Шифруем пароль
+                        }
+                        User updatedUser = repository.save(existingUser);
+                        return mappingService.mapEntityToFilterResponseDto(updatedUser); // Маппинг в DTO
                     }).orElseThrow(() -> new UserNotFoundException(id));
         } catch (Exception e) {
             throw new UserValidationException(e);
@@ -96,22 +108,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<User> getAllUsers() {
-        return repository.findAll();
+    public UserDetails loadUserByEmail(String email) throws UsernameNotFoundException {
+        return repository.findUserByEmail(email).orElseThrow(() -> new UsernameNotFoundException("User not found"));
     }
-
-
-//    @Override
-//    public Optional<UserResponseDto> registration(String email) {
-//        if (email == null || email.trim().isEmpty()) {
-//            throw new IllegalArgumentException("Email cannot be empty or null");
-//        }
-//
-//        return repository.findUserByEmail(email)
-//                .or(() -> {
-//                    throw new UserNotFoundException("Invalid email or password");
-//                })
-//                .map(mappingService::getUserDtoFromEntity);
-//    }
-
 }
