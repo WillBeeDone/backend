@@ -7,6 +7,7 @@ import lombok.*;
 
 import java.math.BigDecimal;
 import java.util.Objects;
+import java.util.Set;
 
 @Entity
 @Getter
@@ -40,8 +41,8 @@ public class Offer {
     @JoinColumn(name = "category_id", nullable = false)
     private Category category;
 
-    @OneToOne(mappedBy = "offer", cascade = CascadeType.ALL)
-    private ImageGallery gallery;
+    @OneToMany(mappedBy = "offer", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<ImageGallery> images;
 
     @Column(name = "active", nullable = false, columnDefinition = "BOOLEAN DEFAULT TRUE")
     private boolean active;
@@ -57,19 +58,7 @@ public class Offer {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Offer offer)) return false;
-        return active == offer.active && Objects.equals(id, offer.id) && Objects.equals(title, offer.title) && Objects.equals(pricePerHour, offer.pricePerHour) && Objects.equals(description, offer.description) && Objects.equals(category, offer.category) && Objects.equals(gallery, offer.gallery) && Objects.equals(user, offer.user);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, title, pricePerHour, description, category, gallery, active, user);
-    }
-
-    @Override
     public String toString() {
-        return String.format("Offer: id - %d, title - %s, pricePerHour - %.2f, category - %s, gallery - %s, description - %s, active - %s", id, title, pricePerHour, category, gallery, description, active ? "Yes" : "No");
+        return String.format("Offer: id - %d, title - %s, pricePerHour - %.2f, category - %s, gallery - %s, description - %s, active - %s", id, title, pricePerHour, category, images, description, active ? "Yes" : "No");
     }
 }
