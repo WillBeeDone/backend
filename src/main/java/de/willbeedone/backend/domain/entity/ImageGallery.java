@@ -5,7 +5,6 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.Pattern;
 import lombok.*;
 
-import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -21,16 +20,15 @@ public class ImageGallery {
     @Column(name = "id")
     private Long id;
 
-    @ElementCollection
     @Column(name = "image_url", nullable = false)
     @Pattern(
             regexp = "^(https?|ftp)://[^\\s/$.?#].[^\\s]*$",
             message = "Each image URL must be a valid URL"
     )
-    private List<String> imageUrl;
+    private String imageUrl;
 
     @JsonIgnore
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "offer_id")
     private Offer offer;
 
