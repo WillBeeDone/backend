@@ -2,7 +2,6 @@ package de.willbeedone.backend.domain.dto.offer_dto.response_dto;
 
 import de.willbeedone.backend.domain.dto.category_dto.response_dto.CategoryResponseDto;
 import de.willbeedone.backend.domain.dto.user_dto.response_dto.UserFilterResponseDto;
-import de.willbeedone.backend.domain.entity.Category;
 import de.willbeedone.backend.domain.entity.ImageGallery;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.DecimalMin;
@@ -13,6 +12,7 @@ import lombok.*;
 
 import java.math.BigDecimal;
 import java.util.Objects;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -46,7 +46,7 @@ public class OfferProfileGuestResponseDto {
     private String description;
 
     @Schema(description = "Photo gallery of work results")
-    private ImageGallery gallery;
+    private Set<ImageGallery> images;
 
     @Schema(description = "The fields from User: first name, last name, location, profile picture")
     private UserFilterResponseDto userFilterResponseDto;
@@ -55,17 +55,18 @@ public class OfferProfileGuestResponseDto {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof OfferProfileGuestResponseDto that)) return false;
-        return Objects.equals(id, that.id) && Objects.equals(title, that.title) && Objects.equals(categoryResponseDto, that.categoryResponseDto) && Objects.equals(pricePerHour, that.pricePerHour) && Objects.equals(description, that.description) && Objects.equals(gallery, that.gallery) && Objects.equals(userFilterResponseDto, that.userFilterResponseDto);
+        return Objects.equals(id, that.id) && Objects.equals(title, that.title) && Objects.equals(categoryResponseDto, that.categoryResponseDto) && Objects.equals(pricePerHour, that.pricePerHour) && Objects.equals(description, that.description) && Objects.equals(images, that.images) && Objects.equals(userFilterResponseDto, that.userFilterResponseDto);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, title, categoryResponseDto, pricePerHour, description, gallery, userFilterResponseDto);
+        return Objects.hash(id, title, categoryResponseDto, pricePerHour, description, images, userFilterResponseDto);
     }
 
     @Override
     public String toString() {
 
-        return String.format("OfferProfileGuestResponseDto: id - %d, title - %s, categoryResponseDto - %s, pricePerHour - %.2f, description - %s, gallery - %s, userFilterResponseDto - %s", id, title, categoryResponseDto, pricePerHour, description, gallery, userFilterResponseDto);
+        return String.format("OfferProfileGuestResponseDto: id - %d, title - %s, categoryResponseDto - %s, pricePerHour - %.2f, description - %s, images - %s, userFilterResponseDto - %s", id, title, categoryResponseDto, pricePerHour, description, images, userFilterResponseDto);
     }
+
 }
