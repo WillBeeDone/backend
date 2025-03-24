@@ -23,7 +23,7 @@ public class OfferController {
 
     @Operation(summary = "Getting all offers",
             description = "Returns all offers for the gallery.")
-    @GetMapping("/all")
+    @GetMapping
     public List<OfferFilterResponseDto> getAllOffers() {
         return offerService.getAllOffers();
     }
