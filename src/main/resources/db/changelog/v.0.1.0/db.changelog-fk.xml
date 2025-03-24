@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.6.xsd">
+
+    <changeSet id="add-foreign-keys" author="karina">
+
+        <!-- User -> Location -->
+        <addForeignKeyConstraint baseTableName="user"
+                                 baseColumnNames="location_id"
+                                 constraintName="fk_user_location"
+                                 referencedTableName="location"
+                                 referencedColumnNames="id"/>
+
+
+        <!-- user_role (User <-> Role) -->
+        <addForeignKeyConstraint baseTableName="user_role"
+                                 baseColumnNames="user_id"
+                                 constraintName="fk_userrole_user"
+                                 referencedTableName="user"
+                                 referencedColumnNames="id"/>
+
+        <addForeignKeyConstraint baseTableName="user_role"
+                                 baseColumnNames="role_id"
+                                 constraintName="fk_userrole_role"
+                                 referencedTableName="role"
+                                 referencedColumnNames="id"/>
+
+        <!--Offer -> User -->
+        <addForeignKeyConstraint baseTableName="offer"
+                                 baseColumnNames="user_id"
+                                 constraintName="fk_offer_user"
+                                 referencedTableName="user"
+                                 referencedColumnNames="id"/>
+
+        <!-- Foreign Key для Offer -> Category -->
+        <addForeignKeyConstraint baseTableName="offer"
+                                 baseColumnNames="category_id"
+                                 constraintName="fk_offer_category"
+                                 referencedTableName="category"
+                                 referencedColumnNames="id"/>
+
+        <!-- ImageGallery -> Offer -->
+        <addForeignKeyConstraint baseTableName="image_gallery"
+                                 baseColumnNames="offer_id"
+                                 constraintName="fk_imagegallery_offer"
+                                 referencedTableName="offer"
+                                 referencedColumnNames="id"/>
+    </changeSet>
+
+</databaseChangeLog>

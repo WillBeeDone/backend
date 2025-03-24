@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.6.xsd">
+
+
+    <include file="db/changelog/v.0.1.0/create_user_table.xml"/>
+    <include file="db/changelog/v.0.1.0/db.changelog-fk.xml"/>
+    <include file="db/changelog/v.0.1.0/create_role_table.xml"/>
+    <include file="db/changelog/v.0.1.0/create_offer_table.xml"/>
+    <include file="db/changelog/v.0.1.0/create_location_table.xml"/>
+    <include file="db/changelog/v.0.1.0/create_category_table.xml"/>
+</databaseChangeLog>
