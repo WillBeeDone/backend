@@ -21,7 +21,7 @@ public class LocationController {
 
     @Operation(summary = "Getting all city names",
             description = "Returns the list of all city names (e.g. for dropdown on the Home Page.")
-    @GetMapping("/list")
+    @GetMapping
     public List<String> getAllLocationsCityNames() {
         return locationService.getAllLocationsCityNames();
     }

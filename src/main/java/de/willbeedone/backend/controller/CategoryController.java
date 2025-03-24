@@ -21,7 +21,7 @@ public class CategoryController {
 
     @Operation(summary = "Getting all category names",
             description = "Returns the list of all category names (e.g. for dropdown on the Home Page.")
-    @GetMapping("/list")
+    @GetMapping
     public List<String> getAllCategoriesNames() {
         return categoryService.getAllCategoriesNames();
     }
