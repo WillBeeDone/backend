@@ -1,11 +1,9 @@
 package de.willbeedone.backend.domain.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.Objects;
-import java.util.Set;
 
 
 @Entity
@@ -24,20 +22,16 @@ public class Role {
     @Column(name = "title", unique = true, nullable = false)
     private String title;
 
-    @JsonIgnore
-    @OneToMany(mappedBy = "role", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<User> users;
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof Role role)) return false;
-        return Objects.equals(id, role.id) && Objects.equals(title, role.title) && Objects.equals(users, role.users);
+        return Objects.equals(id, role.id) && Objects.equals(title, role.title);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, title, users);
+        return Objects.hash(id, title);
     }
 
     @Override
