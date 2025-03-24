@@ -16,3 +16,7 @@ spring:
 
   liquibase:
     enabled: false
+
+server:
+  servlet:
+    context-path: /api
