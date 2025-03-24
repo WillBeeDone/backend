@@ -6,11 +6,13 @@ import de.willbeedone.backend.exceptions.Response;
 import de.willbeedone.backend.exceptions.custom_exceptions.UserNotFoundException;
 import de.willbeedone.backend.exceptions.custom_validation_exceptions.OfferValidationException;
 import de.willbeedone.backend.exceptions.custom_validation_exceptions.UserValidationException;
+import io.swagger.v3.oas.annotations.Hidden;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
+@Hidden
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
