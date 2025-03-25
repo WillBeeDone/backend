@@ -6,6 +6,10 @@ import de.willbeedone.backend.service.interfaces.OfferService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -15,17 +19,30 @@ import java.util.List;
 @Tag(name = "Offer controller", description = "Controller for various operations with Offers")
 public class OfferController {
 
+    @Autowired
     private final OfferService offerService;
 
     public OfferController(OfferService offerService) {
         this.offerService = offerService;
     }
 
-    @Operation(summary = "Getting all offers",
-            description = "Returns all offers for the gallery.")
+    @Operation(summary = "Getting all active offers",
+            description = "Returns al active offers for the gallery.")
+    @GetMapping("/all")
+    public List<OfferFilterResponseDto> getAllActiveOffers() {
+        return offerService.getAllActiveOffers();
+    }
+
+
+    @Operation(summary = "Getting all pageable active offers",
+            description = "Returns all pageable active offers for the gallery. Default size - 15")
     @GetMapping
-    public List<OfferFilterResponseDto> getAllOffers() {
-        return offerService.getAllOffers();
+    public Page<OfferFilterResponseDto> getAllActiveOffers(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "15") int size
+    ) {
+        Pageable pageable = PageRequest.of(page, size);
+        return offerService.getAllActiveOffers(pageable);
     }
 
     @Operation(summary = "Getting offer by id",
@@ -36,9 +53,9 @@ public class OfferController {
             @PathVariable Long id) {
         return offerService.getActiveOfferById(id);
     }
-
+    
     @Operation(summary = "Getting filtered offers",
-            description = "Returns offers filtered by Category, Location or Key phrase from searching field. Filtration can include all, part or none of theese fields.")
+            description = "Returns offers filtered by Category, Location or Key phrase from searching field. Filtration can include all, part or none of thees fields")
     @GetMapping("/filter")
     public List<OfferFilterResponseDto> getFilteredOffers(
             @Parameter(description = "City name", example = "Berlin")
