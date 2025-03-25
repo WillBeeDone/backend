@@ -1,5 +1,4 @@
 package de.willbeedone.backend.security.sec_service;
-
 import de.willbeedone.backend.domain.entity.Role;
 import de.willbeedone.backend.exceptions.custom_exceptions.TokenValidationException;
 import de.willbeedone.backend.repository.RoleRepository;
@@ -13,7 +12,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-
 import javax.crypto.SecretKey;
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -44,7 +42,7 @@ public class TokenService {
         Date expirationDate = Date.from(expiration);
 
         return Jwts.builder()
-                .subject(user.getEmail())
+                .subject(user.getUsername())
                 .expiration(expirationDate)
                 .signWith(accessKey)
                 .claim("roles", user.getAuthorities())

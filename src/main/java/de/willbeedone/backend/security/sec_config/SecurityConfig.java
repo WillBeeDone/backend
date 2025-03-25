@@ -44,11 +44,12 @@ public class SecurityConfig {
                 .authorizeHttpRequests(x -> x
                         .requestMatchers(HttpMethod.GET, "/offers/all").permitAll()
                         .requestMatchers(HttpMethod.GET, "/offers/").hasAnyRole("ADMIN", "USER")
-                        .requestMatchers(HttpMethod.POST,"/offers").hasAnyRole("ADMIN", "USER")
+                        .requestMatchers(HttpMethod.POST,"/offers").permitAll()
                         .requestMatchers(HttpMethod.POST, "/users").permitAll()
                         .requestMatchers(HttpMethod.DELETE,"/offers/deletedOfferId").hasRole("ADMIN")
                         .anyRequest().authenticated()
-                ).addFilterAfter(tokenFilter, UsernamePasswordAuthenticationFilter.class)
+                )
+               .addFilterAfter(tokenFilter, UsernamePasswordAuthenticationFilter.class)
                .build();
     }
 }

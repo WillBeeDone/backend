@@ -10,11 +10,15 @@ import org.mapstruct.Named;
 
 @Mapper(componentModel = "spring", uses = {LocationMappingService.class})
 public interface UserMappingService {
-
     @Mapping(target = "id", ignore = true)
+    @Mapping(target = "firstName", ignore = true)
+    @Mapping(target = "lastName", ignore = true)
+    @Mapping(target = "phoneNumber", ignore = true)
+    @Mapping(target = "location", ignore = true)
+    @Mapping(target = "profilePicture", ignore = true)
+    @Mapping(target = "offers", ignore = true)
+    @Mapping(target = "roles", ignore = true)
     @Mapping(target = "blocked", constant = "false")
-    @Mapping(target = "firstName", source = "firstName", qualifiedByName = "mapNullableString")
-    @Mapping(target = "lastName", source = "lastName", qualifiedByName = "mapNullableString")
     User mapRequestDtoToEntity(UserRequestDto dto);
 
     @Mapping(source = "location", target = "locationResponseDto")

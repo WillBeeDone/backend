@@ -1,5 +1,6 @@
 package de.willbeedone.backend.domain.entity;
 
+import de.willbeedone.backend.security.sec_dto.CustomUserDetails;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -9,7 +10,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
+
 import java.util.Collection;
 import java.util.Objects;
 import java.util.Set;
@@ -19,21 +20,21 @@ import java.util.Set;
 @Setter
 @NoArgsConstructor
 @Table(name = "user")
-public class User implements UserDetails {
+public class User implements CustomUserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
 
-    @Column(name = "first_name", nullable = true)
+    @Column(name = "first_name")
     @Pattern(
             regexp = "^[A-Z][a-zA-Z]{1,}$",
             message = "First name should start with a capital letter and contain only letters"
     )
     private String firstName;
 
-    @Column(name = "last_name", nullable = true)
+    @Column(name = "last_name")
     @Pattern(
             regexp = "^[A-Z][a-zA-Z]{1,}$",
             message = "Last name should start with a capital letter and contain only letters"
@@ -58,7 +59,7 @@ public class User implements UserDetails {
     private String phoneNumber;
 
     @ManyToOne
-    @JoinColumn(name = "location_id", nullable = false)
+    @JoinColumn(name = "location_id")
     private Location location;
 
     @Column(name = "profile_picture")
