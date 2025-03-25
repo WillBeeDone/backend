@@ -32,7 +32,7 @@ public class OfferProfileGuestResponseDto {
     @Schema(description = "Short offer description", example = "Super sexy plumber will fix your pipes.")
     private String title;
 
-    @Schema(description = "Offer category", example = "Plumber")
+    @Schema(description = "Offer category")
     private CategoryResponseDto categoryResponseDto;
 
     @NotNull(message = "Price per hour cannot be empty")

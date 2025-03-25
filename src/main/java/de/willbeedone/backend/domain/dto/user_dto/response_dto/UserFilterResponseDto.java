@@ -32,7 +32,7 @@ public class UserFilterResponseDto {
     @Schema(description = "User's profile photo")
     private String profilePicture;
 
-    @Schema(description = "User's city", example = "Berlin")
+    @Schema(description = "User's city")
     private LocationResponseDto locationResponseDto;
 
     @Override
