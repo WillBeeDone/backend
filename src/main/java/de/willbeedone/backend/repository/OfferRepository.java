@@ -22,7 +22,7 @@ public interface OfferRepository extends JpaRepository<Offer, Long> {
 
     Optional<List<Offer>> findOffersByUser(User user);
 
-    @Query("SELECT o FROM Offer o WHERE o.isActive = true ORDER BY o.pricePerHour ASC")
+    @Query("SELECT o FROM Offer o WHERE o.active = true ORDER BY o.pricePerHour ASC")
     Page<Offer> findActiveOffers(Pageable pageable);
 
 }
