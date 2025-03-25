@@ -9,7 +9,10 @@ import de.willbeedone.backend.exceptions.custom_validation_exceptions.OfferValid
 import de.willbeedone.backend.repository.OfferRepository;
 import de.willbeedone.backend.service.interfaces.OfferService;
 import de.willbeedone.backend.service.mapping.OfferMappingService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.Comparator;
@@ -19,6 +22,7 @@ import java.util.Optional;
 @Service
 public class OfferServiceImpl implements OfferService {
 
+    @Autowired
     private final OfferRepository repository;
     private final OfferMappingService mappingService;
 
@@ -38,7 +42,7 @@ public class OfferServiceImpl implements OfferService {
     }
 
     @Override
-    public List<OfferFilterResponseDto> getAllOffers() {
+    public List<OfferFilterResponseDto> getAllActiveOffers() {
         return repository
                 .findAll()
                 .stream()
@@ -46,6 +50,12 @@ public class OfferServiceImpl implements OfferService {
                 .sorted(Comparator.comparing(Offer::getPricePerHour))
                 .map(mappingService::mapEntityToFilterResponseDto)
                 .toList();
+    }
+
+    @Override
+    public Page<OfferFilterResponseDto> getAllActiveOffers(Pageable pageable) {
+        return repository.findActiveOffers(pageable)
+                .map(mappingService::mapEntityToFilterResponseDto);
     }
 
     @Override
