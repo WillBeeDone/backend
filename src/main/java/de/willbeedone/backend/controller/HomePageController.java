@@ -24,11 +24,11 @@ public class HomePageController {
     }
 
     @Operation(summary = "Getting all pageable active offers",
-            description = "Returns all pageable active offers for the gallery. Default size - 15")
+            description = "Returns all pageable active offers for the gallery. Default size - 9")
     @GetMapping("/")
     public Page<OfferFilterResponseDto> getAllActiveOffers(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "15") int size
+            @RequestParam(defaultValue = "9") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
         return offerService.getAllActiveOffers(pageable);
