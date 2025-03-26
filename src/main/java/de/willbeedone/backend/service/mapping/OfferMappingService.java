@@ -18,10 +18,10 @@ public interface OfferMappingService {
     Offer mapRequestDtoToEntity(OfferRequestDto dto);
 
     @Mapping(source = "user", target = "userFilterResponseDto")
-    @Mapping(source = "category", target = "categoryResponseDto")
+    @Mapping(source = "category", target = "categoryDto")
     OfferFilterResponseDto mapEntityToFilterResponseDto(Offer entity);
 
     @Mapping(source = "user", target = "userFilterResponseDto")
-    @Mapping(source = "category", target = "categoryResponseDto")
+    @Mapping(source = "category", target = "categoryDto")
     OfferProfileGuestResponseDto mapEntityToProfileGuestResponseDto(Offer entity);
 }

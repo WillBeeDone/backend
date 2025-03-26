@@ -41,12 +41,12 @@ public class User implements CustomUserDetails {
     )
     private String lastName;
 
-    @Column(name = "email", unique = true, nullable = false)
+    @Column(name = "email", unique = true)
     @NotBlank(message = "Email cannot be empty")
     @Email(message = "Invalid email format")
     private String email;
 
-    @Column(name = "password", nullable = false)
+    @Column(name = "password")
     @NotBlank(message = "Password cannot be empty")
     @Size(min = 8, message = "Password must be at least 8 characters long")
     private String password;
@@ -76,8 +76,12 @@ public class User implements CustomUserDetails {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Offer> offers;
 
+    @Column(name = "active", nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
+    private boolean active;
+
     @Column(name = "blocked", nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
     private boolean blocked;
+
 
     public User(String email, String password) {
         this.email = email;

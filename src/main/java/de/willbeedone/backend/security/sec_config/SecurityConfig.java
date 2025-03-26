@@ -1,11 +1,9 @@
 package de.willbeedone.backend.security.sec_config;
 
 import de.willbeedone.backend.security.sec_filter.TokenFilter;
-import jakarta.servlet.Filter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -26,30 +24,31 @@ public class SecurityConfig {
         this.tokenFilter = tokenFilter;
     }
 
-
     @Bean
     public BCryptPasswordEncoder encoder() {
         return new BCryptPasswordEncoder();
     }
 
-
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-       return http
+        return http
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(x -> x
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(x -> x
+                        .requestMatchers(HttpMethod.POST, "/auth/login", "/auth/refresh").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/register").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/register/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/offers/all").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/offers/").hasAnyRole("ADMIN", "USER")
-                        .requestMatchers(HttpMethod.POST,"/offers").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/offers/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/offers").permitAll()
                         .requestMatchers(HttpMethod.POST, "/users").permitAll()
-                        .requestMatchers(HttpMethod.DELETE,"/offers/deletedOfferId").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/offers/deletedOfferId").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
-               .addFilterAfter(tokenFilter, UsernamePasswordAuthenticationFilter.class)
-               .build();
+                .addFilterAfter(tokenFilter, UsernamePasswordAuthenticationFilter.class)
+                .build();
     }
 }

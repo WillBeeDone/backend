@@ -1,6 +1,6 @@
 package de.willbeedone.backend.security.sec_service;
+
 import de.willbeedone.backend.domain.entity.Role;
-import de.willbeedone.backend.exceptions.custom_exceptions.TokenValidationException;
 import de.willbeedone.backend.repository.RoleRepository;
 import de.willbeedone.backend.security.AuthInfo;
 import de.willbeedone.backend.security.sec_dto.CustomUserDetails;
@@ -8,8 +8,6 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import javax.crypto.SecretKey;
@@ -17,9 +15,8 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.*;
+
 @Service
-@Getter
-@NoArgsConstructor
 public class TokenService {
 
     private SecretKey accessKey;
@@ -32,7 +29,6 @@ public class TokenService {
             RoleRepository roleRepository) {
         this.accessKey = Keys.hmacShaKeyFor(Decoders.BASE64.decode(accessPhrase));
         this.refreshKey = Keys.hmacShaKeyFor(Decoders.BASE64.decode(refreshPhrase));
-
         this.roleRepository = roleRepository;
     }
 
@@ -77,7 +73,7 @@ public class TokenService {
                     .build()
                     .parseSignedClaims(token);
             return true;
-        } catch (TokenValidationException e) {
+        } catch (Exception e) {
             return false;
         }
     }

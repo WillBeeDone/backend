@@ -25,6 +25,14 @@ public class TokenFilter extends GenericFilterBean {
 
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws ServletException, IOException {
+
+        HttpServletRequest request = (HttpServletRequest) servletRequest;
+
+        if (request.getRequestURI().equals("/api/auth/login")) {
+            filterChain.doFilter(servletRequest, servletResponse);
+            return;
+        }
+
         String token = getTokenFromRequest((HttpServletRequest) servletRequest);
 
         if (token != null && service.validateAccessToken(token)) {
@@ -35,7 +43,6 @@ public class TokenFilter extends GenericFilterBean {
         }
         filterChain.doFilter(servletRequest, servletResponse);
     }
-
 
     private String getTokenFromRequest(HttpServletRequest request) {
         String token = request.getHeader("Authorization");

@@ -2,6 +2,7 @@ package de.willbeedone.backend.domain.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 
@@ -21,13 +22,9 @@ public class Role implements GrantedAuthority {
     @Column(name = "id")
     private Long id;
 
+    @NotBlank
     @Column(name = "title", unique = true, nullable = false)
     private String title;
-
-    @JsonIgnore
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User user;
 
     //SECURITY METHOD
     @Override

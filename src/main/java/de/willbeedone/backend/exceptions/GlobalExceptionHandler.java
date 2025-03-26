@@ -1,11 +1,10 @@
-package de.willbeedone.backend.exceptions.global_exception_handler;
+package de.willbeedone.backend.exceptions;
 
 import de.willbeedone.backend.exceptions.custom_exceptions.AlreadyExistException;
+import de.willbeedone.backend.exceptions.custom_exceptions.ConfirmationCodeIsInvalidException;
 import de.willbeedone.backend.exceptions.custom_exceptions.OfferNotFoundException;
-import de.willbeedone.backend.exceptions.Response;
 import de.willbeedone.backend.exceptions.custom_exceptions.UserNotFoundException;
 import de.willbeedone.backend.exceptions.custom_validation_exceptions.OfferValidationException;
-import de.willbeedone.backend.exceptions.custom_exceptions.TokenValidationException;
 import de.willbeedone.backend.exceptions.custom_validation_exceptions.UserValidationException;
 import io.swagger.v3.oas.annotations.Hidden;
 import org.springframework.http.HttpStatus;
@@ -39,9 +38,19 @@ public class GlobalExceptionHandler {
         Response response = new Response(e.getMessage());
         return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
     }
+
     @ExceptionHandler(OfferValidationException.class)
     public ResponseEntity<Response> handleException(OfferValidationException e) {
         Response response = new Response(e.getMessage());
         return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(ConfirmationCodeIsInvalidException.class)
+    public ResponseEntity<Response> handleException(ConfirmationCodeIsInvalidException e) {
+        Response response = new Response(e.getMessage());
+        if (e.getMessage().contains("found")) {
+            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 }

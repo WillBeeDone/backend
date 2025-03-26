@@ -1,6 +1,6 @@
 package de.willbeedone.backend.security.sec_controller;
 
-import de.willbeedone.backend.domain.entity.User;
+import de.willbeedone.backend.domain.dto.user_dto.request_dto.UserRequestDto;
 import de.willbeedone.backend.security.sec_dto.RefreshRequestDto;
 import de.willbeedone.backend.security.sec_dto.TokenResponseDto;
 import de.willbeedone.backend.security.sec_service.AuthService;
@@ -20,15 +20,16 @@ public class AuthController {
         this.service = service;
     }
     @PostMapping("/login")
-    public TokenResponseDto login(@RequestBody User user) {
+    public TokenResponseDto login(@RequestBody UserRequestDto user) {
         try {
             return service.login(user);
         }catch (AuthException e){
             return new TokenResponseDto(null);
         }
     }
+
     @PostMapping("/refresh")
     public TokenResponseDto getNewAccessToken(@RequestBody RefreshRequestDto refreshRequest){
-return service.getNewAccessToken(refreshRequest.getRefreshToken());
+        return service.getNewAccessToken(refreshRequest.getRefreshToken());
     }
 }

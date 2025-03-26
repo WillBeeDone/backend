@@ -1,6 +1,6 @@
 package de.willbeedone.backend.security.sec_service;
 
-import de.willbeedone.backend.domain.entity.User;
+import de.willbeedone.backend.domain.dto.user_dto.request_dto.UserRequestDto;
 import de.willbeedone.backend.security.sec_dto.CustomUserDetails;
 import de.willbeedone.backend.security.sec_dto.TokenResponseDto;
 import de.willbeedone.backend.service.interfaces.UserService;
@@ -26,7 +26,7 @@ public class AuthService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    public TokenResponseDto login(User inboundUser) throws AuthException {
+    public TokenResponseDto login(UserRequestDto inboundUser) throws AuthException {
         String email = inboundUser.getEmail();
         CustomUserDetails foundUser = (CustomUserDetails) userService.loadUserByEmail(email);
         if (passwordEncoder.matches(inboundUser.getPassword(), foundUser.getPassword())) {
@@ -38,6 +38,7 @@ public class AuthService {
             throw new AuthException("Invalid credentials");
         }
     }
+
     public TokenResponseDto getNewAccessToken(String inboundRefreshToken){
         Claims refreshClaims = tokenService.getRefreshClaims(inboundRefreshToken);
         String email = refreshClaims.getSubject();
