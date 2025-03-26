@@ -12,12 +12,16 @@ import de.willbeedone.backend.service.mapping.OfferMappingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class OfferServiceImpl implements OfferService {
@@ -59,18 +63,67 @@ public class OfferServiceImpl implements OfferService {
     }
 
     @Override
-    public List<OfferFilterResponseDto> getFilteredOffers(String cityName, String category, String keyPhrase) {
-        return repository
-                .findAll()
-                .stream()
-                .filter(Offer::isActive)
-                .filter(offer -> offer == null || "all".equals(cityName) || offer.getUser().getLocation().getCityName().equals(cityName))
-                .filter(offer -> offer == null || "all".equals(category) || offer.getCategory().getName().equals(category))
-                .filter(offer -> offer == null || "all".equals(keyPhrase) || offer.getUser().getFirstName().contains(keyPhrase) || offer.getUser().getLastName().contains(keyPhrase) || offer.getTitle().contains(keyPhrase) || offer.getDescription().contains(keyPhrase))
-                .sorted(Comparator.comparing(Offer::getPricePerHour))
-                .map(mappingService::mapEntityToFilterResponseDto)
-                .toList();
+    public Page<OfferFilterResponseDto> getFilteredOffers(String cityName, String category, String keyPhrase, PageRequest pageRequest) {
+        Specification<Offer> spec = Specification.where((root, query, cb) -> cb.isTrue(root.get("active")));
+
+        if (!"all".equals(cityName)) {
+            spec = spec.and((root, query, cb) -> cb.equal(root.join("user").join("location").get("cityName"), cityName));
+        }
+        if (!"all".equals(category)) {
+            spec = spec.and((root, query, cb) -> cb.equal(root.join("category").get("name"), category));
+        }
+        if (!"all".equals(keyPhrase)) {
+            spec = spec.and((root, query, cb) -> {
+                String pattern = "%" + keyPhrase + "%";
+                return cb.or(
+                        cb.like(root.get("title"), pattern),
+                        cb.like(root.get("description"), pattern),
+                        cb.like(root.join("user").get("firstName"), pattern),
+                        cb.like(root.join("user").get("lastName"), pattern)
+                );
+            });
+        }
+
+        Page<Offer> pagedData = repository.findAll(spec, pageRequest);
+
+        List<OfferFilterResponseDto> offerDtos = pagedData.getContent().stream()
+                .map(offer -> mappingService.mapEntityToFilterResponseDto(offer)) // Маппинг Offer -> OfferFilterResponseDto
+                .collect(Collectors.toList());
+
+        return new PageImpl<>(offerDtos, pageRequest, pagedData.getTotalElements());
     }
+
+
+    /**
+     * Базовая спецификация, фильтрующая только активные записи
+     */
+    private Specification<Offer> getBaseSpecification() {
+        return (root, query, cb) -> cb.isTrue(root.get("active"));
+    }
+
+    private Specification<Offer> filterByCity(String cityName) {
+        return "all".equals(cityName) ? null :
+                (root, query, cb) -> cb.equal(root.join("user").join("location").get("cityName"), cityName);
+    }
+
+    private Specification<Offer> filterByCategory(String category) {
+        return "all".equals(category) ? null :
+                (root, query, cb) -> cb.equal(root.join("category").get("name"), category);
+    }
+
+    private Specification<Offer> filterByKeyPhrase(String keyPhrase) {
+        return "all".equals(keyPhrase) ? null :
+                (root, query, cb) -> {
+                    String pattern = "%" + keyPhrase + "%";
+                    return cb.or(
+                            cb.like(root.get("title"), pattern),
+                            cb.like(root.get("description"), pattern),
+                            cb.like(root.join("user").get("firstName"), pattern),
+                            cb.like(root.join("user").get("lastName"), pattern)
+                    );
+                };
+    }
+
 
     @Override
     public Optional<List<OfferFilterResponseDto>> getOfferByTitle(String title) {
@@ -109,8 +162,11 @@ public class OfferServiceImpl implements OfferService {
     @Override
     public void deleteOfferById(Long id) {
         if (!repository.existsById(id)) {
-            throw new OfferNotFoundException(id);}
+            throw new OfferNotFoundException(id);
+        }
         repository.deleteById(id);
     }
+
+
 }
 
