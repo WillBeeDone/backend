@@ -1,7 +1,8 @@
 package de.willbeedone.backend.domain.dto.offer_dto.request_dto;
 
-import de.willbeedone.backend.domain.entity.Category;
+import de.willbeedone.backend.domain.dto.category_dto.CategoryDto;
 import de.willbeedone.backend.domain.entity.ImageGallery;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotBlank;
@@ -9,44 +10,39 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 import java.math.BigDecimal;
-import java.util.Objects;
 import java.util.Set;
 
 @Getter
 @Setter
 @NoArgsConstructor
+@EqualsAndHashCode
+@Schema(description = "A class that defines the Offer DTO for requests")
 public class OfferRequestDto {
 
     @NotNull(message = "Price per hour cannot be empty")
     @DecimalMin(value = "0.0", inclusive = false, message = "Price per hour must be greater than 0")
+    @Schema(description = "Price per hour", example = "65.00")
     private BigDecimal pricePerHour;
 
-    @NotBlank(message = "Description cannot be empty")
+//    @NotBlank(message = "Description cannot be empty")
     @Size(min = 10, max = 1000, message = "Description must be between 10 and 1000 characters")
+    @Schema(description = "Offer detailed description")
     private String description;
 
-    private Category category;
+    @NotNull
+    @Schema(description = "Offer category")
+    private CategoryDto categoryDto;
 
     @NotBlank(message = "Title cannot be empty")
     @Size(min = 3, max = 255, message = "Title must be between 3 and 255 characters")
+    @Schema(description = "Short offer description", example = "Super sexy plumber will fix your pipes.")
     private String title;
 
+    @Schema(description = "Photo gallery of work results")
     private Set<ImageGallery> images;
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof OfferRequestDto that)) return false;
-        return Objects.equals(pricePerHour, that.pricePerHour) && Objects.equals(description, that.description) && Objects.equals(category, that.category) && Objects.equals(title, that.title) && Objects.equals(images, that.images);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(pricePerHour, description, category, title, images);
-    }
-
-    @Override
     public String toString() {
-        return String.format("Offer: title - %s, description - %s, pricePerHour - %.2f, category - %s, images - %s", title, description, pricePerHour, category, images);
+        return String.format("Offer: title - %s, description - %s, pricePerHour - %.2f, categoryDto - %s, images - %s", title, description, pricePerHour, categoryDto, images);
     }
 }
