@@ -15,7 +15,7 @@ public interface UserService extends CustomUserDetailService {
 
     List<User> getAllUsers();
 
-    Optional<UserFilterResponseDto> getUserByEmail(String email);
+    Optional<User> getUserByEmail(String email);
 
     User getActiveValidUserById(Long id);
 
@@ -23,7 +23,7 @@ public interface UserService extends CustomUserDetailService {
 
     void deleteUserById(Long id);
 
-    void register(UserRequestDto user);
+    Long register(UserRequestDto user);
 
     void confirmRegistration(String code);
 }

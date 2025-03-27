@@ -1,6 +1,7 @@
 package de.willbeedone.backend.controller;
 
 import de.willbeedone.backend.domain.dto.user_dto.request_dto.UserRequestDto;
+import de.willbeedone.backend.domain.entity.User;
 import de.willbeedone.backend.exceptions.Response;
 import de.willbeedone.backend.service.interfaces.UserService;
 import org.springframework.web.bind.annotation.*;
@@ -16,9 +17,8 @@ public class RegistrationController {
     }
 
     @PostMapping
-    public Response register(@RequestBody UserRequestDto user) {
-        userService.register(user);
-        return new Response("Registration is successful. Check your e-mail for confirmation.");
+    public Long register(@RequestBody UserRequestDto inboundUser) {
+       return  userService.register(inboundUser);
     }
 
     @GetMapping("/{code}")
