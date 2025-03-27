@@ -30,8 +30,9 @@ public class LocationServiceImpl  implements LocationService {
     }
 
     @Override
-    public List<Location> getLocationByCity(String cityName) {
-        return locationRepository.findByCityName(cityName);
+    public Location getLocationByCity(String cityName) {
+        return locationRepository.findByCityName(cityName)
+                .orElseThrow(() -> new RuntimeException("Location not found: " + cityName));
     }
 
     @Override

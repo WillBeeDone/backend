@@ -1,7 +1,10 @@
 package de.willbeedone.backend.domain.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import lombok.*;
+import org.springframework.security.core.GrantedAuthority;
 
 import java.util.Objects;
 
@@ -11,7 +14,7 @@ import java.util.Objects;
 @Setter
 @NoArgsConstructor
 @Table(name = "role")
-public class Role {
+public class Role implements GrantedAuthority {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -19,8 +22,15 @@ public class Role {
     @Column(name = "id")
     private Long id;
 
+    @NotBlank
     @Column(name = "title", unique = true, nullable = false)
     private String title;
+
+    //SECURITY METHOD
+    @Override
+    public String getAuthority() {
+        return title;
+    }
 
     @Override
     public boolean equals(Object o) {

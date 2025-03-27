@@ -1,55 +1,83 @@
 package de.willbeedone.backend.service;
 
-
+import de.willbeedone.backend.domain.dto.user_dto.request_dto.UserForOfferRequestDto;
 import de.willbeedone.backend.domain.dto.user_dto.request_dto.UserRequestDto;
 import de.willbeedone.backend.domain.dto.user_dto.response_dto.UserFilterResponseDto;
+import de.willbeedone.backend.domain.entity.ConfirmationCode;
+import de.willbeedone.backend.domain.entity.Location;
 import de.willbeedone.backend.domain.entity.User;
 import de.willbeedone.backend.exceptions.custom_exceptions.AlreadyExistException;
+import de.willbeedone.backend.exceptions.custom_exceptions.ConfirmationCodeIsInvalidException;
 import de.willbeedone.backend.exceptions.custom_exceptions.UserNotFoundException;
 import de.willbeedone.backend.exceptions.custom_validation_exceptions.UserValidationException;
+import de.willbeedone.backend.repository.ConfirmationCodeRepository;
+import de.willbeedone.backend.repository.LocationRepository;
 import de.willbeedone.backend.repository.UserRepository;
+import de.willbeedone.backend.service.interfaces.EmailService;
+import de.willbeedone.backend.service.interfaces.LocationService;
+import de.willbeedone.backend.service.interfaces.RoleService;
 import de.willbeedone.backend.service.interfaces.UserService;
 import de.willbeedone.backend.service.mapping.UserMappingService;
+import jakarta.transaction.Transactional;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
+@Slf4j
 @Service
 public class UserServiceImpl implements UserService {
-
+    private final UserRepository userRepository;
+    private final ConfirmationCodeRepository codeRepository;
+    private final LocationService locationService;
+    private final RoleService roleService;
+    private final EmailService emailService;
     private final UserMappingService mappingService;
-    private final UserRepository repository;
+    private final BCryptPasswordEncoder encoder;
 
-    public UserServiceImpl(UserMappingService mappingService, UserRepository repository) {
+    public UserServiceImpl(UserRepository userRepository, LocationRepository locationRepository, ConfirmationCodeRepository codeRepository, LocationService locationService, RoleService roleService, EmailService emailService, UserMappingService mappingService, BCryptPasswordEncoder encoder) {
+        this.userRepository = userRepository;
+        this.codeRepository = codeRepository;
+        this.locationService = locationService;
+        this.roleService = roleService;
+        this.emailService = emailService;
         this.mappingService = mappingService;
-        this.repository = repository;
+        this.encoder = encoder;
     }
 
     @Override
     public User addNewUser(UserRequestDto request) {
         try {
             if (checkIfUserExists(request.getEmail())) {
-                User newUser = mappingService.mapRequestDtoToEntity(request);
-                return repository.save(newUser);
-            } else {
                 throw new AlreadyExistException(request.getEmail());
             }
+            User user = mappingService.mapRequestDtoToEntity(request);
+            user.setPassword(encoder.encode(request.getPassword()));
+            return userRepository.save(user);
         } catch (Exception e) {
-            throw new UserValidationException(e);
+            throw new UserValidationException(e.getMessage());
         }
     }
 
     private boolean checkIfUserExists(String email) {
-        Optional<User> foundUser = repository.findUserByEmail(email);
-        return foundUser.isEmpty();
+        return userRepository.findUserByEmail(email).isPresent();
     }
 
+    @Override
+    public List<User> getAllUsers() {
+        return userRepository.findAll();
+    }
 
     @Override
     public Optional<UserFilterResponseDto> getUserByEmail(String email) {
         try {
-            return repository.findUserByEmail(email)
+            return userRepository.findUserByEmail(email)
                     .map(mappingService::mapEntityToFilterResponseDto);
         } catch (Exception e) {
             throw new UserValidationException(e);
@@ -57,38 +85,38 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Optional<UserFilterResponseDto> getUserById(Long id) {
+    public User getActiveValidUserById(Long id) {
         try {
-            return Optional.ofNullable(repository.findById(id)
-                    .map(mappingService::mapEntityToFilterResponseDto)
+            return userRepository.findById(id)
+                    .filter(User::isActive)
+                    .filter(user -> !user.isBlocked())
                     .orElseThrow(
-                            () -> new UserNotFoundException(id)));
+                            () -> new UserNotFoundException(id));
         } catch (Exception e) {
             throw new UserValidationException(e);
         }
     }
 
     @Override
-    public User updateUser(UserRequestDto dto, Long id) {
-        try {
-            return repository.findById(id)
-                    .map(existingUser -> {
-                        if (dto.getEmail() != null) existingUser.setEmail(dto.getEmail());
-                        if (dto.getPassword() != null) existingUser.setPassword(dto.getPassword());
-                        return repository.save(existingUser);
-                    }).orElseThrow(() -> new UserNotFoundException(id));
-        } catch (Exception e) {
-            throw new UserValidationException(e);
-        }
+    @Transactional
+    public void updateUser(UserForOfferRequestDto dto, Long id) {
+            User existingUser = getActiveValidUserById(id);
+            Location location = locationService.getLocationByCity(dto.getLocationDto().getCityName());
+
+            existingUser.setFirstName(dto.getFirstName());
+            existingUser.setLastName(dto.getLastName());
+            existingUser.setPhoneNumber(dto.getPhoneNumber());
+            existingUser.setLocation(location);
+            existingUser.setProfilePicture(dto.getProfilePicture());
     }
 
     @Override
     public void deleteUserById(Long id) {
         try {
-            if (!repository.existsById(id)) {
+            if (!userRepository.existsById(id)) {
                 throw new UserNotFoundException(id);
             } else {
-                repository.deleteById(id);
+                userRepository.deleteById(id);
             }
         } catch (Exception e) {
             throw new UserValidationException(e);
@@ -96,22 +124,43 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<User> getAllUsers() {
-        return repository.findAll();
+    @Transactional
+    public void register(UserRequestDto dto) {
+        User user = mappingService.mapRequestDtoToEntity(dto);
+        user.setRoles(Set.of(roleService.getRoleUser()));
+        user.setPassword(encoder.encode(dto.getPassword()));
+
+        userRepository.save(user);
+
+        emailService.sendConfirmationEmail(user);
     }
 
+    @Override
+    @Transactional
+    public void confirmRegistration(String code) {
+        log.info("Подтверждение регистрации. Код: {}", code);
 
-//    @Override
-//    public Optional<UserResponseDto> registration(String email) {
-//        if (email == null || email.trim().isEmpty()) {
-//            throw new IllegalArgumentException("Email cannot be empty or null");
-//        }
-//
-//        return repository.findUserByEmail(email)
-//                .or(() -> {
-//                    throw new UserNotFoundException("Invalid email or password");
-//                })
-//                .map(mappingService::getUserDtoFromEntity);
-//    }
+        ConfirmationCode codeEntity = codeRepository.findByCode(code)
+                .orElseThrow(
+                        () -> {
+                            log.error("Код подтверждения не найден: {}", code);
+                            return new ConfirmationCodeIsInvalidException("Confirmation code not found.");
+                        }
+                );
 
+        log.info("Код найден. Проверяем срок действия...");
+
+        if (codeEntity.getExpired().isBefore(LocalDateTime.now())) {
+            log.error("Код просрочен: {}", code);
+            throw new ConfirmationCodeIsInvalidException("Confirmation code is expired.");
+        }
+
+        log.info("Пользователь {} подтвержден!", codeEntity.getUser().getEmail());
+        codeEntity.getUser().setActive(true);
+    }
+
+    @Override
+    public UserDetails loadUserByEmail(String email) throws UsernameNotFoundException {
+        return userRepository.findUserByEmail(email).orElseThrow(() -> new UsernameNotFoundException("User not found"));
+    }
 }

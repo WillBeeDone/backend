@@ -69,4 +69,9 @@ public class OfferController {
     ) {
         return offerService.getFilteredOffers(cityName, category, keyPhrase);
     }
+
+    @DeleteMapping("/deletedOfferId")
+    public void deleteOfferById(Long id){
+        offerService.deleteOfferById(id);
+    }
 }
