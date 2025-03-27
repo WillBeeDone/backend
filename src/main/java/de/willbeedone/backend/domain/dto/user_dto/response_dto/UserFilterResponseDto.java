@@ -5,10 +5,10 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Pattern;
 import lombok.*;
 
-import java.util.Objects;
 
 @Getter
 @Setter
+@EqualsAndHashCode
 @NoArgsConstructor
 @Schema(description = "A class that defines the User DTO for responses.")
 public class UserFilterResponseDto {
@@ -30,18 +30,6 @@ public class UserFilterResponseDto {
 
     @Schema(description = "User's city")
     private LocationDto locationDto;
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof UserFilterResponseDto that)) return false;
-        return Objects.equals(firstName, that.firstName) && Objects.equals(lastName, that.lastName) && Objects.equals(profilePicture, that.profilePicture) && Objects.equals(locationDto, that.locationDto);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(firstName, lastName, profilePicture, locationDto);
-    }
 
     @Override
     public String toString() {

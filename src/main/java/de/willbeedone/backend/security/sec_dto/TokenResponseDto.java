@@ -3,7 +3,6 @@ package de.willbeedone.backend.security.sec_dto;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
-
 @Getter
 @EqualsAndHashCode
 
