@@ -138,7 +138,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public void confirmRegistration(String code) {
+    public Long confirmRegistration(String code) {
 
         ConfirmationCode codeEntity = codeRepository.findByCode(code)
                 .orElseThrow(
@@ -150,6 +150,8 @@ public class UserServiceImpl implements UserService {
         }
 
         codeEntity.getUser().setActive(true);
+
+        return codeEntity.getUser().getId();
     }
 
     @Override

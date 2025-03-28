@@ -25,5 +25,5 @@ public interface UserService extends CustomUserDetailService {
 
     Long register(UserRequestDto user);
 
-    void confirmRegistration(String code);
+    Long confirmRegistration(String code);
 }

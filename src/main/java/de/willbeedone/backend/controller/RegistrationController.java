@@ -22,8 +22,7 @@ public class RegistrationController {
     }
 
     @GetMapping("/{code}")
-    public Response confirmRegistration(@PathVariable String code) {
-        userService.confirmRegistration(code);
-        return new Response("Registration successfully confirmed.");
+    public Long confirmRegistration(@PathVariable String code) {
+        return userService.confirmRegistration(code);
     }
 }
