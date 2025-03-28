@@ -20,6 +20,26 @@ spring:
   liquibase:
     enabled: false
 
+  mail:
+    username: ${MAIL_FROM}
+    password: ${MAIL_FROM_PASSWORD}
+    host: smtp.gmail.com
+    port: 587
+    properties:
+      mail:
+        debug: true
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+          ssl:
+            protocols: TLSv1.2
+            trust: smtp.gmail.com
+
+key:
+  access: ${ACCESS_PHRASE_SECRET}
+  refresh: ${REFRESH_PHRASE_SECRET}
+
 server:
   servlet:
     context-path: /api

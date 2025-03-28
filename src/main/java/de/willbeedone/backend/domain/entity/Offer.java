@@ -23,38 +23,35 @@ public class Offer {
 
     @NotBlank(message = "Title cannot be empty")
     @Size(min = 3, max = 255, message = "Title must be between 3 and 255 characters")
-    @Column(name = "title", nullable = false)
+    @Column(name = "title")
     private String title;
 
     @NotNull(message = "Price per hour cannot be empty")
     @DecimalMin(value = "0.0", inclusive = false, message = "Price per hour must be greater than 0")
-    @Column(nullable = false)
+    @Column(name = "price_per_hour")
     private BigDecimal pricePerHour;
 
-    @NotBlank(message = "Description cannot be empty")
     @Size(min = 10, max = 1000, message = "Description must be between 10 and 1000 characters")
-    @Column(nullable = false, length = 1000)
+    @Column(name = "description", columnDefinition = "MEDIUMTEXT")
     private String description;
 
+    @NotNull
     @ManyToOne
-    @JoinColumn(name = "category_id", nullable = false)
+    @JoinColumn(name = "category_id")
     private Category category;
 
     @OneToMany(mappedBy = "offer", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<ImageGallery> images;
 
-    @Column(name = "active", nullable = false, columnDefinition = "BOOLEAN DEFAULT TRUE")
+    @NotNull
+    @Column(name = "active", columnDefinition = "BOOLEAN DEFAULT TRUE")
     private boolean active;
 
+    @NotNull
     @JsonIgnore
     @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false)
+    @JoinColumn(name = "user_id")
     private User user;
-
-    public Offer(String title, String description) {
-        this.title = title;
-        this.description = description;
-    }
 
     @Override
     public String toString() {

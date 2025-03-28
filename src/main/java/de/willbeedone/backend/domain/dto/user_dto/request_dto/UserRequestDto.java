@@ -1,47 +1,29 @@
 package de.willbeedone.backend.domain.dto.user_dto.request_dto;
 
-import lombok.*;
-
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
-
-import java.util.Objects;
+import lombok.*;
 
 @Getter
 @Setter
 @NoArgsConstructor
+@EqualsAndHashCode
 public class UserRequestDto {
 
-    @Email(message = "Invalid email format")
+    @NotBlank(message = "E-mail cannot be empty")
+    @Email(message = "Invalid e-mail format")
+    @Schema(description = "User's e-mail", example = "john@gmail.com")
     private String email;
 
     @NotBlank(message = "Password cannot be empty")
     @Size(min = 8, message = "Password must be at least 8 characters long")
-
+    @Schema(description = "User's password", example = "11111111")
     private String password;
-
-    private boolean blocked;
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof UserRequestDto that)) return false;
-        return blocked == that.blocked && Objects.equals(email, that.email) && Objects.equals(password, that.password);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(email, password, blocked);
-    }
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder("UserRequestDto{");
-        sb.append("email='").append(email).append('\'');
-        sb.append(", password='").append(password).append('\'');
-        sb.append(", blocked=").append(blocked);
-        sb.append('}');
-        return sb.toString();
+        return String.format("UserRequestDto: email - %s, password - %s", email, password);
     }
 }

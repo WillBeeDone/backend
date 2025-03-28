@@ -15,9 +15,9 @@ public interface OfferService {
 
     Offer addNewOffer(OfferRequestDto request);
 
-   List<OfferFilterResponseDto> getAllActiveOffers();
+    List<OfferFilterResponseDto> getAllActiveOffers();
 
-   Page<OfferFilterResponseDto> getAllActiveOffers(Pageable pageable);
+    Page<OfferFilterResponseDto> getAllActiveOffers(Pageable pageable);
 
     Page<OfferFilterResponseDto> getFilteredOffers(String cityName, String category, String keyPhrase, PageRequest pageRequest);
 

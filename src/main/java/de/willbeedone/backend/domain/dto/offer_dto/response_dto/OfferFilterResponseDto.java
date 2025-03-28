@@ -1,8 +1,7 @@
 package de.willbeedone.backend.domain.dto.offer_dto.response_dto;
 
-import de.willbeedone.backend.domain.dto.category_dto.response_dto.CategoryResponseDto;
+import de.willbeedone.backend.domain.dto.category_dto.CategoryDto;
 import de.willbeedone.backend.domain.dto.user_dto.response_dto.UserFilterResponseDto;
-import de.willbeedone.backend.domain.entity.Category;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 import jakarta.validation.constraints.DecimalMin;
@@ -32,7 +31,7 @@ public class OfferFilterResponseDto {
     private String title;
 
     @Schema(description = "Offer category")
-    private CategoryResponseDto categoryResponseDto;
+    private CategoryDto categoryDto;
 
     @NotNull(message = "Price per hour cannot be empty")
     @DecimalMin(value = "0.0", inclusive = false, message = "Price per hour must be greater than 0")
@@ -51,17 +50,17 @@ public class OfferFilterResponseDto {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof OfferFilterResponseDto that)) return false;
-        return Objects.equals(id, that.id) && Objects.equals(title, that.title) && Objects.equals(categoryResponseDto, that.categoryResponseDto) && Objects.equals(pricePerHour, that.pricePerHour) && Objects.equals(description, that.description) && Objects.equals(userFilterResponseDto, that.userFilterResponseDto);
+        return Objects.equals(id, that.id) && Objects.equals(title, that.title) && Objects.equals(categoryDto, that.categoryDto) && Objects.equals(pricePerHour, that.pricePerHour) && Objects.equals(description, that.description) && Objects.equals(userFilterResponseDto, that.userFilterResponseDto);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, title, categoryResponseDto, pricePerHour, description, userFilterResponseDto);
+        return Objects.hash(id, title, categoryDto, pricePerHour, description, userFilterResponseDto);
     }
 
     @Override
     public String toString() {
-        return String.format("OfferFilterResponseDto: id - %d, title - %s, categoryResponseDto - %s, pricePerHour - %.2f, description - %s, userFilterResponseDto - %s", id, title, categoryResponseDto, pricePerHour, description, userFilterResponseDto);
+        return String.format("OfferFilterResponseDto: id - %d, title - %s, categoryResponseDto - %s, pricePerHour - %.2f, description - %s, userFilterResponseDto - %s", id, title, categoryDto, pricePerHour, description, userFilterResponseDto);
     }
 }
 

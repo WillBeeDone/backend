@@ -1,12 +1,17 @@
 package de.willbeedone.backend.domain.entity;
 
+import de.willbeedone.backend.security.sec_dto.CustomUserDetails;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
-import lombok.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import org.springframework.security.core.GrantedAuthority;
 
+import java.util.Collection;
 import java.util.Objects;
 import java.util.Set;
 
@@ -15,40 +20,38 @@ import java.util.Set;
 @Setter
 @NoArgsConstructor
 @Table(name = "user")
-public class User {
+public class User implements CustomUserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
 
-    @Column(name = "firstName", nullable = false)
-    @NotBlank(message = "First name cannot be empty")
+    @Column(name = "first_name")
     @Pattern(
             regexp = "^[A-Z][a-zA-Z]{1,}$",
             message = "First name should start with a capital letter and contain only letters"
     )
     private String firstName;
 
-    @Column(name = "lastName", nullable = false)
-    @NotBlank(message = "Last name cannot be empty")
+    @Column(name = "last_name")
     @Pattern(
             regexp = "^[A-Z][a-zA-Z]{1,}$",
             message = "Last name should start with a capital letter and contain only letters"
     )
     private String lastName;
 
-    @Column(name = "email", unique = true, nullable = false)
+    @Column(name = "email", unique = true)
     @NotBlank(message = "Email cannot be empty")
     @Email(message = "Invalid email format")
     private String email;
 
-    @Column(name = "password", nullable = false)
+    @Column(name = "password")
     @NotBlank(message = "Password cannot be empty")
     @Size(min = 8, message = "Password must be at least 8 characters long")
     private String password;
 
-    @Column(name = "phoneNumber")
+    @Column(name = "phone_number")
     @Pattern(
             regexp = "^\\+?[0-9]{7,15}$",
             message = "Phone number should contain only digits and can start with +"
@@ -56,10 +59,10 @@ public class User {
     private String phoneNumber;
 
     @ManyToOne
-    @JoinColumn(name = "location_id", nullable = false)
+    @JoinColumn(name = "location_id")
     private Location location;
 
-    @Column(name = "profilePicture")
+    @Column(name = "profile_picture")
     private String profilePicture;
 
     @ManyToMany(fetch = FetchType.EAGER)
@@ -72,6 +75,9 @@ public class User {
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Offer> offers;
+
+    @Column(name = "active", nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
+    private boolean active;
 
     @Column(name = "blocked", nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
     private boolean blocked;
@@ -96,6 +102,16 @@ public class User {
     @Override
     public String toString() {
         return String.format("User: id - %d, firstName - %s, lastName - %s, email - %s, phoneNumber - %s, location - %s, profilePicture - %s, roles - %s, offers - %s, blocked - %s", id, firstName, lastName, email, phoneNumber, location, profilePicture, roles, offers, blocked ? "Yes" : "No");
+    }
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return roles;
+    }
+
+    @Override
+    public String getUsername() {
+        return email;
     }
 }
 

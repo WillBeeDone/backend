@@ -1,11 +1,8 @@
 package de.willbeedone.backend.controller;
 
-import de.willbeedone.backend.domain.dto.offer_dto.PagedDataDto;
 import de.willbeedone.backend.domain.dto.offer_dto.response_dto.OfferFilterResponseDto;
 import de.willbeedone.backend.domain.dto.offer_dto.response_dto.OfferProfileGuestResponseDto;
-import de.willbeedone.backend.domain.entity.Offer;
 import de.willbeedone.backend.service.interfaces.OfferService;
-import de.willbeedone.backend.service.mapping.OfferMappingService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -16,7 +13,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/offers")
@@ -24,19 +20,17 @@ import java.util.stream.Collectors;
 public class OfferController {
 
     @Autowired
-    private final OfferService service;
-    private final OfferMappingService mappingService;
+    private final OfferService offerService;
 
-    public OfferController(OfferService service, OfferMappingService mappingService) {
-        this.service = service;
-        this.mappingService = mappingService;
+    public OfferController(OfferService offerService) {
+        this.offerService = offerService;
     }
 
     @Operation(summary = "Getting all active offers",
             description = "Returns al active offers for the gallery.")
     @GetMapping("/all")
     public List<OfferFilterResponseDto> getAllActiveOffers() {
-        return service.getAllActiveOffers();
+        return offerService.getAllActiveOffers();
     }
 
 
@@ -48,7 +42,7 @@ public class OfferController {
             @RequestParam(defaultValue = "9") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        return service.getAllActiveOffers(pageable);
+        return offerService.getAllActiveOffers(pageable);
     }
 
     @Operation(summary = "Getting offer by id",
@@ -57,12 +51,13 @@ public class OfferController {
     public OfferProfileGuestResponseDto getActiveOfferByIdGuest(
             @Parameter(description = "Offer unique identifier", example = "1")
             @PathVariable Long id) {
-        return service.getActiveOfferById(id);
+        return offerService.getActiveOfferById(id);
     }
+    
     @Operation(summary = "Getting filtered offers",
             description = "Returns offers filtered by Category, Location or Key phrase from searching field. Filtration can include all, part or none of these fields")
     @GetMapping("/filter")
-    public PagedDataDto<OfferFilterResponseDto> getFilteredOffers(
+    public Page<OfferFilterResponseDto> getFilteredOffers(
             @Parameter(description = "City name", example = "Berlin")
             @RequestParam(required = false, defaultValue = "all") String cityName,
 
@@ -75,14 +70,7 @@ public class OfferController {
             @RequestParam(required = false, defaultValue = "0") int page,
             @RequestParam(required = false, defaultValue = "9") int size
     ) {
-        Page<OfferFilterResponseDto> pagedData = service.getFilteredOffers(cityName, category, keyPhrase, PageRequest.of(page, size));
-
-        PagedDataDto<OfferFilterResponseDto> pagedDataDto = new PagedDataDto<>();
-        pagedDataDto.setData(pagedData.getContent());
-        pagedDataDto.setTotal(pagedData.getTotalElements());
-
-
-        return pagedDataDto;
+        return offerService.getFilteredOffers(cityName, category, keyPhrase, PageRequest.of(page, size));
     }
 
 
@@ -102,5 +90,11 @@ public class OfferController {
 //        return service.getFilteredOffers(cityName, category, keyPhrase);
 //    }
 
+
+
+//    @DeleteMapping("/deletedOfferId")
+//    public void deleteOfferById(Long id){
+//        offerService.deleteOfferById(id);
+//    }
 
 }

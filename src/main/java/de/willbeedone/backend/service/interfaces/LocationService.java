@@ -10,7 +10,7 @@ public interface LocationService {
 
     Location getLocationById(Long id);
 
-    List<Location> getLocationByCity(String cityName);
+    Location getLocationByCity(String cityName);
 
     Location addNewLocation(Location location);
 

@@ -1,8 +1,8 @@
 package de.willbeedone.backend.service.mapping;
 
-
 import de.willbeedone.backend.domain.dto.user_dto.request_dto.UserRequestDto;
 import de.willbeedone.backend.domain.dto.user_dto.response_dto.UserFilterResponseDto;
+import de.willbeedone.backend.domain.dto.user_dto.response_dto.UserLoginResponseDto;
 import de.willbeedone.backend.domain.entity.User;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -11,10 +11,21 @@ import org.mapstruct.Mapping;
 public interface UserMappingService {
 
     @Mapping(target = "id", ignore = true)
+    @Mapping(target = "firstName", ignore = true)
+    @Mapping(target = "lastName", ignore = true)
+    @Mapping(target = "phoneNumber", ignore = true)
+    @Mapping(target = "location", ignore = true)
+    @Mapping(target = "profilePicture", ignore = true)
+    @Mapping(target = "offers", ignore = true)
+    @Mapping(target = "roles", ignore = true)
     @Mapping(target = "blocked", constant = "false")
+    @Mapping(target = "active", constant = "false")
     User mapRequestDtoToEntity(UserRequestDto dto);
 
-    @Mapping(source = "location", target = "locationResponseDto")
+    @Mapping(source = "location", target = "locationDto")
     UserFilterResponseDto mapEntityToFilterResponseDto(User entity);
+
+    @Mapping(source = "location", target = "locationDto")
+    UserLoginResponseDto mapEntityToLoginResponseDto(User entity);
 
 }
