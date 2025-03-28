@@ -2,7 +2,6 @@ package de.willbeedone.backend.service;
 
 import de.willbeedone.backend.domain.dto.user_dto.request_dto.UserForOfferRequestDto;
 import de.willbeedone.backend.domain.dto.user_dto.request_dto.UserRequestDto;
-import de.willbeedone.backend.domain.dto.user_dto.response_dto.UserFilterResponseDto;
 import de.willbeedone.backend.domain.entity.ConfirmationCode;
 import de.willbeedone.backend.domain.entity.Location;
 import de.willbeedone.backend.domain.entity.User;
@@ -19,7 +18,6 @@ import de.willbeedone.backend.service.interfaces.RoleService;
 import de.willbeedone.backend.service.interfaces.UserService;
 import de.willbeedone.backend.service.mapping.UserMappingService;
 import jakarta.transaction.Transactional;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -30,9 +28,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-@Slf4j
 @Service
 public class UserServiceImpl implements UserService {
+
     private final UserRepository userRepository;
     private final ConfirmationCodeRepository codeRepository;
     private final LocationService locationService;
@@ -154,8 +152,9 @@ public class UserServiceImpl implements UserService {
         return codeEntity.getUser().getId();
     }
 
+    //By email (= username)
     @Override
-    public UserDetails loadUserByEmail(String email) throws UsernameNotFoundException {
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         return userRepository.findUserByEmail(email).orElseThrow(() -> new UsernameNotFoundException("User not found"));
     }
 }

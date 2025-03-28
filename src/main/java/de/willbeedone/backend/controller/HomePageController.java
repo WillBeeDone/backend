@@ -11,10 +11,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
-
 @RestController
-@Tag(name = "Controller for the Home Page", description = "Controller for various operations on the Home Page")
+@Tag(name = "Controller for the Home Page", description = "Controller for various operations on the Home Page.")
 public class HomePageController {
 
     private final OfferService offerService;
@@ -24,7 +22,7 @@ public class HomePageController {
     }
 
     @Operation(summary = "Getting all pageable active offers",
-            description = "Returns all pageable active offers for the gallery. Default size - 9")
+            description = "Returns all pageable active offers for the gallery. Default size - 9.")
     @GetMapping("/")
     public Page<OfferFilterResponseDto> getAllActiveOffers(
             @RequestParam(defaultValue = "0") int page,

@@ -1,6 +1,5 @@
 package de.willbeedone.backend.controller;
 
-import de.willbeedone.backend.domain.entity.Category;
 import de.willbeedone.backend.service.interfaces.CategoryService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -10,7 +9,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/categories")
-@Tag(name = "Category controller", description = "Controller for various operations with Offers' categories")
+@Tag(name = "Category controller", description = "Controller for various operations with Offers' categories.")
 public class CategoryController {
 
     private final CategoryService categoryService;
