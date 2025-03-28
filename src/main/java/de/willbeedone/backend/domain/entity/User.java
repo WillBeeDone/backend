@@ -82,7 +82,6 @@ public class User implements CustomUserDetails {
     @Column(name = "blocked", nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
     private boolean blocked;
 
-
     public User(String email, String password) {
         this.email = email;
         this.password = password;

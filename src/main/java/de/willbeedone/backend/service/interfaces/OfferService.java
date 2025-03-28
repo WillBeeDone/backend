@@ -5,6 +5,7 @@ import de.willbeedone.backend.domain.dto.offer_dto.response_dto.OfferFilterRespo
 import de.willbeedone.backend.domain.dto.offer_dto.response_dto.OfferProfileGuestResponseDto;
 import de.willbeedone.backend.domain.entity.Offer;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;
@@ -14,11 +15,11 @@ public interface OfferService {
 
     Offer addNewOffer(OfferRequestDto request);
 
-   List<OfferFilterResponseDto> getAllActiveOffers();
+    List<OfferFilterResponseDto> getAllActiveOffers();
 
-   Page<OfferFilterResponseDto> getAllActiveOffers(Pageable pageable);
+    Page<OfferFilterResponseDto> getAllActiveOffers(Pageable pageable);
 
-    List<OfferFilterResponseDto> getFilteredOffers(String cityName, String category, String keyPhrase);
+    Page<OfferFilterResponseDto> getFilteredOffers(String cityName, String category, String keyPhrase, PageRequest pageRequest);
 
     Optional<List<OfferFilterResponseDto>> getOfferByTitle(String title);
 

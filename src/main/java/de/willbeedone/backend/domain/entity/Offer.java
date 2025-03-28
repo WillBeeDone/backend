@@ -35,7 +35,7 @@ public class Offer {
     @Column(name = "description", columnDefinition = "MEDIUMTEXT")
     private String description;
 
-    //@NotNull
+    @NotNull
     @ManyToOne
     @JoinColumn(name = "category_id")
     private Category category;
@@ -47,7 +47,7 @@ public class Offer {
     @Column(name = "active", columnDefinition = "BOOLEAN DEFAULT TRUE")
     private boolean active;
 
-    //@NotNull
+    @NotNull
     @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "user_id")

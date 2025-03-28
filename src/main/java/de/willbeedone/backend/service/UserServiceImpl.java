@@ -75,12 +75,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Optional<UserFilterResponseDto> getUserByEmail(String email) {
+    public Optional<User> getUserByEmail(String email) {
         try {
-            return userRepository.findUserByEmail(email)
-                    .map(mappingService::mapEntityToFilterResponseDto);
+            return userRepository.findUserByEmail(email);
         } catch (Exception e) {
-            throw new UserValidationException(e);
+            throw new UserNotFoundException();
         }
     }
 
@@ -125,7 +124,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public void register(UserRequestDto dto) {
+    public Long register(UserRequestDto dto) {
         User user = mappingService.mapRequestDtoToEntity(dto);
         user.setRoles(Set.of(roleService.getRoleUser()));
         user.setPassword(encoder.encode(dto.getPassword()));
@@ -133,29 +132,23 @@ public class UserServiceImpl implements UserService {
         userRepository.save(user);
 
         emailService.sendConfirmationEmail(user);
+
+        return user.getId();
     }
 
     @Override
     @Transactional
     public void confirmRegistration(String code) {
-        log.info("Подтверждение регистрации. Код: {}", code);
 
         ConfirmationCode codeEntity = codeRepository.findByCode(code)
                 .orElseThrow(
-                        () -> {
-                            log.error("Код подтверждения не найден: {}", code);
-                            return new ConfirmationCodeIsInvalidException("Confirmation code not found.");
-                        }
+                        () -> new ConfirmationCodeIsInvalidException("Confirmation code not found.")
                 );
 
-        log.info("Код найден. Проверяем срок действия...");
-
         if (codeEntity.getExpired().isBefore(LocalDateTime.now())) {
-            log.error("Код просрочен: {}", code);
             throw new ConfirmationCodeIsInvalidException("Confirmation code is expired.");
         }
 
-        log.info("Пользователь {} подтвержден!", codeEntity.getUser().getEmail());
         codeEntity.getUser().setActive(true);
     }
 
