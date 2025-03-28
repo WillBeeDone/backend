@@ -1,14 +1,19 @@
 package de.willbeedone.backend.security.sec_dto;
 
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
+import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.*;
 
+@Schema(description = "A class that defines the Token Dto for responses.")
 @Getter
+@Setter
+@NoArgsConstructor
 @EqualsAndHashCode
-
 public class TokenResponseDto {
 
+    @Schema(description = "User's access token")
     private String accessToken;
+
+    @Schema(description = "User's refresh token")
     private String refreshToken;
 
     public TokenResponseDto(String accessToken, String refreshToken) {

@@ -16,7 +16,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/offers")
-@Tag(name = "Offer controller", description = "Controller for various operations with Offers")
+@Tag(name = "Offer controller", description = "Controller for various operations with Offers.")
 public class OfferController {
 
     @Autowired
@@ -35,7 +35,7 @@ public class OfferController {
 
 
     @Operation(summary = "Getting all pageable active offers",
-            description = "Returns all pageable active offers for the gallery. Default size - 9")
+            description = "Returns all pageable active offers for the gallery. Default size - 9.")
     @GetMapping
     public Page<OfferFilterResponseDto> getAllActiveOffers(
             @RequestParam(defaultValue = "0") int page,
@@ -55,7 +55,7 @@ public class OfferController {
     }
     
     @Operation(summary = "Getting filtered offers",
-            description = "Returns offers filtered by Category, Location or Key phrase from searching field. Filtration can include all, part or none of these fields")
+            description = "Returns pageable active offers filtered by Category, Location or Key phrase from searching field. Filtration can include all, part or none of these fields.")
     @GetMapping("/filter")
     public Page<OfferFilterResponseDto> getFilteredOffers(
             @Parameter(description = "City name", example = "Berlin")
@@ -73,7 +73,6 @@ public class OfferController {
         return offerService.getFilteredOffers(cityName, category, keyPhrase, PageRequest.of(page, size));
     }
 
-
 //    @Operation(summary = "Getting filtered offers",
 //            description = "Returns offers filtered by Category, Location or Key phrase from searching field. Filtration can include all, part or none of thees fields")
 //    @GetMapping("/filter")
@@ -89,8 +88,6 @@ public class OfferController {
 //    ) {
 //        return service.getFilteredOffers(cityName, category, keyPhrase);
 //    }
-
-
 
 //    @DeleteMapping("/deletedOfferId")
 //    public void deleteOfferById(Long id){

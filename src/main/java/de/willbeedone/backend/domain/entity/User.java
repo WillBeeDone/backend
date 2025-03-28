@@ -1,6 +1,5 @@
 package de.willbeedone.backend.domain.entity;
 
-import de.willbeedone.backend.security.sec_dto.CustomUserDetails;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -10,6 +9,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 import java.util.Objects;
@@ -20,7 +20,7 @@ import java.util.Set;
 @Setter
 @NoArgsConstructor
 @Table(name = "user")
-public class User implements CustomUserDetails {
+public class User implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -113,6 +113,17 @@ public class User implements CustomUserDetails {
     public String getUsername() {
         return email;
     }
+
+    @Override
+    public boolean isEnabled() {
+        return active;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return blocked;
+    }
+
 }
 
 

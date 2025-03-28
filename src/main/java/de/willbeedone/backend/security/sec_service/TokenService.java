@@ -3,12 +3,12 @@ package de.willbeedone.backend.security.sec_service;
 import de.willbeedone.backend.domain.entity.Role;
 import de.willbeedone.backend.repository.RoleRepository;
 import de.willbeedone.backend.security.AuthInfo;
-import de.willbeedone.backend.security.sec_dto.CustomUserDetails;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import javax.crypto.SecretKey;
 import java.time.Instant;
@@ -32,7 +32,7 @@ public class TokenService {
         this.roleRepository = roleRepository;
     }
 
-    public String generateAccessToken(CustomUserDetails user) {
+    public String generateAccessToken(UserDetails user) {
         LocalDateTime currentDate = LocalDateTime.now();
         Instant expiration = currentDate.plusWeeks(1).atZone(ZoneId.systemDefault()).toInstant();
         Date expirationDate = Date.from(expiration);
@@ -42,17 +42,17 @@ public class TokenService {
                 .expiration(expirationDate)
                 .signWith(accessKey)
                 .claim("roles", user.getAuthorities())
-                .claim("name", user.getEmail())
+                .claim("name", user.getUsername())
                 .compact();
     }
 
-    public String generateRefreshToken(CustomUserDetails user) {
+    public String generateRefreshToken(UserDetails user) {
         LocalDateTime currentDate = LocalDateTime.now();
         Instant expiration = currentDate.plusWeeks(7).atZone(ZoneId.systemDefault()).toInstant();
         Date expirationDate = Date.from(expiration);
 
         return Jwts.builder()
-                .subject(user.getEmail())
+                .subject(user.getUsername())
                 .expiration(expirationDate)
                 .signWith(refreshKey)
                 .compact();

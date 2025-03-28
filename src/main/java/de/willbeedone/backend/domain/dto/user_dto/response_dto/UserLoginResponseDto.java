@@ -1,18 +1,18 @@
 package de.willbeedone.backend.domain.dto.user_dto.response_dto;
 
 import de.willbeedone.backend.domain.dto.location_dto.LocationDto;
+import de.willbeedone.backend.domain.entity.Role;
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.*;
 import lombok.*;
 
+import java.util.Set;
+
+@Schema(description = "A class that defines the User DTO for registration responses.")
 @Getter
 @Setter
 @EqualsAndHashCode
 @NoArgsConstructor
-@Schema(description = "A class that defines the User DTO for registration responses.")
 public class UserLoginResponseDto {
 
     @NotNull
@@ -55,11 +55,14 @@ public class UserLoginResponseDto {
     @Schema(description = "User's profile photo")
     private String profilePicture;
 
-    @NotNull
+    @Schema(description = "List of user's roles")
+    private Set<Role> roles;
+
+    @NotBlank
     @Schema(description = "User's activity status")
     private boolean active;
 
-    @NotNull
+    @NotBlank
     @Schema(description = "User's block status")
     private boolean blocked;
 
