@@ -7,7 +7,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.Objects;
 
 @Schema(description = "A class that defines the Category DTO for requests and responses.")
 @Getter
