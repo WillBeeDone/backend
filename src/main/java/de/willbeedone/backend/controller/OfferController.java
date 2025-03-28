@@ -55,9 +55,9 @@ public class OfferController {
     }
     
     @Operation(summary = "Getting filtered offers",
-            description = "Returns offers filtered by Category, Location or Key phrase from searching field. Filtration can include all, part or none of thees fields")
+            description = "Returns offers filtered by Category, Location or Key phrase from searching field. Filtration can include all, part or none of these fields")
     @GetMapping("/filter")
-    public List<OfferFilterResponseDto> getFilteredOffers(
+    public Page<OfferFilterResponseDto> getFilteredOffers(
             @Parameter(description = "City name", example = "Berlin")
             @RequestParam(required = false, defaultValue = "all") String cityName,
 
@@ -65,10 +65,32 @@ public class OfferController {
             @RequestParam(required = false, defaultValue = "all") String category,
 
             @Parameter(description = "Key phrase from searching field", example = "Plumber with beard")
-            @RequestParam(required = false, defaultValue = "all") String keyPhrase
+            @RequestParam(required = false, defaultValue = "all") String keyPhrase,
+
+            @RequestParam(required = false, defaultValue = "0") int page,
+            @RequestParam(required = false, defaultValue = "9") int size
     ) {
-        return offerService.getFilteredOffers(cityName, category, keyPhrase);
+        return offerService.getFilteredOffers(cityName, category, keyPhrase, PageRequest.of(page, size));
     }
+
+
+//    @Operation(summary = "Getting filtered offers",
+//            description = "Returns offers filtered by Category, Location or Key phrase from searching field. Filtration can include all, part or none of thees fields")
+//    @GetMapping("/filter")
+//    public List<OfferFilterResponseDto> getFilteredOffers(
+//            @Parameter(description = "City name", example = "Berlin")
+//            @RequestParam(required = false, defaultValue = "all") String cityName,
+//
+//            @Parameter(description = "Category name", example = "Plumber")
+//            @RequestParam(required = false, defaultValue = "all") String category,
+//
+//            @Parameter(description = "Key phrase from searching field", example = "Plumber with beard")
+//            @RequestParam(required = false, defaultValue = "all") String keyPhrase
+//    ) {
+//        return service.getFilteredOffers(cityName, category, keyPhrase);
+//    }
+
+
 
 //    @DeleteMapping("/deletedOfferId")
 //    public void deleteOfferById(Long id){

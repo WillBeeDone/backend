@@ -1,5 +1,6 @@
 package de.willbeedone.backend.repository;
-
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import de.willbeedone.backend.domain.entity.Category;
 import de.willbeedone.backend.domain.entity.Offer;
 import de.willbeedone.backend.domain.entity.User;
@@ -12,7 +13,7 @@ import java.util.List;
 import java.util.Optional;
 
 
-public interface OfferRepository extends JpaRepository<Offer, Long> {
+public interface OfferRepository extends JpaRepository<Offer, Long>, JpaSpecificationExecutor<Offer>  {
 
     List<Offer> findOfferByTitle(String title);
 
@@ -24,5 +25,8 @@ public interface OfferRepository extends JpaRepository<Offer, Long> {
 
     @Query("SELECT o FROM Offer o WHERE o.active = true ORDER BY o.pricePerHour ASC")
     Page<Offer> findActiveOffers(Pageable pageable);
+
+    @Query("from Offer ")
+    List<Offer> findAllOffersByPageRequest(PageRequest pageRequest);
 
 }
