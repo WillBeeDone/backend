@@ -14,10 +14,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-
 @RestController
 @RequestMapping("/offers")
-@Tag(name = "Offer controller", description = "Controller for various operations with Offers")
+@Tag(name = "Offer controller", description = "Controller for various operations with Offers.")
 public class OfferController {
 
     @Autowired
@@ -36,7 +35,7 @@ public class OfferController {
 
 
     @Operation(summary = "Getting all pageable active offers",
-            description = "Returns all pageable active offers for the gallery. Default size - 9")
+            description = "Returns all pageable active offers for the gallery. Default size - 9.")
     @GetMapping
     public Page<OfferFilterResponseDto> getAllActiveOffers(
             @RequestParam(defaultValue = "0") int page,
@@ -56,9 +55,9 @@ public class OfferController {
     }
     
     @Operation(summary = "Getting filtered offers",
-            description = "Returns offers filtered by Category, Location or Key phrase from searching field. Filtration can include all, part or none of these fields")
+            description = "Returns pageable active offers filtered by Category, Location or Key phrase from searching field. Filtration can include all, part or none of these fields.")
     @GetMapping("/filter")
-    public List<OfferFilterResponseDto> getFilteredOffers(
+    public Page<OfferFilterResponseDto> getFilteredOffers(
             @Parameter(description = "City name", example = "Berlin")
             @RequestParam(required = false, defaultValue = "all") String cityName,
 
@@ -71,30 +70,11 @@ public class OfferController {
             @RequestParam(required = false, defaultValue = "0") int page,
             @RequestParam(required = false, defaultValue = "9") int size
     ) {
-        return offerService.getFilteredOffers(cityName, category, keyPhrase);
+        return offerService.getFilteredOffers(cityName, category, keyPhrase, PageRequest.of(page, size));
     }
 
     @DeleteMapping("/deletedOfferId")
     public void deleteOfferById(Long id){
         offerService.deleteOfferById(id);
     }
-
-
-//    @Operation(summary = "Getting filtered offers",
-//            description = "Returns offers filtered by Category, Location or Key phrase from searching field. Filtration can include all, part or none of thees fields")
-//    @GetMapping("/filter")
-//    public List<OfferFilterResponseDto> getFilteredOffers(
-//            @Parameter(description = "City name", example = "Berlin")
-//            @RequestParam(required = false, defaultValue = "all") String cityName,
-//
-//            @Parameter(description = "Category name", example = "Plumber")
-//            @RequestParam(required = false, defaultValue = "all") String category,
-//
-//            @Parameter(description = "Key phrase from searching field", example = "Plumber with beard")
-//            @RequestParam(required = false, defaultValue = "all") String keyPhrase
-//    ) {
-//        return service.getFilteredOffers(cityName, category, keyPhrase);
-//    }
-
-
 }

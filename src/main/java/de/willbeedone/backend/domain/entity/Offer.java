@@ -31,12 +31,11 @@ public class Offer {
     @Column(name = "price_per_hour")
     private BigDecimal pricePerHour;
 
-    //@NotBlank(message = "Description cannot be empty")
     @Size(min = 10, max = 1000, message = "Description must be between 10 and 1000 characters")
-    @Column(name = "description", length = 1000)
+    @Column(name = "description", columnDefinition = "MEDIUMTEXT")
     private String description;
 
-    //@NotNull
+    @NotNull
     @ManyToOne
     @JoinColumn(name = "category_id")
     private Category category;
@@ -48,7 +47,7 @@ public class Offer {
     @Column(name = "active", columnDefinition = "BOOLEAN DEFAULT TRUE")
     private boolean active;
 
-    //@NotNull
+    @NotNull
     @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "user_id")

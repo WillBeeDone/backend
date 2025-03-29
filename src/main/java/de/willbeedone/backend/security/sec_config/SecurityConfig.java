@@ -18,6 +18,9 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableMethodSecurity
 public class SecurityConfig {
 
+    private final String ADMIN_ROLE = "ADMIN";
+    private final String USER_ROLE = "USER";
+
     private final TokenFilter tokenFilter;
 
     public SecurityConfig(TokenFilter tokenFilter) {
@@ -38,15 +41,11 @@ public class SecurityConfig {
                 )
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(x -> x
-                        .requestMatchers(HttpMethod.POST, "/auth/login", "/auth/refresh").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/register").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/register/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/offers/all").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/offers/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/auth/login", "/auth/refresh", "/register").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/register/**", "/offers/**", "/locations", "/categories").permitAll()
                         .requestMatchers(HttpMethod.POST, "/offers").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/users").permitAll()
-                        .requestMatchers(HttpMethod.DELETE, "/offers/deletedOfferId").hasRole("ADMIN")
-                        .anyRequest().authenticated()
+                        .requestMatchers( "/swagger-ui/**", "/v3/api-docs/**").permitAll()
+                        .anyRequest().permitAll()
                 )
                 .addFilterAfter(tokenFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
