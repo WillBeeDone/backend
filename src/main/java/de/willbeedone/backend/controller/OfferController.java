@@ -2,17 +2,23 @@ package de.willbeedone.backend.controller;
 
 import de.willbeedone.backend.domain.dto.offer_dto.response_dto.OfferFilterResponseDto;
 import de.willbeedone.backend.domain.dto.offer_dto.response_dto.OfferProfileGuestResponseDto;
+import de.willbeedone.backend.domain.entity.Offer;
 import de.willbeedone.backend.service.interfaces.OfferService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.Pattern;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.List;
+
 
 @RestController
 @RequestMapping("/offers")
@@ -39,9 +45,17 @@ public class OfferController {
     @GetMapping
     public Page<OfferFilterResponseDto> getAllActiveOffers(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "9") int size
+            @RequestParam(defaultValue = "9") int size,
+
+            @RequestParam(required = false)
+            @Pattern(regexp = "^[A-Za-zÀ-ÖØ-öø-ÿ\\s-]+$", message = "City name can only contain letters, spaces, and hyphens")
+            String cityName
     ) {
         Pageable pageable = PageRequest.of(page, size);
+
+        if (cityName != null && !cityName.equals("all")) {
+            return offerService.getActiveOffersByCity(cityName, pageable);
+        }
         return offerService.getAllActiveOffers(pageable);
     }
 
@@ -53,7 +67,7 @@ public class OfferController {
             @PathVariable Long id) {
         return offerService.getActiveOfferById(id);
     }
-    
+
     @Operation(summary = "Getting filtered offers",
             description = "Returns pageable active offers filtered by Category, Location or Key phrase from searching field. Filtration can include all, part or none of these fields.")
     @GetMapping("/filter")
@@ -66,15 +80,44 @@ public class OfferController {
 
             @Parameter(description = "Key phrase from searching field", example = "Plumber with beard")
             @RequestParam(required = false, defaultValue = "all") String keyPhrase,
-
+            @RequestParam(required = false) @DecimalMin(value = "0.01", message = "Price must be greater than 0") BigDecimal minPrice,
+            @RequestParam(required = false) @DecimalMin(value = "0.01", message = "Price must be greater than 0") BigDecimal maxPrice,
+            @RequestParam(required = false, defaultValue = "9") int size,
             @RequestParam(required = false, defaultValue = "0") int page,
-            @RequestParam(required = false, defaultValue = "9") int size
+            @RequestParam(required = false, defaultValue = "price,asc") String sort  // Новый параметр сортировки
     ) {
-        return offerService.getFilteredOffers(cityName, category, keyPhrase, PageRequest.of(page, size));
+
+        String[] sortParams = sort.split(",");
+        Sort sortOrder = Sort.by(Sort.Direction.fromString(sortParams[1]), sortParams[0]);
+        PageRequest pageRequest = PageRequest.of(page, size, sortOrder);
+
+        return offerService.getFilteredOffers(cityName, category, keyPhrase, minPrice, maxPrice, pageRequest);
     }
 
-    @DeleteMapping("/deletedOfferId")
-    public void deleteOfferById(Long id){
+
+    @Operation(summary = "Delete an offer by id",
+            description = "Deletes an offer by its unique identifier.")
+    @DeleteMapping("/{id}")
+    public void deleteOfferById(@PathVariable Long id) {
         offerService.deleteOfferById(id);
     }
+
+
+//    @Operation(summary = "Getting filtered offers",
+//            description = "Returns offers filtered by Category, Location or Key phrase from searching field. Filtration can include all, part or none of thees fields")
+//    @GetMapping("/filter")
+//    public List<OfferFilterResponseDto> getFilteredOffers(
+//            @Parameter(description = "City name", example = "Berlin")
+//            @RequestParam(required = false, defaultValue = "all") String cityName,
+//
+//            @Parameter(description = "Category name", example = "Plumber")
+//            @RequestParam(required = false, defaultValue = "all") String category,
+//
+//            @Parameter(description = "Key phrase from searching field", example = "Plumber with beard")
+//            @RequestParam(required = false, defaultValue = "all") String keyPhrase
+//    ) {
+//        return service.getFilteredOffers(cityName, category, keyPhrase);
+//    }
+
+
 }

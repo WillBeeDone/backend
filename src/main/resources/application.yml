@@ -3,10 +3,10 @@ spring:
     name: WillBeeDone
 
   datasource:
-    url: ${LDB_DATABASE}//${LDB_HOST}:${LDB_PORT}/${LDB_NAME}
+    url: jdbc:mysql://localhost:3306/tasker_db
     driver-class-name: com.mysql.cj.jdbc.Driver
-    username: ${LDB_USERNAME}
-    password: ${LDB_PASSWORD}
+    username: root
+    password: sql77777
 
   jpa:
     database-platform: org.hibernate.dialect.MySQLDialect

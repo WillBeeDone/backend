@@ -14,6 +14,7 @@ import java.util.Objects;
 @Entity
 @Getter
 @Setter
+@EqualsAndHashCode
 @NoArgsConstructor
 @Table(name = "location")
 public class Location {
@@ -33,18 +34,6 @@ public class Location {
     @JsonIgnore
     @OneToMany(mappedBy = "location", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<User> users = new ArrayList<>();
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Location location)) return false;
-        return Objects.equals(id, location.id) && Objects.equals(users, location.users) && Objects.equals(cityName, location.cityName);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, users, cityName);
-    }
 
     @Override
     public String toString() {

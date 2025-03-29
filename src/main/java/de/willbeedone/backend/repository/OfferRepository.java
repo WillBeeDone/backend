@@ -1,4 +1,5 @@
 package de.willbeedone.backend.repository;
+import de.willbeedone.backend.domain.dto.offer_dto.response_dto.OfferFilterResponseDto;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import de.willbeedone.backend.domain.entity.Category;
@@ -8,6 +9,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 import java.util.Optional;
@@ -16,6 +18,9 @@ import java.util.Optional;
 public interface OfferRepository extends JpaRepository<Offer, Long>, JpaSpecificationExecutor<Offer>  {
 
     List<Offer> findOfferByTitle(String title);
+
+    @Query("SELECT o FROM Offer o WHERE o.user.location.cityName = :cityName")
+    Page<Offer> findByCity(@Param("cityName") String cityName, Pageable pageable);
 
     List<Offer> findOfferByTitleAndActiveIsTrue(String title);
 
