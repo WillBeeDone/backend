@@ -57,7 +57,7 @@ public class AuthService {
             UserDetails foundUser = userService.loadUserByUsername(email);
             String accessToken = tokenService.generateAccessToken(foundUser);
             return new TokenResponseDto(accessToken);
-        }else {
+        } else {
             return new TokenResponseDto(null);
         }
     }
