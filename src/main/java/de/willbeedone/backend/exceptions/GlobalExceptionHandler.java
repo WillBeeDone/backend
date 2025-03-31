@@ -13,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 @Hidden
 @ControllerAdvice
@@ -67,6 +68,11 @@ public class GlobalExceptionHandler {
     public ResponseEntity<Response> handleException(DataIntegrityViolationException e) {
         Response response = new Response(e.getMessage());
         return new ResponseEntity<>(response, HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<Object> handleException(MethodArgumentTypeMismatchException e) {
+        return new ResponseEntity<>("Endpoint not found", HttpStatus.NOT_FOUND);
     }
 
 }
