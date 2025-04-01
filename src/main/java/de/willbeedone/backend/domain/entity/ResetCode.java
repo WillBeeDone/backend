@@ -10,8 +10,8 @@ import java.time.LocalDateTime;
 @Setter
 @NoArgsConstructor
 @EqualsAndHashCode
-@Table(name = "confirm_code")
-public class ConfirmationCode {
+@Table(name = "reset_code")
+public class ResetCode {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -28,7 +28,7 @@ public class ConfirmationCode {
     @JoinColumn(name = "user_id")
     private User user;
 
-    public ConfirmationCode(String code, LocalDateTime expired, User user) {
+    public ResetCode(String code, LocalDateTime expired, User user) {
         this.code = code;
         this.expired = expired;
         this.user = user;
@@ -36,7 +36,7 @@ public class ConfirmationCode {
 
     @Override
     public String toString() {
-        return String.format("Confirmation code: id - %d, code - %s, expired - %s, username - %s.",
+        return String.format("Reset code: id - %d, code - %s, expired - %s, username - %s.",
                 id, code, expired, user.getEmail());
     }
 }
