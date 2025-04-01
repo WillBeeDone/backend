@@ -2,20 +2,19 @@ package de.willbeedone.backend.service.interfaces;
 
 import de.willbeedone.backend.domain.dto.user_dto.request_dto.UserForOfferRequestDto;
 import de.willbeedone.backend.domain.dto.user_dto.request_dto.UserRequestDto;
-import de.willbeedone.backend.domain.dto.user_dto.response_dto.UserFilterResponseDto;
 import de.willbeedone.backend.domain.entity.User;
-import de.willbeedone.backend.security.sec_dto.CustomUserDetailService;
+import org.springframework.security.core.userdetails.UserDetailsService;
 
 import java.util.List;
 import java.util.Optional;
 
-public interface UserService extends CustomUserDetailService {
+public interface UserService extends UserDetailsService {
 
     User addNewUser(UserRequestDto request);
 
     List<User> getAllUsers();
 
-    Optional<UserFilterResponseDto> getUserByEmail(String email);
+    Optional<User> getUserByEmail(String email);
 
     User getActiveValidUserById(Long id);
 
@@ -23,7 +22,8 @@ public interface UserService extends CustomUserDetailService {
 
     void deleteUserById(Long id);
 
-    void register(UserRequestDto user);
+    Long register(UserRequestDto user);
 
-    void confirmRegistration(String code);
+    Long confirmRegistration(String code);
+
 }

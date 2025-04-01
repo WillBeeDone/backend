@@ -1,6 +1,5 @@
 package de.willbeedone.backend.controller;
 
-import de.willbeedone.backend.domain.entity.Location;
 import de.willbeedone.backend.service.interfaces.LocationService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -10,7 +9,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/locations")
-@Tag(name = "Location controller", description = "Controller for various operations with Users' (Offers') Locations")
+@Tag(name = "Location controller", description = "Controller for various operations with Users' (Offers') Locations.")
 public class LocationController {
 
     private final LocationService locationService;

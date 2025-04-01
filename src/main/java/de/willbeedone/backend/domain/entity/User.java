@@ -1,6 +1,5 @@
 package de.willbeedone.backend.domain.entity;
 
-import de.willbeedone.backend.security.sec_dto.CustomUserDetails;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -10,6 +9,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 import java.util.Objects;
@@ -20,7 +20,7 @@ import java.util.Set;
 @Setter
 @NoArgsConstructor
 @Table(name = "user")
-public class User implements CustomUserDetails {
+public class User implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -82,7 +82,6 @@ public class User implements CustomUserDetails {
     @Column(name = "blocked", nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
     private boolean blocked;
 
-
     public User(String email, String password) {
         this.email = email;
         this.password = password;
@@ -102,7 +101,7 @@ public class User implements CustomUserDetails {
 
     @Override
     public String toString() {
-        return String.format("User: id - %d, firstName - %s, lastName - %s, email - %s, phoneNumber - %s, location - %s, profilePicture - %s, roles - %s, offers - %s, blocked - %s", id, firstName, lastName, email, phoneNumber, location, profilePicture, roles, offers, blocked ? "Yes" : "No");
+        return String.format("User: id - %d, firstName - %s, lastName - %s, email - %s, phoneNumber - %s, location - %s, profilePicture - %s, roles - %s, offers - %s, active - %s, blocked - %s", id, firstName, lastName, email, phoneNumber, location, profilePicture, roles, offers, active ? "Yes" : "No", blocked ? "Yes" : "No");
     }
 
     @Override
@@ -114,6 +113,17 @@ public class User implements CustomUserDetails {
     public String getUsername() {
         return email;
     }
+
+    @Override
+    public boolean isEnabled() {
+        return active;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return blocked;
+    }
+
 }
 
 

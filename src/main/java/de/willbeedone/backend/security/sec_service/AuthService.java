@@ -1,11 +1,11 @@
 package de.willbeedone.backend.security.sec_service;
 
 import de.willbeedone.backend.domain.dto.user_dto.request_dto.UserRequestDto;
-import de.willbeedone.backend.security.sec_dto.CustomUserDetails;
 import de.willbeedone.backend.security.sec_dto.TokenResponseDto;
 import de.willbeedone.backend.service.interfaces.UserService;
 import io.jsonwebtoken.Claims;
 import jakarta.security.auth.message.AuthException;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -28,7 +28,16 @@ public class AuthService {
 
     public TokenResponseDto login(UserRequestDto inboundUser) throws AuthException {
         String email = inboundUser.getEmail();
-        CustomUserDetails foundUser = (CustomUserDetails) userService.loadUserByEmail(email);
+        UserDetails foundUser = userService.loadUserByUsername(email);
+
+        if (!foundUser.isEnabled()) {
+            throw new AuthException("User is not activated");
+        }
+
+        if (foundUser.isAccountNonLocked()) {
+            throw new AuthException("User is blocked");
+        }
+
         if (passwordEncoder.matches(inboundUser.getPassword(), foundUser.getPassword())) {
             String accessToken = tokenService.generateAccessToken(foundUser);
             String refreshToken = tokenService.generateRefreshToken(foundUser);
@@ -45,11 +54,12 @@ public class AuthService {
         String foundRefreshToken = refreshStorage.get(email);
 
         if(foundRefreshToken != null && foundRefreshToken.equals(inboundRefreshToken)){
-            CustomUserDetails foundUser = (CustomUserDetails) userService.loadUserByEmail(email);
+            UserDetails foundUser = userService.loadUserByUsername(email);
             String accessToken = tokenService.generateAccessToken(foundUser);
             return new TokenResponseDto(accessToken);
-        }else {
+        } else {
             return new TokenResponseDto(null);
         }
     }
+
 }

@@ -2,7 +2,6 @@ package de.willbeedone.backend.service;
 
 import de.willbeedone.backend.domain.dto.user_dto.request_dto.UserForOfferRequestDto;
 import de.willbeedone.backend.domain.dto.user_dto.request_dto.UserRequestDto;
-import de.willbeedone.backend.domain.dto.user_dto.response_dto.UserFilterResponseDto;
 import de.willbeedone.backend.domain.entity.ConfirmationCode;
 import de.willbeedone.backend.domain.entity.Location;
 import de.willbeedone.backend.domain.entity.User;
@@ -19,20 +18,22 @@ import de.willbeedone.backend.service.interfaces.RoleService;
 import de.willbeedone.backend.service.interfaces.UserService;
 import de.willbeedone.backend.service.mapping.UserMappingService;
 import jakarta.transaction.Transactional;
-import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-@Slf4j
 @Service
 public class UserServiceImpl implements UserService {
+
     private final UserRepository userRepository;
     private final ConfirmationCodeRepository codeRepository;
     private final LocationService locationService;
@@ -75,12 +76,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Optional<UserFilterResponseDto> getUserByEmail(String email) {
+    public Optional<User> getUserByEmail(String email) {
         try {
-            return userRepository.findUserByEmail(email)
-                    .map(mappingService::mapEntityToFilterResponseDto);
+            return userRepository.findUserByEmail(email);
         } catch (Exception e) {
-            throw new UserValidationException(e);
+            throw new UserNotFoundException();
         }
     }
 
@@ -125,42 +125,45 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public void register(UserRequestDto dto) {
-        User user = mappingService.mapRequestDtoToEntity(dto);
-        user.setRoles(Set.of(roleService.getRoleUser()));
-        user.setPassword(encoder.encode(dto.getPassword()));
+    public Long register(UserRequestDto dto) {
+        try {
+            User user = mappingService.mapRequestDtoToEntity(dto);
+            user.setRoles(Set.of(roleService.getRoleUser()));
+            user.setPassword(encoder.encode(dto.getPassword()));
 
-        userRepository.save(user);
+            userRepository.save(user);
 
-        emailService.sendConfirmationEmail(user);
+            emailService.sendConfirmationEmail(user);
+
+            return user.getId();
+        } catch (DataIntegrityViolationException e) {
+            throw new DataIntegrityViolationException("User with this email already exists");
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "An unexpected error occurred", e);
+        }
     }
 
     @Override
     @Transactional
-    public void confirmRegistration(String code) {
-        log.info("Подтверждение регистрации. Код: {}", code);
+    public Long confirmRegistration(String code) {
 
         ConfirmationCode codeEntity = codeRepository.findByCode(code)
                 .orElseThrow(
-                        () -> {
-                            log.error("Код подтверждения не найден: {}", code);
-                            return new ConfirmationCodeIsInvalidException("Confirmation code not found.");
-                        }
+                        () -> new ConfirmationCodeIsInvalidException("Confirmation code not found.")
                 );
 
-        log.info("Код найден. Проверяем срок действия...");
-
         if (codeEntity.getExpired().isBefore(LocalDateTime.now())) {
-            log.error("Код просрочен: {}", code);
             throw new ConfirmationCodeIsInvalidException("Confirmation code is expired.");
         }
 
-        log.info("Пользователь {} подтвержден!", codeEntity.getUser().getEmail());
         codeEntity.getUser().setActive(true);
+
+        return codeEntity.getUser().getId();
     }
 
+    //By email (= username)
     @Override
-    public UserDetails loadUserByEmail(String email) throws UsernameNotFoundException {
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         return userRepository.findUserByEmail(email).orElseThrow(() -> new UsernameNotFoundException("User not found"));
     }
 }
