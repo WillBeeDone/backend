@@ -21,7 +21,7 @@ public class RegistrationController {
             description = "Creates new user in database and sends confirmation e-mail to user.")
     @PostMapping
     public Long register(@RequestBody UserRequestDto inboundUser) {
-       return  userService.register(inboundUser);
+       return userService.register(inboundUser);
     }
 
     @Operation(summary = "User's registration confirmation",
@@ -30,4 +30,5 @@ public class RegistrationController {
     public Long confirmRegistration(@PathVariable String code) {
         return userService.confirmRegistration(code);
     }
+
 }

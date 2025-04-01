@@ -49,3 +49,6 @@ key:
 server:
   servlet:
     context-path: /api
+
+base:
+  url: ${BASE_URL}

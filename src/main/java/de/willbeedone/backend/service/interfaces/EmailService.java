@@ -6,4 +6,6 @@ public interface EmailService {
 
     void sendConfirmationEmail(User user);
 
+    void sendResetPasswordEmail(User user);
+
 }

@@ -101,7 +101,7 @@ public class User implements UserDetails {
 
     @Override
     public String toString() {
-        return String.format("User: id - %d, firstName - %s, lastName - %s, email - %s, phoneNumber - %s, location - %s, profilePicture - %s, roles - %s, offers - %s, blocked - %s", id, firstName, lastName, email, phoneNumber, location, profilePicture, roles, offers, blocked ? "Yes" : "No");
+        return String.format("User: id - %d, firstName - %s, lastName - %s, email - %s, phoneNumber - %s, location - %s, profilePicture - %s, roles - %s, offers - %s, active - %s, blocked - %s", id, firstName, lastName, email, phoneNumber, location, profilePicture, roles, offers, active ? "Yes" : "No", blocked ? "Yes" : "No");
     }
 
     @Override
