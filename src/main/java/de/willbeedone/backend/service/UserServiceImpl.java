@@ -18,10 +18,13 @@ import de.willbeedone.backend.service.interfaces.RoleService;
 import de.willbeedone.backend.service.interfaces.UserService;
 import de.willbeedone.backend.service.mapping.UserMappingService;
 import jakarta.transaction.Transactional;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -123,15 +126,21 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public Long register(UserRequestDto dto) {
-        User user = mappingService.mapRequestDtoToEntity(dto);
-        user.setRoles(Set.of(roleService.getRoleUser()));
-        user.setPassword(encoder.encode(dto.getPassword()));
+        try {
+            User user = mappingService.mapRequestDtoToEntity(dto);
+            user.setRoles(Set.of(roleService.getRoleUser()));
+            user.setPassword(encoder.encode(dto.getPassword()));
 
-        userRepository.save(user);
+            userRepository.save(user);
 
-        emailService.sendConfirmationEmail(user);
+            emailService.sendConfirmationEmail(user);
 
-        return user.getId();
+            return user.getId();
+        } catch (DataIntegrityViolationException e) {
+            throw new DataIntegrityViolationException("User with this email already exists");
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "An unexpected error occurred", e);
+        }
     }
 
     @Override
