@@ -1,9 +1,12 @@
 package de.willbeedone.backend.service;
 
+import de.willbeedone.backend.domain.dto.user_dto.request_dto.UserEmailRequestDto;
 import de.willbeedone.backend.domain.dto.user_dto.request_dto.UserForOfferRequestDto;
+import de.willbeedone.backend.domain.dto.user_dto.request_dto.UserPasswordRequestDto;
 import de.willbeedone.backend.domain.dto.user_dto.request_dto.UserRequestDto;
 import de.willbeedone.backend.domain.entity.ConfirmationCode;
 import de.willbeedone.backend.domain.entity.Location;
+import de.willbeedone.backend.domain.entity.ResetCode;
 import de.willbeedone.backend.domain.entity.User;
 import de.willbeedone.backend.exceptions.custom_exceptions.AlreadyExistException;
 import de.willbeedone.backend.exceptions.custom_exceptions.ConfirmationCodeIsInvalidException;
@@ -11,20 +14,19 @@ import de.willbeedone.backend.exceptions.custom_exceptions.UserNotFoundException
 import de.willbeedone.backend.exceptions.custom_validation_exceptions.UserValidationException;
 import de.willbeedone.backend.repository.ConfirmationCodeRepository;
 import de.willbeedone.backend.repository.LocationRepository;
+import de.willbeedone.backend.repository.ResetCodeRepository;
 import de.willbeedone.backend.repository.UserRepository;
 import de.willbeedone.backend.service.interfaces.EmailService;
 import de.willbeedone.backend.service.interfaces.LocationService;
 import de.willbeedone.backend.service.interfaces.RoleService;
 import de.willbeedone.backend.service.interfaces.UserService;
 import de.willbeedone.backend.service.mapping.UserMappingService;
+import jakarta.security.auth.message.AuthException;
 import jakarta.transaction.Transactional;
-import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -35,35 +37,23 @@ import java.util.Set;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
-    private final ConfirmationCodeRepository codeRepository;
+    private final ConfirmationCodeRepository confirmationCodeRepository;
+    private final ResetCodeRepository resetCodeRepository;
     private final LocationService locationService;
     private final RoleService roleService;
     private final EmailService emailService;
     private final UserMappingService mappingService;
     private final BCryptPasswordEncoder encoder;
 
-    public UserServiceImpl(UserRepository userRepository, LocationRepository locationRepository, ConfirmationCodeRepository codeRepository, LocationService locationService, RoleService roleService, EmailService emailService, UserMappingService mappingService, BCryptPasswordEncoder encoder) {
+    public UserServiceImpl(UserRepository userRepository, LocationRepository locationRepository, ConfirmationCodeRepository codeRepository, ResetCodeRepository resetCodeRepository, LocationService locationService, RoleService roleService, EmailService emailService, UserMappingService mappingService, BCryptPasswordEncoder encoder) {
         this.userRepository = userRepository;
-        this.codeRepository = codeRepository;
+        this.confirmationCodeRepository = codeRepository;
+        this.resetCodeRepository = resetCodeRepository;
         this.locationService = locationService;
         this.roleService = roleService;
         this.emailService = emailService;
         this.mappingService = mappingService;
         this.encoder = encoder;
-    }
-
-    @Override
-    public User addNewUser(UserRequestDto request) {
-        try {
-            if (checkIfUserExists(request.getEmail())) {
-                throw new AlreadyExistException(request.getEmail());
-            }
-            User user = mappingService.mapRequestDtoToEntity(request);
-            user.setPassword(encoder.encode(request.getPassword()));
-            return userRepository.save(user);
-        } catch (Exception e) {
-            throw new UserValidationException(e.getMessage());
-        }
     }
 
     private boolean checkIfUserExists(String email) {
@@ -100,14 +90,14 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public void updateUser(UserForOfferRequestDto dto, Long id) {
-            User existingUser = getActiveValidUserById(id);
-            Location location = locationService.getLocationByCity(dto.getLocationDto().getCityName());
+        User existingUser = getActiveValidUserById(id);
+        Location location = locationService.getLocationByCity(dto.getLocationDto().getCityName());
 
-            existingUser.setFirstName(dto.getFirstName());
-            existingUser.setLastName(dto.getLastName());
-            existingUser.setPhoneNumber(dto.getPhoneNumber());
-            existingUser.setLocation(location);
-            existingUser.setProfilePicture(dto.getProfilePicture());
+        existingUser.setFirstName(dto.getFirstName());
+        existingUser.setLastName(dto.getLastName());
+        existingUser.setPhoneNumber(dto.getPhoneNumber());
+        existingUser.setLocation(location);
+        existingUser.setProfilePicture(dto.getProfilePicture());
     }
 
     @Override
@@ -126,7 +116,10 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public Long register(UserRequestDto dto) {
-        try {
+        if(userRepository.findUserByEmail(dto.getEmail()).isPresent()) {
+            throw new AlreadyExistException(dto.getEmail());
+        }
+
             User user = mappingService.mapRequestDtoToEntity(dto);
             user.setRoles(Set.of(roleService.getRoleUser()));
             user.setPassword(encoder.encode(dto.getPassword()));
@@ -136,18 +129,13 @@ public class UserServiceImpl implements UserService {
             emailService.sendConfirmationEmail(user);
 
             return user.getId();
-        } catch (DataIntegrityViolationException e) {
-            throw new DataIntegrityViolationException("User with this email already exists");
-        } catch (Exception e) {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "An unexpected error occurred", e);
-        }
+
     }
 
     @Override
     @Transactional
     public Long confirmRegistration(String code) {
-
-        ConfirmationCode codeEntity = codeRepository.findByCode(code)
+        ConfirmationCode codeEntity = confirmationCodeRepository.findByCode(code)
                 .orElseThrow(
                         () -> new ConfirmationCodeIsInvalidException("Confirmation code not found.")
                 );
@@ -157,8 +145,42 @@ public class UserServiceImpl implements UserService {
         }
 
         codeEntity.getUser().setActive(true);
+        Long userId = codeEntity.getUser().getId();
+        confirmationCodeRepository.delete(codeEntity);
 
-        return codeEntity.getUser().getId();
+        return userId;
+    }
+
+    @Override
+    @Transactional
+    public void forgotPassword(UserEmailRequestDto dto) throws AuthException {
+        User foundUser = userRepository.findUserByEmail(dto.getEmail())
+                .orElseThrow(
+                        () -> new UserNotFoundException("User with email '" + dto.getEmail() + "' not found")
+                );
+
+        if (!foundUser.isEnabled()) {
+            throw new AuthException("User is not activated");
+        }
+
+        if (foundUser.isAccountNonLocked()) {
+            throw new AuthException("User is blocked");
+        }
+
+        emailService.sendResetPasswordEmail(foundUser);
+    }
+
+    @Override
+    @Transactional
+    public void resetPassword(String code, UserPasswordRequestDto dto) {
+        ResetCode codeEntity = resetCodeRepository.findByCode(code)
+                .orElseThrow(
+                        () -> new RuntimeException("Reset code not found")
+                );
+
+        codeEntity.getUser().setPassword(encoder.encode(dto.getPassword()));
+
+        resetCodeRepository.delete(codeEntity);
     }
 
     //By email (= username)
