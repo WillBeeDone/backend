@@ -18,6 +18,9 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableMethodSecurity
 public class SecurityConfig {
 
+    private final String ADMIN_ROLE = "ADMIN";
+    private final String USER_ROLE = "USER";
+
     private final TokenFilter tokenFilter;
 
     public SecurityConfig(TokenFilter tokenFilter) {
@@ -42,6 +45,9 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/register/**", "/offers/**", "/locations", "/categories").permitAll()
                         .requestMatchers(HttpMethod.POST, "/offers").permitAll()
                         .requestMatchers( "/swagger-ui/**", "/v3/api-docs/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/users/favourites").hasRole(USER_ROLE)
+                        .requestMatchers(HttpMethod.PUT, "/users/favourites/**").hasRole(USER_ROLE)
+                        .requestMatchers(HttpMethod.DELETE, "/users/favourites", "/users/favourites/**").hasRole(USER_ROLE)
                         .anyRequest().permitAll()
                 )
                 .addFilterAfter(tokenFilter, UsernamePasswordAuthenticationFilter.class)
