@@ -148,8 +148,8 @@ public class OfferServiceImpl implements OfferService {
     }
 
     @Override
-    public OfferProfileGuestResponseDto getActiveOfferById(Long id) {
-        return mappingService.mapEntityToProfileGuestResponseDto(getActiveOfferEntityById(id));
+    public  Optional<OfferProfileGuestResponseDto> getActiveOfferById(Long id) {
+        return Optional.ofNullable(mappingService.mapEntityToProfileGuestResponseDto(getActiveOfferEntityById(id)));
 
     }
 
@@ -192,7 +192,5 @@ public class OfferServiceImpl implements OfferService {
         }
         repository.deleteById(id);
     }
-
-
 }
 

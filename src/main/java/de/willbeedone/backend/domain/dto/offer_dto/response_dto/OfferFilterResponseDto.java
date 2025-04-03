@@ -4,9 +4,15 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import de.willbeedone.backend.domain.dto.category_dto.CategoryDto;
 import de.willbeedone.backend.domain.dto.user_dto.response_dto.UserFilterResponseDto;
 import de.willbeedone.backend.domain.entity.User;
+import de.willbeedone.backend.domain.entity.Category;
+import de.willbeedone.backend.domain.entity.ImageGallery;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.OneToMany;
 import lombok.*;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotBlank;
@@ -15,6 +21,7 @@ import jakarta.validation.constraints.Size;
 
 import java.math.BigDecimal;
 import java.util.Objects;
+import java.util.Set;
 
 @Schema(description = "A class that defines the Offer DTO for filtering responses (Category, Location, Search field) in the offers gallery on the Home Page.")
 @Getter
@@ -23,7 +30,6 @@ import java.util.Objects;
 @NoArgsConstructor
 public class OfferFilterResponseDto {
 
-    @NotNull
     @Schema(
             description = "Offer unique identifier",
             example = "1",
@@ -36,7 +42,6 @@ public class OfferFilterResponseDto {
     @Schema(description = "Short offer description", example = "Super sexy plumber will fix your pipes.")
     private String title;
 
-    @NotNull
     @Schema(description = "Offer category")
     private CategoryDto categoryDto;
 
@@ -48,6 +53,9 @@ public class OfferFilterResponseDto {
     @Size(min = 10, max = 1000, message = "Description must be between 10 and 1000 characters")
     @Schema(description = "Offer detailed description")
     private String description;
+
+    @Schema(description = "Photo gallery of work results")
+    private Set<ImageGallery> images;
 
     @Schema(description = "The fields from User: first name, last name, location, profile picture")
     private UserFilterResponseDto userFilterResponseDto;

@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
 import java.util.List;
-
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/offers")
@@ -38,6 +38,7 @@ public class OfferController {
     public List<OfferFilterResponseDto> getAllActiveOffers() {
         return offerService.getAllActiveOffers();
     }
+
 
     @Operation(summary = "Getting all pageable active offers",
             description = "Returns all pageable active offers for the gallery. Default size - 9.")
@@ -61,12 +62,12 @@ public class OfferController {
     @Operation(summary = "Getting offer by id",
             description = "Returns precise offer by id for its profile card.")
     @GetMapping("/{id}")
-    public OfferProfileGuestResponseDto getActiveOfferByIdGuest(
+    public Optional<OfferProfileGuestResponseDto> getActiveOfferByIdGuest(
             @Parameter(description = "Offer unique identifier", example = "1")
             @PathVariable Long id) {
         return offerService.getActiveOfferById(id);
     }
-
+    
     @Operation(summary = "Getting filtered offers",
             description = "Returns pageable active offers filtered by Category, Location or Key phrase from searching field. Filtration can include all, part or none of these fields.")
     @GetMapping("/filter")
@@ -100,23 +101,5 @@ public class OfferController {
     public void deleteOfferById(@PathVariable Long id) {
         offerService.deleteOfferById(id);
     }
-
-
-//    @Operation(summary = "Getting filtered offers",
-//            description = "Returns offers filtered by Category, Location or Key phrase from searching field. Filtration can include all, part or none of thees fields")
-//    @GetMapping("/filter")
-//    public List<OfferFilterResponseDto> getFilteredOffers(
-//            @Parameter(description = "City name", example = "Berlin")
-//            @RequestParam(required = false, defaultValue = "all") String cityName,
-//
-//            @Parameter(description = "Category name", example = "Plumber")
-//            @RequestParam(required = false, defaultValue = "all") String category,
-//
-//            @Parameter(description = "Key phrase from searching field", example = "Plumber with beard")
-//            @RequestParam(required = false, defaultValue = "all") String keyPhrase
-//    ) {
-//        return service.getFilteredOffers(cityName, category, keyPhrase);
-//    }
-
 
 }

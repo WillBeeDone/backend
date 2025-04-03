@@ -86,6 +86,6 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(ConstraintViolationException.class)
     public ResponseEntity<String> handleConstraintViolation(ConstraintViolationException e) {
         return ResponseEntity.badRequest().body("Invalid parameter: " + e.getMessage());
-   }
+    }
 
 }
