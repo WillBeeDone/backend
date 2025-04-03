@@ -141,13 +141,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Page<OfferFilterResponseDto> getAllFavouriteOffersByUserId(String email, Pageable pageable) {
+    public Page<OfferFilterResponseDto> getAllFavouriteOffers(String email, Pageable pageable) {
         return offerRepository.findActiveFavouriteOffersByUserEmail(email, pageable)
                 .map(offerMappingService::mapEntityToFilterResponseDto);
     }
 
     @Override
-    public Page<OfferFilterResponseDto> getAllFavouriteFilteredOffersByUserId(String email, Pageable pageable, String cityName, String category, String keyPhrase) {
+    public Page<OfferFilterResponseDto> getAllFavouriteFilteredOffers(String email, Pageable pageable, String cityName, String category, String keyPhrase) {
 
         Page<Offer> pageOffers = offerRepository.findActiveFavouriteOffersByUserEmail(email, pageable);
 
