@@ -1,10 +1,20 @@
 package de.willbeedone.backend.domain.dto.offer_dto.response_dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import de.willbeedone.backend.domain.dto.category_dto.CategoryDto;
 import de.willbeedone.backend.domain.dto.user_dto.response_dto.UserFilterResponseDto;
+import de.willbeedone.backend.domain.entity.User;
+import de.willbeedone.backend.domain.entity.Category;
+import de.willbeedone.backend.domain.entity.ImageGallery;
 import de.willbeedone.backend.domain.entity.Category;
 import de.willbeedone.backend.domain.entity.ImageGallery;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.OneToMany;
 import lombok.*;

@@ -43,4 +43,9 @@ public class CategoryServiceImpl implements CategoryService {
     public void deleteCategory(Long id) {
         categoryRepository.deleteById(id);
     }
+
+    @Override
+    public boolean existsByName(String categoryName) {
+        return categoryRepository.existsByName(categoryName);
+    }
 }

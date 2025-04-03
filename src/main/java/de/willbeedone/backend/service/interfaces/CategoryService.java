@@ -14,6 +14,8 @@ public interface CategoryService {
 
     Category addNewCategory(Category category);
 
+    boolean existsByName(String categoryName);
+
     void deleteCategory(Long id);
 
 }

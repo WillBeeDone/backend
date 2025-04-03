@@ -62,7 +62,6 @@ public class ImageGalleryServiceImpl implements ImageGalleryService {
             offer.getImages().add(newImage);
             repository.save(offer);
             return url;
-            //TODO проверь bucketName пожалуйста
         } catch (AmazonServiceException | IOException e) {
             throw new ImageUploadException((AmazonServiceException) e);
         }

@@ -7,6 +7,7 @@ import de.willbeedone.backend.domain.entity.Category;
 import de.willbeedone.backend.domain.entity.Offer;
 import de.willbeedone.backend.exceptions.custom_exceptions.OfferNotFoundException;
 import de.willbeedone.backend.exceptions.custom_validation_exceptions.OfferValidationException;
+import de.willbeedone.backend.repository.CategoryRepository;
 import de.willbeedone.backend.repository.OfferRepository;
 import de.willbeedone.backend.service.interfaces.CategoryService;
 import de.willbeedone.backend.service.interfaces.OfferService;
@@ -19,6 +20,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
@@ -31,11 +34,13 @@ public class OfferServiceImpl implements OfferService {
     private final OfferRepository repository;
     private final CategoryService categoryService;
     private final OfferMappingService mappingService;
+    private final CategoryRepository categoryRepository;
 
-    public OfferServiceImpl(OfferRepository repository, CategoryService categoryService, OfferMappingService mappingService) {
+    public OfferServiceImpl(OfferRepository repository, CategoryService categoryService, OfferMappingService mappingService, CategoryRepository categoryRepository) {
         this.repository = repository;
         this.categoryService = categoryService;
         this.mappingService = mappingService;
+        this.categoryRepository = categoryRepository;
     }
 
     @Override
@@ -68,36 +73,40 @@ public class OfferServiceImpl implements OfferService {
     }
 
     @Override
-    public Page<OfferFilterResponseDto> getFilteredOffers(String cityName, String category, String keyPhrase, PageRequest pageRequest) {
-        Specification<Offer> spec = Specification.where((root, query, cb) -> cb.isTrue(root.get("active")));
+    public Page<OfferFilterResponseDto> getFilteredOffers(
+            String cityName, String category, String keyPhrase,
+            BigDecimal minPrice, BigDecimal maxPrice, PageRequest pageRequest) {
+
+
+        Specification<Offer> spec = getBaseSpecification();
 
         if (!"all".equals(cityName)) {
-            spec = spec.and((root, query, cb) -> cb.equal(root.join("user").join("location").get("cityName"), cityName));
+            spec = spec.and(filterByCity(cityName));
         }
         if (!"all".equals(category)) {
-            spec = spec.and((root, query, cb) -> cb.equal(root.join("category").get("name"), category));
+            if (!categoryService.existsByName(category)) {
+                throw new OfferValidationException("Invalid category: " + category);
+            }
+            spec = spec.and(filterByCategory(category));
         }
         if (!"all".equals(keyPhrase)) {
-            spec = spec.and((root, query, cb) -> {
-                String pattern = "%" + keyPhrase + "%";
-                return cb.or(
-                        cb.like(root.get("title"), pattern),
-                        cb.like(root.get("description"), pattern),
-                        cb.like(root.join("user").get("firstName"), pattern),
-                        cb.like(root.join("user").get("lastName"), pattern)
-                );
-            });
+            spec = spec.and(filterByKeyPhrase(keyPhrase));
+        }
+        if (minPrice != null) {
+            spec = spec.and((root, query, cb) -> cb.greaterThanOrEqualTo(root.get("pricePerHour"), minPrice));
+        }
+        if (maxPrice != null) {
+            spec = spec.and((root, query, cb) -> cb.lessThanOrEqualTo(root.get("pricePerHour"), maxPrice));
         }
 
         Page<Offer> pagedData = repository.findAll(spec, pageRequest);
 
         List<OfferFilterResponseDto> offerDtos = pagedData.getContent().stream()
-                .map(offer -> mappingService.mapEntityToFilterResponseDto(offer)) // Маппинг Offer -> OfferFilterResponseDto
+                .map(mappingService::mapEntityToFilterResponseDto)
                 .collect(Collectors.toList());
 
         return new PageImpl<>(offerDtos, pageRequest, pagedData.getTotalElements());
     }
-
 
     /**
      * Базовая спецификация, фильтрующая только активные записи
@@ -145,6 +154,16 @@ public class OfferServiceImpl implements OfferService {
     }
 
     @Override
+    public Page<OfferFilterResponseDto> getActiveOffersByCity(String cityName, Pageable pageable) {
+        Page<Offer> offerPage = repository.findByCity(cityName, pageable);
+
+        if (offerPage.isEmpty()) {
+            throw new OfferNotFoundException("No active offers found in city: " + cityName);
+        }
+        return offerPage.map(mappingService::mapEntityToFilterResponseDto);
+    }
+
+    @Override
     public Offer getActiveOfferEntityById(Long id) {
         return repository.findById(id)
                 .filter(Offer::isActive)
@@ -173,7 +192,5 @@ public class OfferServiceImpl implements OfferService {
         }
         repository.deleteById(id);
     }
-
-
 }
 

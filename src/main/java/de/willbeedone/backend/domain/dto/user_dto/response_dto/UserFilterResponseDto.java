@@ -7,11 +7,13 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import lombok.*;
 
-@Schema(description = "A class that defines the User DTO for responses.")
+import java.util.Objects;
+
 @Getter
 @Setter
 @EqualsAndHashCode
 @NoArgsConstructor
+@Schema(description = "A class that defines the User DTO for responses.")
 public class UserFilterResponseDto {
 
 
@@ -32,7 +34,6 @@ public class UserFilterResponseDto {
 
     @Schema(description = "User's city")
     private LocationDto locationDto;
-
 
     @Override
     public String toString() {
