@@ -1,8 +1,11 @@
 package de.willbeedone.backend.security.sec_controller;
 
+import de.willbeedone.backend.domain.dto.user_dto.request_dto.UserEmailRequestDto;
+import de.willbeedone.backend.domain.dto.user_dto.request_dto.UserPasswordRequestDto;
 import de.willbeedone.backend.domain.dto.user_dto.request_dto.UserRequestDto;
 import de.willbeedone.backend.domain.dto.user_dto.response_dto.UserLoginResponseDto;
 import de.willbeedone.backend.domain.entity.User;
+import de.willbeedone.backend.exceptions.Response;
 import de.willbeedone.backend.exceptions.custom_exceptions.UserNotFoundException;
 import de.willbeedone.backend.security.sec_dto.RefreshRequestDto;
 import de.willbeedone.backend.security.sec_dto.TokenResponseDto;
@@ -12,10 +15,7 @@ import de.willbeedone.backend.service.mapping.UserMappingService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.security.auth.message.AuthException;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/auth")
@@ -51,10 +51,30 @@ public class AuthController {
             return userLoginResponseDto;
     }
 
+    @Operation(summary = "Request for password reset",
+            description = "Sends e-mail for password reset to user if he has forgotten his password.")
+    @PostMapping("/reset")
+    public Response forgotPassword(@RequestBody UserEmailRequestDto dto) throws AuthException {
+        userService.forgotPassword(dto);
+        return new Response("OK");
+    }
+
+    @Operation(summary = "Password reset",
+            description = "Resets user's password.")
+    @PostMapping("/reset/{code}")
+    public Response confirmRegistration(
+            @PathVariable String code,
+            @RequestBody UserPasswordRequestDto dto
+            ) {
+        userService.resetPassword(code, dto);
+        return new Response("OK");
+    }
+
     @Operation(summary = "Reset access token",
             description = "Generates and sends new access token when the previous one is expired.")
     @PostMapping("/refresh")
     public TokenResponseDto getNewAccessToken(@RequestBody RefreshRequestDto refreshRequest){
         return authService.getNewAccessToken(refreshRequest.getRefreshToken());
     }
+
 }

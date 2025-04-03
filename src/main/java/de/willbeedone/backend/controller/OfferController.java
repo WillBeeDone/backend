@@ -39,7 +39,6 @@ public class OfferController {
         return offerService.getAllActiveOffers();
     }
 
-
     @Operation(summary = "Getting all pageable active offers",
             description = "Returns all pageable active offers for the gallery. Default size - 9.")
     @GetMapping
