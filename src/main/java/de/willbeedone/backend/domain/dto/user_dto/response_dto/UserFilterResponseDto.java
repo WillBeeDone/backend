@@ -16,6 +16,7 @@ import java.util.Objects;
 @Schema(description = "A class that defines the User DTO for responses.")
 public class UserFilterResponseDto {
 
+
     @Pattern(
             regexp = "^[A-Z][a-zA-Z]{1,}$",
             message = "First name should start with a capital letter and contain only letters")

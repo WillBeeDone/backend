@@ -7,7 +7,6 @@ import de.willbeedone.backend.domain.entity.Category;
 import de.willbeedone.backend.domain.entity.Offer;
 import de.willbeedone.backend.exceptions.custom_exceptions.OfferNotFoundException;
 import de.willbeedone.backend.exceptions.custom_validation_exceptions.OfferValidationException;
-import de.willbeedone.backend.repository.CategoryRepository;
 import de.willbeedone.backend.repository.OfferRepository;
 import de.willbeedone.backend.service.interfaces.CategoryService;
 import de.willbeedone.backend.service.interfaces.OfferService;

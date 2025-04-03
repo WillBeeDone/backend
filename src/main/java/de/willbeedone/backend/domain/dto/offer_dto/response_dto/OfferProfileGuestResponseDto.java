@@ -21,7 +21,6 @@ import java.util.Set;
 @Schema(description = "A class that defines the Offer DTO for profile cards responses made by unauthorized users.")
 public class OfferProfileGuestResponseDto {
 
-    @NotNull
     @Schema(
             description = "Offer unique identifier",
             example = "1",
@@ -34,6 +33,7 @@ public class OfferProfileGuestResponseDto {
     @Schema(description = "Short offer description", example = "Super sexy plumber will fix your pipes.")
     private String title;
 
+    @NotNull
     @Schema(description = "Offer category")
     private CategoryDto categoryDto;
 
@@ -51,8 +51,6 @@ public class OfferProfileGuestResponseDto {
 
     @Schema(description = "The fields from User: first name, last name, location, profile picture")
     private UserFilterResponseDto userFilterResponseDto;
-
-
 
     @Override
     public String toString() {
