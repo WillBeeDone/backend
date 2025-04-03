@@ -5,6 +5,7 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -12,12 +13,12 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
-import java.util.Objects;
 import java.util.Set;
 
 @Entity
 @Getter
 @Setter
+@EqualsAndHashCode
 @NoArgsConstructor
 @Table(name = "user")
 public class User implements UserDetails {
@@ -76,32 +77,18 @@ public class User implements UserDetails {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Offer> offers;
 
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Favourite favourites;
+
     @Column(name = "active", nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
     private boolean active;
 
     @Column(name = "blocked", nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
     private boolean blocked;
 
-    public User(String email, String password) {
-        this.email = email;
-        this.password = password;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof User user)) return false;
-        return blocked == user.blocked && Objects.equals(id, user.id) && Objects.equals(firstName, user.firstName) && Objects.equals(lastName, user.lastName) && Objects.equals(email, user.email) && Objects.equals(password, user.password) && Objects.equals(phoneNumber, user.phoneNumber) && Objects.equals(location, user.location) && Objects.equals(profilePicture, user.profilePicture) && Objects.equals(roles, user.roles) && Objects.equals(offers, user.offers);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, firstName, lastName, email, password, phoneNumber, location, profilePicture, roles, offers, blocked);
-    }
-
     @Override
     public String toString() {
-        return String.format("User: id - %d, firstName - %s, lastName - %s, email - %s, phoneNumber - %s, location - %s, profilePicture - %s, roles - %s, offers - %s, active - %s, blocked - %s", id, firstName, lastName, email, phoneNumber, location, profilePicture, roles, offers, active ? "Yes" : "No", blocked ? "Yes" : "No");
+        return String.format("User: id - %d, firstName - %s, lastName - %s, email - %s, phoneNumber - %s, location - %s, profilePicture - %s, roles - %s, offers - %s, favourites - %s, active - %s, blocked - %s", id, firstName, lastName, email, phoneNumber, location, profilePicture, roles, offers, favourites, active ? "Yes" : "No", blocked ? "Yes" : "No");
     }
 
     @Override

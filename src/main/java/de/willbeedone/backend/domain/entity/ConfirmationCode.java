@@ -15,6 +15,7 @@ public class ConfirmationCode {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Setter(AccessLevel.NONE)
     @Column(name = "id")
     private Long id;
 
