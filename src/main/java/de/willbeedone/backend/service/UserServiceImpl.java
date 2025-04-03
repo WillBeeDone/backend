@@ -1,28 +1,27 @@
 package de.willbeedone.backend.service;
 
+import de.willbeedone.backend.domain.dto.offer_dto.response_dto.OfferFilterResponseDto;
 import de.willbeedone.backend.domain.dto.user_dto.request_dto.UserEmailRequestDto;
 import de.willbeedone.backend.domain.dto.user_dto.request_dto.UserForOfferRequestDto;
 import de.willbeedone.backend.domain.dto.user_dto.request_dto.UserPasswordRequestDto;
 import de.willbeedone.backend.domain.dto.user_dto.request_dto.UserRequestDto;
-import de.willbeedone.backend.domain.entity.ConfirmationCode;
-import de.willbeedone.backend.domain.entity.Location;
-import de.willbeedone.backend.domain.entity.ResetCode;
-import de.willbeedone.backend.domain.entity.User;
+import de.willbeedone.backend.domain.entity.*;
 import de.willbeedone.backend.exceptions.custom_exceptions.AlreadyExistException;
 import de.willbeedone.backend.exceptions.custom_exceptions.ConfirmationCodeIsInvalidException;
 import de.willbeedone.backend.exceptions.custom_exceptions.UserNotFoundException;
 import de.willbeedone.backend.exceptions.custom_validation_exceptions.UserValidationException;
-import de.willbeedone.backend.repository.ConfirmationCodeRepository;
-import de.willbeedone.backend.repository.LocationRepository;
-import de.willbeedone.backend.repository.ResetCodeRepository;
-import de.willbeedone.backend.repository.UserRepository;
+import de.willbeedone.backend.repository.*;
 import de.willbeedone.backend.service.interfaces.EmailService;
 import de.willbeedone.backend.service.interfaces.LocationService;
 import de.willbeedone.backend.service.interfaces.RoleService;
 import de.willbeedone.backend.service.interfaces.UserService;
+import de.willbeedone.backend.service.mapping.OfferMappingService;
 import de.willbeedone.backend.service.mapping.UserMappingService;
 import jakarta.security.auth.message.AuthException;
 import jakarta.transaction.Transactional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -37,22 +36,26 @@ import java.util.Set;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
+    private final OfferRepository offerRepository;
     private final ConfirmationCodeRepository confirmationCodeRepository;
     private final ResetCodeRepository resetCodeRepository;
     private final LocationService locationService;
     private final RoleService roleService;
     private final EmailService emailService;
-    private final UserMappingService mappingService;
+    private final UserMappingService userMappingService;
+    private final OfferMappingService offerMappingService;
     private final BCryptPasswordEncoder encoder;
 
-    public UserServiceImpl(UserRepository userRepository, LocationRepository locationRepository, ConfirmationCodeRepository codeRepository, ResetCodeRepository resetCodeRepository, LocationService locationService, RoleService roleService, EmailService emailService, UserMappingService mappingService, BCryptPasswordEncoder encoder) {
+    public UserServiceImpl(UserRepository userRepository, LocationRepository locationRepository, OfferRepository offerRepository, ConfirmationCodeRepository codeRepository, ResetCodeRepository resetCodeRepository, FavouriteRepository favouriteRepository, LocationService locationService, RoleService roleService, EmailService emailService, UserMappingService mappingService, UserMappingService userMappingService, OfferMappingService offerMappingService, BCryptPasswordEncoder encoder) {
         this.userRepository = userRepository;
+        this.offerRepository = offerRepository;
         this.confirmationCodeRepository = codeRepository;
         this.resetCodeRepository = resetCodeRepository;
+        this.userMappingService = userMappingService;
+        this.offerMappingService = offerMappingService;
         this.locationService = locationService;
         this.roleService = roleService;
         this.emailService = emailService;
-        this.mappingService = mappingService;
         this.encoder = encoder;
     }
 
@@ -76,15 +79,12 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User getActiveValidUserById(Long id) {
-        try {
-            return userRepository.findById(id)
-                    .filter(User::isActive)
-                    .filter(user -> !user.isBlocked())
-                    .orElseThrow(
-                            () -> new UserNotFoundException(id));
-        } catch (Exception e) {
-            throw new UserValidationException(e);
-        }
+        return userRepository.findById(id)
+                .filter(User::isActive)
+                .filter(user -> !user.isBlocked())
+                .orElseThrow(
+                        () -> new UserNotFoundException(id)
+                );
     }
 
     @Override
@@ -113,23 +113,85 @@ public class UserServiceImpl implements UserService {
         }
     }
 
+    //Почему getReferenceById?
+    //Скорее всего, код использует getReferenceById вместо getById, потому что:
+    //Эффективность: Он не сразу загружает объект из БД, а только когда он действительно понадобится.
+    //Оптимизация работы с Hibernate: Если тебе нужно просто сохранить связь (например, установить offer в Favourite),
+    // а поля Offer не используются, реальный запрос в БД может даже не выполняться.
+    //Современные версии Spring Data JPA (после 2.5) рекомендуют getReferenceById, и в некоторых местах он автоматически подставляется.
+    @Override
+    @Transactional
+    public void addOfferToFavourite(String email, Long offerId) {
+        User user = userRepository.findUserByEmail(email)
+                .orElseThrow(
+                        () -> new UserNotFoundException("User with email "  + email + " not found")
+                );
+        Offer offer = offerRepository.getReferenceById(offerId);
+        user.getFavourites().addOffer(offer);
+    }
+
+    @Override
+    @Transactional
+    public void removeOfferFromFavourite(String email, Long offerId) {
+        User user = userRepository.findUserByEmail(email)
+                .orElseThrow(
+                        () -> new UserNotFoundException("User with email "  + email + " not found")
+                );
+        user.getFavourites().removeOfferById(offerId);
+    }
+
+    @Override
+    public Page<OfferFilterResponseDto> getAllFavouriteOffersByUserId(String email, Pageable pageable) {
+        return offerRepository.findActiveFavouriteOffersByUserEmail(email, pageable)
+                .map(offerMappingService::mapEntityToFilterResponseDto);
+    }
+
+    @Override
+    public Page<OfferFilterResponseDto> getAllFavouriteFilteredOffersByUserId(String email, Pageable pageable, String cityName, String category, String keyPhrase) {
+
+        Page<Offer> pageOffers = offerRepository.findActiveFavouriteOffersByUserEmail(email, pageable);
+
+        List<OfferFilterResponseDto> offers = pageOffers
+                .stream()
+                .filter(offer -> offer == null || "all".equals(cityName) || offer.getUser().getLocation().getCityName().equals(cityName))
+                .filter(offer -> offer == null || "all".equals(category) || offer.getCategory().getName().equals(category))
+                .filter(offer -> offer == null || "all".equals(keyPhrase) || offer.getUser().getFirstName().contains(keyPhrase) || offer.getUser().getLastName().contains(keyPhrase) || offer.getTitle().contains(keyPhrase) || offer.getDescription().contains(keyPhrase))
+                .map(offerMappingService::mapEntityToFilterResponseDto)
+                .toList();
+
+        return new PageImpl<>(offers, pageable, pageOffers.getTotalElements());
+    }
+
+    @Override
+    @Transactional
+    public void removeAllOffersFromFavourite(String email) {
+        User user = userRepository.findUserByEmail(email)
+                .orElseThrow(
+                        () -> new UserNotFoundException("User with email "  + email + " not found")
+                );
+        user.getFavourites().clear();
+    }
+
     @Override
     @Transactional
     public Long register(UserRequestDto dto) {
-        if(userRepository.findUserByEmail(dto.getEmail()).isPresent()) {
+        if (userRepository.findUserByEmail(dto.getEmail()).isPresent()) {
             throw new AlreadyExistException(dto.getEmail());
         }
 
-            User user = mappingService.mapRequestDtoToEntity(dto);
-            user.setRoles(Set.of(roleService.getRoleUser()));
-            user.setPassword(encoder.encode(dto.getPassword()));
+        User userEntity = userMappingService.mapRequestDtoToEntity(dto);
+        userEntity.setRoles(Set.of(roleService.getRoleUser()));
+        userEntity.setPassword(encoder.encode(dto.getPassword()));
 
-            userRepository.save(user);
+        Favourite favourites = new Favourite();
+        favourites.setUser(userEntity);
+        userEntity.setFavourites(favourites);
 
-            emailService.sendConfirmationEmail(user);
+        userRepository.save(userEntity);
 
-            return user.getId();
+        emailService.sendConfirmationEmail(userEntity);
 
+        return userEntity.getId();
     }
 
     @Override

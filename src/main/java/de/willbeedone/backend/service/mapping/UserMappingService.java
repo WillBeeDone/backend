@@ -18,6 +18,7 @@ public interface UserMappingService {
     @Mapping(target = "profilePicture", ignore = true)
     @Mapping(target = "offers", ignore = true)
     @Mapping(target = "roles", ignore = true)
+    @Mapping(target = "favourites", ignore = true)
     @Mapping(target = "blocked", constant = "false")
     @Mapping(target = "active", constant = "false")
     User mapRequestDtoToEntity(UserRequestDto dto);

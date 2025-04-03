@@ -1,10 +1,10 @@
 package de.willbeedone.backend.repository;
-import de.willbeedone.backend.domain.dto.offer_dto.response_dto.OfferFilterResponseDto;
+
+import de.willbeedone.backend.domain.entity.Category;
+import de.willbeedone.backend.domain.entity.User;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
-import de.willbeedone.backend.domain.entity.Category;
 import de.willbeedone.backend.domain.entity.Offer;
-import de.willbeedone.backend.domain.entity.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -13,7 +13,6 @@ import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 import java.util.Optional;
-
 
 public interface OfferRepository extends JpaRepository<Offer, Long>, JpaSpecificationExecutor<Offer>  {
 
@@ -31,7 +30,9 @@ public interface OfferRepository extends JpaRepository<Offer, Long>, JpaSpecific
     @Query("SELECT o FROM Offer o WHERE o.active = true ORDER BY o.pricePerHour ASC")
     Page<Offer> findActiveOffers(Pageable pageable);
 
-    @Query("from Offer ")
-    List<Offer> findAllOffersByPageRequest(PageRequest pageRequest);
+    @Query("SELECT o FROM Offer o, Favourite f WHERE o MEMBER OF f.offers AND f.user.email = :userEmail AND o.active = true ORDER BY o.pricePerHour ASC")
+    Page<Offer> findActiveFavouriteOffersByUserEmail(@Param("userEmail") String userEmail, Pageable pageable);
 
+    @Query("from Offer")
+    List<Offer> findAllOffersByPageRequest(PageRequest pageRequest);
 }
