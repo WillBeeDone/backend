@@ -1,9 +1,11 @@
 package de.willbeedone.backend.controller;
 
+import de.willbeedone.backend.domain.dto.offer_dto.request_dto.OfferRequestDto;
 import de.willbeedone.backend.domain.dto.offer_dto.response_dto.OfferFilterResponseDto;
 import de.willbeedone.backend.domain.dto.offer_dto.response_dto.OfferProfileGuestResponseDto;
 import de.willbeedone.backend.domain.entity.Offer;
 import de.willbeedone.backend.service.interfaces.OfferService;
+import de.willbeedone.backend.service.interfaces.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -14,6 +16,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
@@ -27,9 +31,11 @@ public class OfferController {
 
     @Autowired
     private final OfferService offerService;
+    private final UserService userService;
 
-    public OfferController(OfferService offerService) {
+    public OfferController(OfferService offerService, UserService userService) {
         this.offerService = offerService;
+        this.userService = userService;
     }
 
     @Operation(summary = "Getting all active offers",
@@ -100,6 +106,18 @@ public class OfferController {
     @DeleteMapping("/{id}")
     public void deleteOfferById(@PathVariable Long id) {
         offerService.deleteOfferById(id);
+    }
+
+    @PostMapping("/user/{userId}/add-offer")
+    public ResponseEntity<Offer> addOfferToUser(@PathVariable Long userId, @RequestBody OfferRequestDto request) {
+        Offer createdOffer = offerService.addOfferToUser(userId, request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdOffer);
+    }
+
+    @GetMapping("/user/{userId}/offers")
+    public ResponseEntity<List<Offer>> getUserOffers(@PathVariable Long userId) {
+        List<Offer> offers = userService.getUserOffers(userId);
+        return ResponseEntity.ok(offers);
     }
 
 }
