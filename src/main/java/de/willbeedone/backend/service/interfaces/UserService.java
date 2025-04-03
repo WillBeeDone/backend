@@ -31,9 +31,9 @@ public interface UserService extends UserDetailsService {
 
     void removeOfferFromFavourite(String email, Long offerId);
 
-    Page<OfferFilterResponseDto> getAllFavouriteOffersByUserId(String email, Pageable pageable);
+    Page<OfferFilterResponseDto> getAllFavouriteOffers(String email, Pageable pageable);
 
-    Page<OfferFilterResponseDto> getAllFavouriteFilteredOffersByUserId(String email, Pageable pageable, String cityName, String category, String keyPhrase);
+    Page<OfferFilterResponseDto> getAllFavouriteFilteredOffers(String email, Pageable pageable, String cityName, String category, String keyPhrase);
 
     void removeAllOffersFromFavourite(String email);
 
