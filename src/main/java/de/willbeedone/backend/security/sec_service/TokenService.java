@@ -94,6 +94,13 @@ public class TokenService {
                 .getPayload();
     }
 
+    //Method for extracting e-mail from token
+    public String extractEmailFromToken(String jwt) {
+        String token = jwt.substring(7);
+        Claims claims = getAccessClaims(token);
+        return claims.getSubject();
+    }
+
     public AuthInfo mapClaimsToAuthInfo(Claims claims) {
         String email = claims.getSubject();
         List<LinkedHashMap<String, String>> rolesList =

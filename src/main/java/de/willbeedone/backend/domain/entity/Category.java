@@ -17,20 +17,20 @@ import java.util.Objects;
 @Table(name = "category")
 public class Category {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Setter(AccessLevel.NONE)
-    @Column(name = "id")
-    private Long id;
+        @Id
+        @GeneratedValue(strategy = GenerationType.IDENTITY)
+        @Setter(AccessLevel.NONE)
+        @Column(name = "id")
+        private Long id;
 
-    @NotBlank
-    @Column(name = "name")
-    @Pattern(regexp = "^[A-Za-zА-Яа-я0-9\\s-]{3,50}$", message = "Name must be between 3 and 50 characters and contain only letters, numbers, spaces, or hyphens")
-    private String name;
+        @NotBlank
+        @Column(name = "name")
+        @Pattern(regexp = "^[A-Za-zА-Яа-я0-9\\s-]{3,50}$", message = "Name must be between 3 and 50 characters and contain only letters, numbers, spaces, or hyphens")
+        private String name;
 
-    @JsonIgnore
-    @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Offer> offers = new ArrayList<>();
+        @JsonIgnore
+        @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, orphanRemoval = true)
+        private List<Offer> offers = new ArrayList<>();
 
     @Override
     public boolean equals(Object o) {
