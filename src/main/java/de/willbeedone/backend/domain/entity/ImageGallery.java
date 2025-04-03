@@ -9,6 +9,7 @@ import lombok.*;
 import java.util.Objects;
 
 @Entity
+@EqualsAndHashCode
 @NoArgsConstructor
 @Getter
 @Setter
@@ -29,22 +30,9 @@ public class ImageGallery {
     )
     private String imageUrl;
 
-    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "offer_id")
     private Offer offer;
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof ImageGallery that)) return false;
-        return Objects.equals(id, that.id) && Objects.equals(imageUrl, that.imageUrl) && Objects.equals(offer, that.offer);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, imageUrl, offer);
-    }
 
     @Override
     public String toString() {

@@ -9,7 +9,7 @@ spring:
 #    password: sql77777
 
   datasource:
-    url: ${LDB_DATABASE}//${LDB_HOST}:${LDB_PORT}/${LDB_NAME}
+    url: jdbc:mysql://${LDB_HOST}:${LDB_PORT}/${LDB_NAME}
     driver-class-name: com.mysql.cj.jdbc.Driver
     username: ${LDB_USERNAME}
     password: ${LDB_PASSWORD}
