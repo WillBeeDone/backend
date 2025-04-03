@@ -14,27 +14,25 @@ import lombok.*;
 @NoArgsConstructor
 public class UserFilterResponseDto {
 
-    @NotBlank
+
     @Pattern(
             regexp = "^[A-Z][a-zA-Z]{1,}$",
             message = "First name should start with a capital letter and contain only letters")
     @Schema(description = "User's first name", example = "John")
     private String firstName;
 
-    @NotBlank
     @Pattern(
             regexp = "^[A-Z][a-zA-Z]{1,}$",
             message = "Last name should start with a capital letter and contain only letters")
     @Schema(description = "User's last name", example = "Doe")
     private String lastName;
 
-    @NotBlank
     @Schema(description = "User's profile photo")
     private String profilePicture;
 
-    @NotNull
     @Schema(description = "User's city")
     private LocationDto locationDto;
+
 
     @Override
     public String toString() {

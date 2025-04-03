@@ -19,7 +19,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
-
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
@@ -140,8 +139,8 @@ public class OfferServiceImpl implements OfferService {
     }
 
     @Override
-    public OfferProfileGuestResponseDto getActiveOfferById(Long id) {
-        return mappingService.mapEntityToProfileGuestResponseDto(getActiveOfferEntityById(id));
+    public  Optional<OfferProfileGuestResponseDto> getActiveOfferById(Long id) {
+        return Optional.ofNullable(mappingService.mapEntityToProfileGuestResponseDto(getActiveOfferEntityById(id)));
 
     }
 
