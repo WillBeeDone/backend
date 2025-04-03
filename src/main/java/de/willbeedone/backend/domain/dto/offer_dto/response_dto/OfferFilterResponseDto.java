@@ -2,7 +2,11 @@ package de.willbeedone.backend.domain.dto.offer_dto.response_dto;
 
 import de.willbeedone.backend.domain.dto.category_dto.CategoryDto;
 import de.willbeedone.backend.domain.dto.user_dto.response_dto.UserFilterResponseDto;
+import de.willbeedone.backend.domain.entity.Category;
+import de.willbeedone.backend.domain.entity.ImageGallery;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.OneToMany;
 import lombok.*;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotBlank;
@@ -11,10 +15,12 @@ import jakarta.validation.constraints.Size;
 
 import java.math.BigDecimal;
 import java.util.Objects;
+import java.util.Set;
 
 @Schema(description = "A class that defines the Offer DTO for filtering responses (Category, Location, Search field) in the offers gallery on the Home Page.")
 @Getter
 @Setter
+@EqualsAndHashCode
 @NoArgsConstructor
 public class OfferFilterResponseDto {
 
@@ -31,7 +37,6 @@ public class OfferFilterResponseDto {
     @Schema(description = "Short offer description", example = "Super sexy plumber will fix your pipes.")
     private String title;
 
-    @NotNull
     @Schema(description = "Offer category")
     private CategoryDto categoryDto;
 
@@ -44,20 +49,12 @@ public class OfferFilterResponseDto {
     @Schema(description = "Offer detailed description")
     private String description;
 
+    @Schema(description = "Photo gallery of work results")
+    private Set<ImageGallery> images;
+
     @Schema(description = "The fields from User: first name, last name, location, profile picture")
     private UserFilterResponseDto userFilterResponseDto;
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof OfferFilterResponseDto that)) return false;
-        return Objects.equals(id, that.id) && Objects.equals(title, that.title) && Objects.equals(categoryDto, that.categoryDto) && Objects.equals(pricePerHour, that.pricePerHour) && Objects.equals(description, that.description) && Objects.equals(userFilterResponseDto, that.userFilterResponseDto);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, title, categoryDto, pricePerHour, description, userFilterResponseDto);
-    }
 
     @Override
     public String toString() {

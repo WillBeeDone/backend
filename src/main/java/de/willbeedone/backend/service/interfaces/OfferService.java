@@ -23,7 +23,7 @@ public interface OfferService {
 
     Optional<List<OfferFilterResponseDto>> getOfferByTitle(String title);
 
-    OfferProfileGuestResponseDto getActiveOfferById(Long id);
+    Optional<OfferProfileGuestResponseDto> getActiveOfferById(Long id);
 
     Offer getActiveOfferEntityById(Long id);
 

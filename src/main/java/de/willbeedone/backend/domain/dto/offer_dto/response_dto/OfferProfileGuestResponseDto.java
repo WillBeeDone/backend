@@ -17,10 +17,10 @@ import java.util.Set;
 @Getter
 @Setter
 @NoArgsConstructor
+@EqualsAndHashCode
 @Schema(description = "A class that defines the Offer DTO for profile cards responses made by unauthorized users.")
 public class OfferProfileGuestResponseDto {
 
-    @NotNull
     @Schema(
             description = "Offer unique identifier",
             example = "1",
@@ -33,7 +33,6 @@ public class OfferProfileGuestResponseDto {
     @Schema(description = "Short offer description", example = "Super sexy plumber will fix your pipes.")
     private String title;
 
-    @NotNull
     @Schema(description = "Offer category")
     private CategoryDto categoryDto;
 
@@ -51,18 +50,6 @@ public class OfferProfileGuestResponseDto {
 
     @Schema(description = "The fields from User: first name, last name, location, profile picture")
     private UserFilterResponseDto userFilterResponseDto;
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof OfferProfileGuestResponseDto that)) return false;
-        return Objects.equals(id, that.id) && Objects.equals(title, that.title) && Objects.equals(categoryDto, that.categoryDto) && Objects.equals(pricePerHour, that.pricePerHour) && Objects.equals(description, that.description) && Objects.equals(images, that.images) && Objects.equals(userFilterResponseDto, that.userFilterResponseDto);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, title, categoryDto, pricePerHour, description, images, userFilterResponseDto);
-    }
 
     @Override
     public String toString() {

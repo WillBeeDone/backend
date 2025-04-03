@@ -13,6 +13,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/offers")
@@ -47,7 +48,7 @@ public class OfferController {
     @Operation(summary = "Getting offer by id",
             description = "Returns precise offer by id for its profile card.")
     @GetMapping("/{id}")
-    public OfferProfileGuestResponseDto getActiveOfferByIdGuest(
+    public Optional<OfferProfileGuestResponseDto> getActiveOfferByIdGuest(
             @Parameter(description = "Offer unique identifier", example = "1")
             @PathVariable Long id) {
         return offerService.getActiveOfferById(id);
