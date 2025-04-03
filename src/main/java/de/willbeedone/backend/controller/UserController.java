@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -29,8 +30,9 @@ public class UserController {
 
     @Operation(summary = "Get all pageable favourite active offers",
             description = "Returns all pageable favourite active offers for user by his id. Returns filtrated if it's needed. Default size - 9.")
+    @PreAuthorize("hasAuthority('ROLE_USER')")
     @GetMapping("/favourites")
-    public Page<OfferFilterResponseDto> getAllFavouriteOffersByUserId(
+    public Page<OfferFilterResponseDto> getAllFavouriteOffers(
             @RequestHeader("Authorization") String token,
 
             @Parameter(description = "Starting page number", example = "0")
@@ -54,14 +56,15 @@ public class UserController {
 
         if (!"all".equals(cityName) || !"all".equals(category) || !"all".equals(keyPhrase)
         ) {
-            return userService.getAllFavouriteFilteredOffersByUserId(email, pageable, cityName, category, keyPhrase);
+            return userService.getAllFavouriteFilteredOffers(email, pageable, cityName, category, keyPhrase);
         }
 
-        return userService.getAllFavouriteOffersByUserId(email, pageable);
+        return userService.getAllFavouriteOffers(email, pageable);
     }
 
     @Operation(summary = "Add offer to favourites",
             description = "Adds offer to user's favourites. Finds exact offer by its id.")
+    @PreAuthorize("hasAuthority('ROLE_USER')")
     @PutMapping("/favourites/{offerId}")
     public Response addOfferToFavourite(
             @RequestHeader("Authorization") String token,
@@ -76,6 +79,7 @@ public class UserController {
 
     @Operation(summary = "Delete offer from favourites",
             description = "Deletes offer from user's favourites. Finds exact offer and user by their id.")
+    @PreAuthorize("hasAuthority('ROLE_USER')")
     @DeleteMapping("/favourites/{offerId}")
     public Response deleteOfferFromFavourite(
             @RequestHeader("Authorization") String token,
@@ -90,6 +94,7 @@ public class UserController {
 
     @Operation(summary = "Clear favourites",
             description = "Deletes all offers from user's favourites. Finds exact user by id.")
+    @PreAuthorize("hasAuthority('ROLE_USER')")
     @DeleteMapping("/favourites")
     public Response clearAllFromFavourite(
             @RequestHeader("Authorization") String token
