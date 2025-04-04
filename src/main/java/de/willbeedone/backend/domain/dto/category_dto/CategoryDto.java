@@ -1,6 +1,7 @@
 package de.willbeedone.backend.domain.dto.category_dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -15,6 +16,7 @@ import lombok.Setter;
 @EqualsAndHashCode
 public class CategoryDto {
 
+    @NotBlank
     @Schema(description = "Offer category", example = "Plumber")
     @Pattern(regexp = "^[A-Za-zА-Яа-я0-9\\s-]{3,50}$", message = "Name must be between 3 and 50 characters and contain only letters, numbers, spaces, or hyphens")
     private String name;
