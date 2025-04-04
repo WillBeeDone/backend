@@ -1,8 +1,11 @@
 package de.willbeedone.backend.controller;
 
 import de.willbeedone.backend.domain.dto.offer_dto.response_dto.OfferFilterResponseDto;
+import de.willbeedone.backend.domain.dto.user_dto.request_dto.UserForOfferRequestDto;
+import de.willbeedone.backend.domain.dto.user_dto.response_dto.UserProfileResponseDto;
 import de.willbeedone.backend.exceptions.Response;
 import de.willbeedone.backend.security.sec_service.TokenService;
+import de.willbeedone.backend.service.interfaces.OfferService;
 import de.willbeedone.backend.service.interfaces.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -21,10 +24,14 @@ public class UserController {
 
     @Autowired
     private final UserService userService;
+    @Autowired
+    private final OfferService offerService;
+    @Autowired
     private final TokenService tokenService;
 
-    public UserController(UserService userService, TokenService tokenService) {
+    public UserController(UserService userService, OfferService offerService, TokenService tokenService) {
         this.userService = userService;
+        this.offerService = offerService;
         this.tokenService = tokenService;
     }
 
@@ -101,6 +108,42 @@ public class UserController {
     ) {
         String email = tokenService.extractEmailFromToken(token);
         userService.removeAllOffersFromFavourite(email);
+        return new Response("OK");
+    }
+
+    @Operation(summary = "Update user's profile",
+            description = "Updates user's profile, filling all missing fields.")
+    @PreAuthorize("hasAuthority('ROLE_USER')")
+    @GetMapping
+    public UserProfileResponseDto getUserProfile(
+            @RequestHeader("Authorization") String token
+    ) {
+        String email = tokenService.extractEmailFromToken(token);
+        return userService.getUserProfile(email);
+    }
+
+    @Operation(summary = "Update user's profile",
+            description = "Updates user's profile, filling all missing fields.")
+    @PreAuthorize("hasAuthority('ROLE_USER')")
+    @PutMapping
+    public Response updateUserProfileForOffer(
+            @RequestHeader("Authorization") String token,
+            @RequestBody UserForOfferRequestDto userDto
+            ) {
+        String email = tokenService.extractEmailFromToken(token);
+        userService.updateUser(userDto, email);
+        return new Response("OK");
+    }
+
+    @Operation(summary = "Add new offer",
+            description = "Adds new user's offer.")
+    @PreAuthorize("hasAuthority('ROLE_USER')")
+    @PostMapping("/offers")
+    public Response addNewOffer(
+            @RequestHeader("Authorization") String token
+    ) {
+        String email = tokenService.extractEmailFromToken(token);
+        //offerService.addNewOffer();
         return new Response("OK");
     }
 

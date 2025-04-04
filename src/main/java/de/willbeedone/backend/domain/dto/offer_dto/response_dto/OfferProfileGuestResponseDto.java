@@ -41,6 +41,7 @@ public class OfferProfileGuestResponseDto {
     @Schema(description = "Price per hour", example = "65.00")
     private BigDecimal pricePerHour;
 
+    @NotBlank(message = "Description cannot be empty")
     @Size(min = 10, max = 1000, message = "Description must be between 10 and 1000 characters")
     @Schema(description = "Offer detailed description")
     private String description;
@@ -48,6 +49,7 @@ public class OfferProfileGuestResponseDto {
     @Schema(description = "Photo gallery of work results")
     private Set<ImageGallery> images;
 
+    @NotNull
     @Schema(description = "The fields from User: first name, last name, location, profile picture")
     private UserFilterResponseDto userFilterResponseDto;
 

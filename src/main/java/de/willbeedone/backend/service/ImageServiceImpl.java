@@ -10,7 +10,7 @@ import de.willbeedone.backend.domain.entity.Offer;
 import de.willbeedone.backend.exceptions.custom_exceptions.ImageUploadException;
 import de.willbeedone.backend.exceptions.custom_exceptions.OfferNotFoundException;
 import de.willbeedone.backend.repository.OfferRepository;
-import de.willbeedone.backend.service.interfaces.ImageGalleryService;
+import de.willbeedone.backend.service.interfaces.ImageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
@@ -20,7 +20,7 @@ import java.io.IOException;
 import java.util.UUID;
 
 @Service
-public class ImageGalleryServiceImpl implements ImageGalleryService {
+public class ImageServiceImpl implements ImageService {
 
     @Autowired
     private final AmazonS3 client;
@@ -29,9 +29,9 @@ public class ImageGalleryServiceImpl implements ImageGalleryService {
 
     @Autowired
     @Lazy
-    private ImageGalleryServiceImpl self;
+    private ImageServiceImpl self;
 
-    public ImageGalleryServiceImpl(AmazonS3 client, OfferRepository repository, OfferServiceImpl offerService) {
+    public ImageServiceImpl(AmazonS3 client, OfferRepository repository, OfferServiceImpl offerService) {
         this.client = client;
         this.repository = repository;
         this.offerService = offerService;

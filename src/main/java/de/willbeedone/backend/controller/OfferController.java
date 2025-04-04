@@ -86,8 +86,11 @@ public class OfferController {
 
             @Parameter(description = "Key phrase from searching field", example = "Plumber with beard")
             @RequestParam(required = false, defaultValue = "all") String keyPhrase,
+
             @RequestParam(required = false) @DecimalMin(value = "0.01", message = "Price must be greater than 0") BigDecimal minPrice,
+
             @RequestParam(required = false) @DecimalMin(value = "0.01", message = "Price must be greater than 0") BigDecimal maxPrice,
+
             @RequestParam(required = false, defaultValue = "9") int size,
             @RequestParam(required = false, defaultValue = "0") int page,
             @RequestParam(required = false, defaultValue = "price,asc") String sort  // Новый параметр сортировки
@@ -99,7 +102,6 @@ public class OfferController {
 
         return offerService.getFilteredOffers(cityName, category, keyPhrase, minPrice, maxPrice, pageRequest);
     }
-
 
     @Operation(summary = "Delete an offer by id",
             description = "Deletes an offer by its unique identifier.")

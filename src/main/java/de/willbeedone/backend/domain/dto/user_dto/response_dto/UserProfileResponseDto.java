@@ -1,28 +1,21 @@
 package de.willbeedone.backend.domain.dto.user_dto.response_dto;
 
 import de.willbeedone.backend.domain.dto.location_dto.LocationDto;
-import de.willbeedone.backend.domain.entity.Role;
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import lombok.*;
 
-import java.util.Set;
-
-@Schema(description = "A class that defines the User DTO for registration responses.")
+@Schema(description = "A class that defines the User DTO for his profile responses.")
 @Getter
 @Setter
 @EqualsAndHashCode
 @NoArgsConstructor
-public class UserLoginResponseDto {
+public class UserProfileResponseDto {
 
-    @NotNull
-    @Schema(
-            description = "User's unique identifier",
-            example = "1",
-            accessMode = Schema.AccessMode.READ_ONLY
-    )
-    private Long id;
-
+    @NotBlank
     @Pattern(
             regexp = "^[A-Z][a-zA-Z]{1,}$",
             message = "First name should start with a capital letter and contain only letters"
@@ -30,6 +23,7 @@ public class UserLoginResponseDto {
     @Schema(description = "User's first name", example = "John")
     private String firstName;
 
+    @NotBlank
     @Pattern(
             regexp = "^[A-Z][a-zA-Z]{1,}$",
             message = "Last name should start with a capital letter and contain only letters"
@@ -42,6 +36,7 @@ public class UserLoginResponseDto {
     @Schema(description = "User's e-mail", example = "john@gmail.com")
     private String email;
 
+    @NotBlank
     @Pattern(
             regexp = "^\\+?[0-9]{7,15}$",
             message = "Phone number should contain only digits and can start with +"
@@ -49,32 +44,17 @@ public class UserLoginResponseDto {
     @Schema(description = "User's phone number")
     private String phoneNumber;
 
+    @NotNull
     @Schema(description = "User's city")
     private LocationDto locationDto;
 
+    @NotBlank
     @Schema(description = "User's profile photo")
     private String profilePicture;
 
-    @Schema(description = "List of user's roles")
-    private Set<Role> roles;
-
-    @NotBlank
-    @Schema(description = "User's activity status")
-    private boolean active;
-
-    @NotBlank
-    @Schema(description = "User's block status")
-    private boolean blocked;
-
-    @Schema(description = "User's access token")
-    private String accessToken;
-
-    @Schema(description = "User's refresh token")
-    private String refreshToken;
-
     @Override
     public String toString() {
-        return String.format("UserLoginResponseDto: id - %d, firstName - %s, lastName - %s, email - %s, phoneNumber - %s, locationDto - %s, profilePicture - %s, roles - %s, active - %s, blocked - %s", id, firstName, lastName, email, phoneNumber, locationDto, profilePicture, roles, active ? "Yes" : "No", blocked ? "Yes" : "No");
+        return String.format("UserProfileResponseDto: firstName - %s, lastName - %s, email - %s, phoneNumber - %s, locationDto - %s, profilePicture - %s", firstName, lastName, email, phoneNumber, locationDto, profilePicture);
     }
 
 }

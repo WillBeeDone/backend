@@ -3,6 +3,7 @@ package de.willbeedone.backend.service.mapping;
 import de.willbeedone.backend.domain.dto.user_dto.request_dto.UserRequestDto;
 import de.willbeedone.backend.domain.dto.user_dto.response_dto.UserFilterResponseDto;
 import de.willbeedone.backend.domain.dto.user_dto.response_dto.UserLoginResponseDto;
+import de.willbeedone.backend.domain.dto.user_dto.response_dto.UserProfileResponseDto;
 import de.willbeedone.backend.domain.entity.User;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -28,5 +29,8 @@ public interface UserMappingService {
 
     @Mapping(source = "location", target = "locationDto")
     UserLoginResponseDto mapEntityToLoginResponseDto(User entity);
+
+    @Mapping(source = "location", target = "locationDto")
+    UserProfileResponseDto mapEntityToProfileResponseDto(User entity);
 
 }
