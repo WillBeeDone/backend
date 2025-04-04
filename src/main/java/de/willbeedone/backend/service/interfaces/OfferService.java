@@ -14,6 +14,7 @@ import java.util.Optional;
 
 public interface OfferService {
 
+    Offer addOfferToUser(Long userId, OfferRequestDto request);
     Offer addNewOffer(OfferRequestDto request);
 
     Page<OfferFilterResponseDto> getActiveOffersByCity(String cityName, Pageable pageable);

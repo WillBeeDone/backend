@@ -1,12 +1,8 @@
 package de.willbeedone.backend.domain.dto.category_dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import jakarta.validation.constraints.*;
+import lombok.*;
 
 
 @Schema(description = "A class that defines the Category DTO for requests and responses.")

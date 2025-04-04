@@ -5,10 +5,13 @@ import de.willbeedone.backend.domain.dto.offer_dto.response_dto.OfferFilterRespo
 import de.willbeedone.backend.domain.dto.offer_dto.response_dto.OfferProfileGuestResponseDto;
 import de.willbeedone.backend.domain.entity.Category;
 import de.willbeedone.backend.domain.entity.Offer;
+import de.willbeedone.backend.domain.entity.User;
 import de.willbeedone.backend.exceptions.custom_exceptions.OfferNotFoundException;
+import de.willbeedone.backend.exceptions.custom_exceptions.UserNotFoundException;
 import de.willbeedone.backend.exceptions.custom_validation_exceptions.OfferValidationException;
 import de.willbeedone.backend.repository.CategoryRepository;
 import de.willbeedone.backend.repository.OfferRepository;
+import de.willbeedone.backend.repository.UserRepository;
 import de.willbeedone.backend.service.interfaces.CategoryService;
 import de.willbeedone.backend.service.interfaces.OfferService;
 import de.willbeedone.backend.service.mapping.OfferMappingService;
@@ -35,12 +38,31 @@ public class OfferServiceImpl implements OfferService {
     private final CategoryService categoryService;
     private final OfferMappingService mappingService;
     private final CategoryRepository categoryRepository;
+    private final UserRepository userRepository;
 
-    public OfferServiceImpl(OfferRepository repository, CategoryService categoryService, OfferMappingService mappingService, CategoryRepository categoryRepository) {
+    public OfferServiceImpl(OfferRepository repository, CategoryService categoryService, OfferMappingService mappingService, CategoryRepository categoryRepository, UserRepository userRepository) {
         this.repository = repository;
         this.categoryService = categoryService;
         this.mappingService = mappingService;
         this.categoryRepository = categoryRepository;
+        this.userRepository = userRepository;
+    }
+
+    @Override
+    public Offer addOfferToUser(Long userId, OfferRequestDto request) {
+        try {
+            User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
+
+            Category category = categoryService.getCategoryByName(request.getCategoryDto().getName());
+            Offer newOffer = mappingService.mapRequestDtoToEntity(request);
+
+            newOffer.setCategory(category);
+            newOffer.setUser(user);
+
+            return repository.save(newOffer);
+        } catch (DataIntegrityViolationException e) {
+            throw new OfferValidationException(e);
+        }
     }
 
     @Override

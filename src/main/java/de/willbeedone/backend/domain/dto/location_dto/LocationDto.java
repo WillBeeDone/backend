@@ -1,9 +1,7 @@
 package de.willbeedone.backend.domain.dto.location_dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import lombok.*;
 
 @Schema(description = "A class that defines the Location DTO for requests and responses.")

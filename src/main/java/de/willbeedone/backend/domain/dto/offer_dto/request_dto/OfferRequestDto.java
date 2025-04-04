@@ -4,10 +4,7 @@ import de.willbeedone.backend.domain.dto.category_dto.CategoryDto;
 import de.willbeedone.backend.domain.entity.ImageGallery;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
-import jakarta.validation.constraints.DecimalMin;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 
 import java.math.BigDecimal;
 import java.util.Set;
