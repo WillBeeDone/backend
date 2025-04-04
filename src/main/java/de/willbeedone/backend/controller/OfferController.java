@@ -2,7 +2,6 @@ package de.willbeedone.backend.controller;
 
 import de.willbeedone.backend.domain.dto.offer_dto.response_dto.OfferFilterResponseDto;
 import de.willbeedone.backend.domain.dto.offer_dto.response_dto.OfferProfileGuestResponseDto;
-import de.willbeedone.backend.domain.entity.Offer;
 import de.willbeedone.backend.service.interfaces.OfferService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -93,7 +92,6 @@ public class OfferController {
 
         return offerService.getFilteredOffers(cityName, category, keyPhrase, minPrice, maxPrice, pageRequest);
     }
-
 
     @Operation(summary = "Delete an offer by id",
             description = "Deletes an offer by its unique identifier.")
