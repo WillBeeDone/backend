@@ -1,22 +1,8 @@
 package de.willbeedone.backend.domain.dto.offer_dto.response_dto;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import de.willbeedone.backend.domain.dto.category_dto.CategoryDto;
 import de.willbeedone.backend.domain.dto.user_dto.response_dto.UserFilterResponseDto;
-import de.willbeedone.backend.domain.entity.User;
-import de.willbeedone.backend.domain.entity.Category;
-import de.willbeedone.backend.domain.entity.ImageGallery;
-import de.willbeedone.backend.domain.entity.Category;
 import de.willbeedone.backend.domain.entity.ImageGallery;
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.OneToMany;
 import lombok.*;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotBlank;
@@ -24,7 +10,6 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 import java.math.BigDecimal;
-import java.util.Objects;
 import java.util.Set;
 
 @Schema(description = "A class that defines the Offer DTO for filtering responses (Category, Location, Search field) in the offers gallery on the Home Page.")
@@ -34,7 +19,6 @@ import java.util.Set;
 @NoArgsConstructor
 public class OfferFilterResponseDto {
 
-    @NotNull
     @Schema(
             description = "Offer unique identifier",
             example = "1",

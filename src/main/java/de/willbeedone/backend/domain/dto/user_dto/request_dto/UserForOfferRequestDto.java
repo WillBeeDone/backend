@@ -6,6 +6,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import lombok.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @Getter
 @Setter
@@ -43,7 +44,7 @@ public class UserForOfferRequestDto {
 
     @NotBlank
     @Schema(description = "User's profile photo")
-    private String profilePicture;
+    private MultipartFile profilePicture;
 
     @Override
     public String toString() {

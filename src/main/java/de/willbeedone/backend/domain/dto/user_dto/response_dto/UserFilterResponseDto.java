@@ -2,12 +2,9 @@ package de.willbeedone.backend.domain.dto.user_dto.response_dto;
 
 import de.willbeedone.backend.domain.dto.location_dto.LocationDto;
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import lombok.*;
 
-import java.util.Objects;
 
 @Getter
 @Setter
@@ -15,7 +12,6 @@ import java.util.Objects;
 @NoArgsConstructor
 @Schema(description = "A class that defines the User DTO for responses.")
 public class UserFilterResponseDto {
-
 
     @Pattern(
             regexp = "^[A-Z][a-zA-Z]{1,}$",

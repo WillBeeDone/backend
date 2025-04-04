@@ -11,7 +11,6 @@ import jakarta.validation.constraints.Size;
 import lombok.*;
 
 import java.math.BigDecimal;
-import java.util.Objects;
 import java.util.Set;
 
 @Getter
@@ -21,6 +20,7 @@ import java.util.Set;
 @Schema(description = "A class that defines the Offer DTO for profile cards responses made by unauthorized users.")
 public class OfferProfileGuestResponseDto {
 
+    @NotNull
     @Schema(
             description = "Offer unique identifier",
             example = "1",
@@ -33,7 +33,6 @@ public class OfferProfileGuestResponseDto {
     @Schema(description = "Short offer description", example = "Super sexy plumber will fix your pipes.")
     private String title;
 
-    @NotNull
     @Schema(description = "Offer category")
     private CategoryDto categoryDto;
 

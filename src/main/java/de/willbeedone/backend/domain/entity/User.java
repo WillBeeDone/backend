@@ -13,6 +13,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
+import java.util.Objects;
 import java.util.Set;
 
 @Entity
@@ -86,9 +87,14 @@ public class User implements UserDetails {
     @Column(name = "blocked", nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
     private boolean blocked;
 
+    public User(String email, String password) {
+        this.email = email;
+        this.password = password;
+    }
+
     @Override
     public String toString() {
-        return String.format("User: id - %d, firstName - %s, lastName - %s, email - %s, phoneNumber - %s, location - %s, profilePicture - %s, roles - %s, offers - %s, favourites - %s, active - %s, blocked - %s", id, firstName, lastName, email, phoneNumber, location, profilePicture, roles, offers, favourites, active ? "Yes" : "No", blocked ? "Yes" : "No");
+        return String.format("User: id - %d, firstName - %s, lastName - %s, email - %s, phoneNumber - %s, location - %s, profilePicture - %s, roles - %s, offers - %s, active - %s, blocked - %s", id, firstName, lastName, email, phoneNumber, location, profilePicture, roles, offers, active ? "Yes" : "No", blocked ? "Yes" : "No");
     }
 
     @Override

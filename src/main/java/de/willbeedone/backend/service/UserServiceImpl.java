@@ -5,16 +5,14 @@ import de.willbeedone.backend.domain.dto.user_dto.request_dto.UserEmailRequestDt
 import de.willbeedone.backend.domain.dto.user_dto.request_dto.UserForOfferRequestDto;
 import de.willbeedone.backend.domain.dto.user_dto.request_dto.UserPasswordRequestDto;
 import de.willbeedone.backend.domain.dto.user_dto.request_dto.UserRequestDto;
+import de.willbeedone.backend.domain.dto.user_dto.response_dto.UpdatedUserResponseDto;
 import de.willbeedone.backend.domain.entity.*;
 import de.willbeedone.backend.exceptions.custom_exceptions.AlreadyExistException;
 import de.willbeedone.backend.exceptions.custom_exceptions.ConfirmationCodeIsInvalidException;
 import de.willbeedone.backend.exceptions.custom_exceptions.UserNotFoundException;
 import de.willbeedone.backend.exceptions.custom_validation_exceptions.UserValidationException;
 import de.willbeedone.backend.repository.*;
-import de.willbeedone.backend.service.interfaces.EmailService;
-import de.willbeedone.backend.service.interfaces.LocationService;
-import de.willbeedone.backend.service.interfaces.RoleService;
-import de.willbeedone.backend.service.interfaces.UserService;
+import de.willbeedone.backend.service.interfaces.*;
 import de.willbeedone.backend.service.mapping.OfferMappingService;
 import de.willbeedone.backend.service.mapping.UserMappingService;
 import jakarta.security.auth.message.AuthException;
@@ -26,8 +24,10 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -36,7 +36,6 @@ import java.util.Set;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
-    private final OfferRepository offerRepository;
     private final ConfirmationCodeRepository confirmationCodeRepository;
     private final ResetCodeRepository resetCodeRepository;
     private final LocationService locationService;
@@ -45,22 +44,33 @@ public class UserServiceImpl implements UserService {
     private final UserMappingService userMappingService;
     private final OfferMappingService offerMappingService;
     private final BCryptPasswordEncoder encoder;
+    private final ImageGalleryService imageGalleryService;
+    private final OfferRepository offerRepository;
 
-    public UserServiceImpl(UserRepository userRepository, LocationRepository locationRepository, OfferRepository offerRepository, ConfirmationCodeRepository codeRepository, ResetCodeRepository resetCodeRepository, FavouriteRepository favouriteRepository, LocationService locationService, RoleService roleService, EmailService emailService, UserMappingService mappingService, UserMappingService userMappingService, OfferMappingService offerMappingService, BCryptPasswordEncoder encoder) {
+    public UserServiceImpl(UserRepository userRepository, ConfirmationCodeRepository confirmationCodeRepository, ResetCodeRepository resetCodeRepository, LocationService locationService, RoleService roleService, EmailService emailService, UserMappingService userMappingService, OfferMappingService offerMappingService, BCryptPasswordEncoder encoder, ImageGalleryService imageGalleryService, OfferRepository offerRepository) {
         this.userRepository = userRepository;
-        this.offerRepository = offerRepository;
-        this.confirmationCodeRepository = codeRepository;
+        this.confirmationCodeRepository = confirmationCodeRepository;
         this.resetCodeRepository = resetCodeRepository;
-        this.userMappingService = userMappingService;
-        this.offerMappingService = offerMappingService;
         this.locationService = locationService;
         this.roleService = roleService;
         this.emailService = emailService;
+        this.userMappingService = userMappingService;
+        this.offerMappingService = offerMappingService;
         this.encoder = encoder;
+        this.imageGalleryService = imageGalleryService;
+        this.offerRepository = offerRepository;
     }
+
 
     private boolean checkIfUserExists(String email) {
         return userRepository.findUserByEmail(email).isPresent();
+    }
+
+    @Override
+    public List<Offer> getUserOffers(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException(userId));
+    return new ArrayList<>(user.getOffers());
     }
 
     @Override
@@ -89,7 +99,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public void updateUser(UserForOfferRequestDto dto, Long id) {
+    public UpdatedUserResponseDto updateUser(UserForOfferRequestDto dto, Long id) {
         User existingUser = getActiveValidUserById(id);
         Location location = locationService.getLocationByCity(dto.getLocationDto().getCityName());
 
@@ -97,7 +107,23 @@ public class UserServiceImpl implements UserService {
         existingUser.setLastName(dto.getLastName());
         existingUser.setPhoneNumber(dto.getPhoneNumber());
         existingUser.setLocation(location);
-        existingUser.setProfilePicture(dto.getProfilePicture());
+
+        MultipartFile profilePicture = dto.getProfilePicture();
+        String imageUrl = null;
+
+        if (profilePicture != null && !profilePicture.isEmpty()) {
+            imageUrl = imageGalleryService.upload(profilePicture, existingUser.getId());
+            existingUser.setProfilePicture(imageUrl);
+        }
+
+        return new UpdatedUserResponseDto(
+                existingUser.getFirstName(),
+                existingUser.getLastName(),
+                existingUser.getEmail(),  // если нужно
+                existingUser.getPhoneNumber(),
+                existingUser.getLocation(),
+                imageUrl
+        );
     }
 
     @Override

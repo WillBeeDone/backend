@@ -4,6 +4,6 @@ import de.willbeedone.backend.domain.entity.ImageGallery;
 import org.springframework.web.multipart.MultipartFile;
 
 public interface ImageGalleryService {
-    String upload(MultipartFile file, Long imageId);
+    String upload(MultipartFile file, Long userId);
 
 }
