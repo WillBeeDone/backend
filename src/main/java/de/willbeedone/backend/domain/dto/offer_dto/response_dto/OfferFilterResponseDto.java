@@ -59,12 +59,8 @@ public class OfferFilterResponseDto {
     @Schema(description = "Offer detailed description")
     private String description;
 
-    @Schema(description = "Photo gallery of work results")
-    private Set<ImageGallery> images;
-
     @Schema(description = "The fields from User: first name, last name, location, profile picture")
     private UserFilterResponseDto userFilterResponseDto;
-
 
     @Override
     public String toString() {
