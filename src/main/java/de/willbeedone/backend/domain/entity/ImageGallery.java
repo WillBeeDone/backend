@@ -31,6 +31,7 @@ public class ImageGallery {
     private String imageUrl;
 
     @ManyToOne
+    @JsonIgnore
     @JoinColumn(name = "offer_id")
     private Offer offer;
 
