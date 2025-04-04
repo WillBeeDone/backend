@@ -5,14 +5,14 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import lombok.*;
-
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
+
 
 @Entity
 @Getter
 @Setter
+@EqualsAndHashCode
 @NoArgsConstructor
 @Table(name = "category")
 public class Category {
@@ -32,17 +32,6 @@ public class Category {
         @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, orphanRemoval = true)
         private List<Offer> offers = new ArrayList<>();
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Category category)) return false;
-        return Objects.equals(id, category.id) && Objects.equals(name, category.name) && Objects.equals(offers, category.offers);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, name, offers);
-    }
 
     @Override
     public String toString() {

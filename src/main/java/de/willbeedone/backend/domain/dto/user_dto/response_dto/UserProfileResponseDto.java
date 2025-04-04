@@ -2,10 +2,7 @@ package de.willbeedone.backend.domain.dto.user_dto.response_dto;
 
 import de.willbeedone.backend.domain.dto.location_dto.LocationDto;
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.*;
 import lombok.*;
 
 @Schema(description = "A class that defines the User DTO for his profile responses.")
