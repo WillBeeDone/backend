@@ -46,7 +46,6 @@ public class UserServiceImpl implements UserService {
     private final OfferMappingService offerMappingService;
     private final BCryptPasswordEncoder encoder;
     private final ImageService imageService;
-    private final OfferRepository offerRepository;
 
     public UserServiceImpl(UserRepository userRepository, ConfirmationCodeRepository confirmationCodeRepository, ResetCodeRepository resetCodeRepository, LocationService locationService, RoleService roleService, EmailService emailService, UserMappingService userMappingService, OfferMappingService offerMappingService, BCryptPasswordEncoder encoder, ImageService imageService, OfferRepository offerRepository) {
         this.userRepository = userRepository;
