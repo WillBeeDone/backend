@@ -6,7 +6,6 @@ import de.willbeedone.backend.domain.dto.user_dto.request_dto.UserRequestDto;
 import de.willbeedone.backend.domain.dto.user_dto.response_dto.UserLoginResponseDto;
 import de.willbeedone.backend.domain.entity.User;
 import de.willbeedone.backend.exceptions.Response;
-import de.willbeedone.backend.exceptions.custom_exceptions.UserNotFoundException;
 import de.willbeedone.backend.security.sec_dto.RefreshRequestDto;
 import de.willbeedone.backend.security.sec_dto.TokenResponseDto;
 import de.willbeedone.backend.security.sec_service.AuthService;
@@ -38,10 +37,7 @@ public class AuthController {
     public UserLoginResponseDto login(@RequestBody UserRequestDto requestDto) throws AuthException {
 
             TokenResponseDto tokenResponseDto = authService.login(requestDto);
-            User userEntity = userService.getUserByEmail(requestDto.getEmail())
-                    .orElseThrow(
-                            UserNotFoundException::new
-                    );
+            User userEntity = userService.getUserByEmail(requestDto.getEmail());
 
             UserLoginResponseDto userLoginResponseDto = userMappingService.mapEntityToLoginResponseDto(userEntity);
             userLoginResponseDto.setAccessToken(tokenResponseDto.getAccessToken());
