@@ -5,6 +5,7 @@ import de.willbeedone.backend.domain.dto.user_dto.request_dto.UserEmailRequestDt
 import de.willbeedone.backend.domain.dto.user_dto.request_dto.UserForOfferRequestDto;
 import de.willbeedone.backend.domain.dto.user_dto.request_dto.UserPasswordRequestDto;
 import de.willbeedone.backend.domain.dto.user_dto.request_dto.UserRequestDto;
+import de.willbeedone.backend.domain.dto.user_dto.response_dto.UserProfileResponseDto;
 import de.willbeedone.backend.domain.entity.*;
 import de.willbeedone.backend.exceptions.custom_exceptions.AlreadyExistException;
 import de.willbeedone.backend.exceptions.custom_exceptions.ConfirmationCodeIsInvalidException;
@@ -29,7 +30,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 
 @Service
@@ -69,12 +69,18 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Optional<User> getUserByEmail(String email) {
-        try {
-            return userRepository.findUserByEmail(email);
-        } catch (Exception e) {
-            throw new UserNotFoundException();
-        }
+    public User getUserByEmail(String email) {
+        return userRepository.findUserByEmail(email)
+                .filter(User::isActive)
+                .filter(user -> !user.isBlocked())
+                .orElseThrow(
+                        () -> new UserNotFoundException("User with email " + email + " not found")
+                );
+    }
+
+    @Override
+    public UserProfileResponseDto getUserProfile(String email) {
+        return userMappingService.mapEntityToProfileResponseDto(getUserByEmail(email));
     }
 
     @Override
@@ -89,8 +95,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public void updateUser(UserForOfferRequestDto dto, Long id) {
-        User existingUser = getActiveValidUserById(id);
+    public void updateUser(UserForOfferRequestDto dto, String email) {
+        User existingUser = getUserByEmail(email);
         Location location = locationService.getLocationByCity(dto.getLocationDto().getCityName());
 
         existingUser.setFirstName(dto.getFirstName());
@@ -122,10 +128,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public void addOfferToFavourite(String email, Long offerId) {
-        User user = userRepository.findUserByEmail(email)
-                .orElseThrow(
-                        () -> new UserNotFoundException("User with email "  + email + " not found")
-                );
+        User user = getUserByEmail(email);
         Offer offer = offerRepository.getReferenceById(offerId);
         user.getFavourites().addOffer(offer);
     }
@@ -133,10 +136,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public void removeOfferFromFavourite(String email, Long offerId) {
-        User user = userRepository.findUserByEmail(email)
-                .orElseThrow(
-                        () -> new UserNotFoundException("User with email "  + email + " not found")
-                );
+        User user = getUserByEmail(email);
         user.getFavourites().removeOfferById(offerId);
     }
 
@@ -165,10 +165,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public void removeAllOffersFromFavourite(String email) {
-        User user = userRepository.findUserByEmail(email)
-                .orElseThrow(
-                        () -> new UserNotFoundException("User with email "  + email + " not found")
-                );
+        User user = getUserByEmail(email);
         user.getFavourites().clear();
     }
 
@@ -216,10 +213,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public void forgotPassword(UserEmailRequestDto dto) throws AuthException {
-        User foundUser = userRepository.findUserByEmail(dto.getEmail())
-                .orElseThrow(
-                        () -> new UserNotFoundException("User with email '" + dto.getEmail() + "' not found")
-                );
+        User foundUser = getUserByEmail(dto.getEmail());
 
         if (!foundUser.isEnabled()) {
             throw new AuthException("User is not activated");

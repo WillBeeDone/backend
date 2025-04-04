@@ -94,7 +94,6 @@ public class OfferController {
         return offerService.getFilteredOffers(cityName, category, keyPhrase, minPrice, maxPrice, pageRequest);
     }
 
-
     @Operation(summary = "Delete an offer by id",
             description = "Deletes an offer by its unique identifier.")
     @DeleteMapping("/{id}")
