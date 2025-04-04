@@ -3,6 +3,7 @@ package de.willbeedone.backend.controller;
 import de.willbeedone.backend.domain.dto.offer_dto.request_dto.OfferRequestDto;
 import de.willbeedone.backend.domain.dto.offer_dto.response_dto.OfferFilterResponseDto;
 import de.willbeedone.backend.domain.dto.offer_dto.response_dto.OfferProfileGuestResponseDto;
+import de.willbeedone.backend.domain.entity.Offer;
 import de.willbeedone.backend.service.interfaces.OfferService;
 import de.willbeedone.backend.service.interfaces.UserService;
 import io.swagger.v3.oas.annotations.Operation;
