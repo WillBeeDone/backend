@@ -20,6 +20,7 @@ import java.util.Set;
 @Schema(description = "A class that defines the Offer DTO for profile cards responses made by unauthorized users.")
 public class OfferProfileGuestResponseDto {
 
+    @NotNull
     @Schema(
             description = "Offer unique identifier",
             example = "1",
