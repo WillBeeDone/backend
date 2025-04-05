@@ -105,7 +105,7 @@ public class OfferServiceImpl implements OfferService {
         }
         if (!"all".equals(category)) {
             if (!categoryService.existsByName(category)) {
-                throw new OfferValidationException("Invalid categoryDto: " + category);
+                throw new OfferValidationException("Invalid category: " + category);
             }
             spec = spec.and(filterByCategory(category));
         }
@@ -142,7 +142,7 @@ public class OfferServiceImpl implements OfferService {
 
     private Specification<Offer> filterByCategory(String category) {
         return "all".equals(category) ? null :
-                (root, query, cb) -> cb.equal(root.join("categoryDto").get("name"), category);
+                (root, query, cb) -> cb.equal(root.join("category").get("name"), category);
     }
 
     private Specification<Offer> filterByKeyPhrase(String keyPhrase) {
