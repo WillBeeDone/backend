@@ -1,6 +1,7 @@
 package de.willbeedone.backend.security.sec_service;
 
 import de.willbeedone.backend.domain.entity.Role;
+import de.willbeedone.backend.domain.entity.User;
 import de.willbeedone.backend.repository.RoleRepository;
 import de.willbeedone.backend.security.AuthInfo;
 import io.jsonwebtoken.Claims;
@@ -32,14 +33,14 @@ public class TokenService {
         this.roleRepository = roleRepository;
     }
 
-    public String generateAccessToken(UserDetails user) {
+    public String generateAccessToken(User user) {
         LocalDateTime currentDate = LocalDateTime.now();
         Instant expiration = currentDate.plusWeeks(1).atZone(ZoneId.systemDefault()).toInstant();
         Date expirationDate = Date.from(expiration);
 
         return Jwts.builder()
-                .subject(user.getUsername())
-                .expiration(expirationDate)
+                .setSubject(user.getUsername()) // Заменено на setSubject
+                .setExpiration(expirationDate)
                 .signWith(accessKey)
                 .claim("roles", user.getAuthorities())
                 .claim("name", user.getUsername())
@@ -52,8 +53,8 @@ public class TokenService {
         Date expirationDate = Date.from(expiration);
 
         return Jwts.builder()
-                .subject(user.getUsername())
-                .expiration(expirationDate)
+                .setSubject(user.getUsername()) // Заменено на setSubject
+                .setExpiration(expirationDate)
                 .signWith(refreshKey)
                 .compact();
     }
@@ -68,10 +69,11 @@ public class TokenService {
 
     public boolean validateToken(String token, SecretKey key) {
         try {
-            Jwts.parser()
-                    .verifyWith(key)
+            // Используем parserBuilder для валидации
+            Jwts.parserBuilder()
+                    .setSigningKey(key) // Установка ключа
                     .build()
-                    .parseSignedClaims(token);
+                    .parseClaimsJws(token); // Парсинг и валидация токена
             return true;
         } catch (Exception e) {
             return false;
@@ -87,18 +89,19 @@ public class TokenService {
     }
 
     public Claims getClaims(String token, SecretKey key) {
-        return Jwts.parser()
-                .verifyWith(key)
+        // Используем parserBuilder для парсинга
+        return Jwts.parserBuilder()
+                .setSigningKey(key) // Установка ключа
                 .build()
-                .parseSignedClaims(token)
-                .getPayload();
+                .parseClaimsJws(token) // Парсинг JWT
+                .getBody(); // Получение тела токена (Claims)
     }
 
-    //Method for extracting e-mail from token
+    // Метод для извлечения email из токена
     public String extractEmailFromToken(String jwt) {
-        String token = jwt.substring(7);
+        String token = jwt.substring(7); // Убираем "Bearer " из начала токена
         Claims claims = getAccessClaims(token);
-        return claims.getSubject();
+        return claims.getSubject(); // Извлекаем subject (email)
     }
 
     public AuthInfo mapClaimsToAuthInfo(Claims claims) {

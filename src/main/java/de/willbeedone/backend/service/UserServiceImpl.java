@@ -69,7 +69,7 @@ public class UserServiceImpl implements UserService {
     public List<Offer> getUserOffers(Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException(userId));
-    return new ArrayList<>(user.getOffers());
+        return new ArrayList<>(user.getOffers());
     }
 
     @Override
@@ -82,9 +82,7 @@ public class UserServiceImpl implements UserService {
         return userRepository.findUserByEmail(email)
                 .filter(User::isActive)
                 .filter(user -> !user.isBlocked())
-                .orElseThrow(
-                        () -> new UserNotFoundException("User with email " + email + " not found")
-                );
+                .orElseThrow(() -> new UserNotFoundException("User with email " + email + " not found"));
     }
 
     @Override
@@ -97,9 +95,7 @@ public class UserServiceImpl implements UserService {
         return userRepository.findById(id)
                 .filter(User::isActive)
                 .filter(user -> !user.isBlocked())
-                .orElseThrow(
-                        () -> new UserNotFoundException(id)
-                );
+                .orElseThrow(() -> new UserNotFoundException(id));
     }
 
     @Override
@@ -115,9 +111,10 @@ public class UserServiceImpl implements UserService {
 
         MultipartFile profilePicture = dto.getProfilePicture();
         String imageUrl = null;
+        Long userId = existingUser.getId();
 
         if (profilePicture != null && !profilePicture.isEmpty()) {
-            imageUrl = imageService.upload(profilePicture, existingUser.getId());
+            imageUrl = imageService.uploadImage(profilePicture, userId);
             existingUser.setProfilePicture(imageUrl);
         }
     }
@@ -127,20 +124,13 @@ public class UserServiceImpl implements UserService {
         try {
             if (!userRepository.existsById(id)) {
                 throw new UserNotFoundException(id);
-            } else {
-                userRepository.deleteById(id);
             }
+            userRepository.deleteById(id);
         } catch (Exception e) {
             throw new UserValidationException(e);
         }
     }
 
-    //Почему getReferenceById?
-    //Скорее всего, код использует getReferenceById вместо getById, потому что:
-    //Эффективность: Он не сразу загружает объект из БД, а только когда он действительно понадобится.
-    //Оптимизация работы с Hibernate: Если тебе нужно просто сохранить связь (например, установить offer в Favourite),
-    // а поля Offer не используются, реальный запрос в БД может даже не выполняться.
-    //Современные версии Spring Data JPA (после 2.5) рекомендуют getReferenceById, и в некоторых местах он автоматически подставляется.
     @Override
     @Transactional
     public void addOfferToFavourite(String email, Long offerId) {
@@ -164,13 +154,11 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Page<OfferFilterResponseDto> getAllFavouriteFilteredOffers(String email, Pageable pageable, String cityName, String category, String keyPhrase) {
-
         Page<Offer> pageOffers = offerRepository.findActiveFavouriteOffersByUserEmail(email, pageable);
 
-        List<OfferFilterResponseDto> offers = pageOffers
-                .stream()
+        List<OfferFilterResponseDto> offers = pageOffers.stream()
                 .filter(offer -> offer == null || "all".equals(cityName) || offer.getUser().getLocation().getCityName().equals(cityName))
-                .filter(offer -> offer == null || "all".equals(category) || offer.getCategory().getName().equals(category))
+                .filter(offer -> offer == null || "all".equals(category) || offer.getCategory().equals(category))
                 .filter(offer -> offer == null || "all".equals(keyPhrase) || offer.getUser().getFirstName().contains(keyPhrase) || offer.getUser().getLastName().contains(keyPhrase) || offer.getTitle().contains(keyPhrase) || offer.getDescription().contains(keyPhrase))
                 .map(offerMappingService::mapEntityToFilterResponseDto)
                 .toList();
@@ -188,9 +176,8 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public Long register(UserRequestDto dto) {
-        if (userRepository.findUserByEmail(dto.getEmail()).isPresent()) {
-            throw new AlreadyExistException(dto.getEmail());
-        }
+        userRepository.findUserByEmail(dto.getEmail())
+                .ifPresent(user -> { throw new AlreadyExistException(dto.getEmail()); });
 
         User userEntity = userMappingService.mapRequestDtoToEntity(dto);
         userEntity.setRoles(Set.of(roleService.getRoleUser()));
@@ -201,7 +188,6 @@ public class UserServiceImpl implements UserService {
         userEntity.setFavourites(favourites);
 
         userRepository.save(userEntity);
-
         emailService.sendConfirmationEmail(userEntity);
 
         return userEntity.getId();
@@ -211,9 +197,7 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public Long confirmRegistration(String code) {
         ConfirmationCode codeEntity = confirmationCodeRepository.findByCode(code)
-                .orElseThrow(
-                        () -> new ConfirmationCodeIsInvalidException("Confirmation code not found.")
-                );
+                .orElseThrow(() -> new ConfirmationCodeIsInvalidException("Confirmation code not found."));
 
         if (codeEntity.getExpired().isBefore(LocalDateTime.now())) {
             throw new ConfirmationCodeIsInvalidException("Confirmation code is expired.");
@@ -246,18 +230,15 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public void resetPassword(String code, UserPasswordRequestDto dto) {
         ResetCode codeEntity = resetCodeRepository.findByCode(code)
-                .orElseThrow(
-                        () -> new RuntimeException("Reset code not found")
-                );
+                .orElseThrow(() -> new RuntimeException("Reset code not found"));
 
         codeEntity.getUser().setPassword(encoder.encode(dto.getPassword()));
-
         resetCodeRepository.delete(codeEntity);
     }
 
-    //By email (= username)
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        return userRepository.findUserByEmail(email).orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        return userRepository.findUserByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
     }
 }

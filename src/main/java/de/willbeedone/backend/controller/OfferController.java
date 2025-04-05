@@ -93,7 +93,7 @@ public class OfferController {
 
             @RequestParam(required = false, defaultValue = "9") int size,
             @RequestParam(required = false, defaultValue = "0") int page,
-            @RequestParam(required = false, defaultValue = "pricePerHour,asc") String sort  // Новый параметр сортировки
+            @RequestParam(required = false, defaultValue = "price,asc") String sort  // Новый параметр сортировки
     ) {
 
         String[] sortParams = sort.split(",");

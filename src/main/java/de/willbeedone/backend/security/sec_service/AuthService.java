@@ -1,6 +1,7 @@
 package de.willbeedone.backend.security.sec_service;
 
 import de.willbeedone.backend.domain.dto.user_dto.request_dto.UserRequestDto;
+import de.willbeedone.backend.domain.entity.User;
 import de.willbeedone.backend.security.sec_dto.TokenResponseDto;
 import de.willbeedone.backend.service.interfaces.UserService;
 import io.jsonwebtoken.Claims;
@@ -39,7 +40,7 @@ public class AuthService {
         }
 
         if (passwordEncoder.matches(inboundUser.getPassword(), foundUser.getPassword())) {
-            String accessToken = tokenService.generateAccessToken(foundUser);
+            String accessToken = tokenService.generateAccessToken((User) foundUser);
             String refreshToken = tokenService.generateRefreshToken(foundUser);
             refreshStorage.put(email, refreshToken);
             return new TokenResponseDto(accessToken, refreshToken);
@@ -55,7 +56,7 @@ public class AuthService {
 
         if(foundRefreshToken != null && foundRefreshToken.equals(inboundRefreshToken)){
             UserDetails foundUser = userService.loadUserByUsername(email);
-            String accessToken = tokenService.generateAccessToken(foundUser);
+            String accessToken = tokenService.generateAccessToken((User) foundUser);
             return new TokenResponseDto(accessToken);
         } else {
             return new TokenResponseDto(null);

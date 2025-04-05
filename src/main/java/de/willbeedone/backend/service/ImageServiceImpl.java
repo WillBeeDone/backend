@@ -38,40 +38,58 @@ public class ImageServiceImpl implements ImageService {
     }
 
 
+
+        private String generateUniqueFileName(MultipartFile file) {
+            // Генерация уникального имени файла
+            String sourceFileName = file.getOriginalFilename();
+            int dotIndex = sourceFileName.lastIndexOf(".");
+            String filename = sourceFileName.substring(0, dotIndex);
+            String extension = sourceFileName.substring(dotIndex);
+            return String.format("%s-%s%s", filename, UUID.randomUUID(), extension);
+        }
+
     @Override
-    public String upload(MultipartFile file, Long offerId) {
+    public String uploadImage(MultipartFile file,Long userId) {
         try {
+            // Генерация уникального имени файла
             String uniqueName = generateUniqueFileName(file);
             ObjectMetadata metadata = new ObjectMetadata();
             metadata.setContentType(file.getContentType());
 
+            // Подготовка запроса для загрузки файла в S3
             PutObjectRequest request = new PutObjectRequest(
                     "will-bee-done", uniqueName, file.getInputStream(), metadata
             ).withCannedAcl(CannedAccessControlList.PublicRead);
+
+            // Загружаем файл в S3
             client.putObject(request);
+            // Получаем URL загруженного файла
             String url = client.getUrl("will-bee-done", uniqueName).toString();
 
-            Offer offer = offerService.getActiveOfferEntityById(offerId);
+            // Получаем активное предложение по userId
+            Offer offer = offerService.getActiveOfferEntityById(userId);
             if (offer == null) {
-                throw new OfferNotFoundException(offerId);
+                throw new OfferNotFoundException(userId); // Если предложение не найдено, выбрасываем исключение
             }
 
+            // Создаем новый объект ImageGallery
             ImageGallery newImage = new ImageGallery();
-            newImage.setImageUrl(url);
-            newImage.setOffer(offer);
+            newImage.setImageUrl(url); // Устанавливаем URL изображения
+            newImage.setOffer(offer); // Привязываем к предложению
+
+            // Добавляем новое изображение в список изображений предложения
             offer.getImages().add(newImage);
+
+            // Сохраняем обновленное предложение в базе
             repository.save(offer);
+
+            // Возвращаем URL изображения
             return url;
         } catch (AmazonServiceException | IOException e) {
+            // Обработка ошибок загрузки (например, если S3 не доступен)
             throw new ImageUploadException((AmazonServiceException) e);
         }
     }
-
-    private String generateUniqueFileName(MultipartFile file) {
-        String sourceFileName = file.getOriginalFilename();
-        int dotIndex = sourceFileName.lastIndexOf(".");
-        String filename = sourceFileName.substring(0, dotIndex);
-        String extension = sourceFileName.substring(dotIndex);
-        return String.format("%s-%s%s", filename, UUID.randomUUID(), extension);
     }
-}
+
+

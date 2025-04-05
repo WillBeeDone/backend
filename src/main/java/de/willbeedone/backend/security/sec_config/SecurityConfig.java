@@ -1,6 +1,7 @@
 package de.willbeedone.backend.security.sec_config;
 
 import de.willbeedone.backend.security.sec_filter.TokenFilter;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -32,6 +33,7 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
@@ -45,6 +47,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/register/**", "/offers/**", "/locations", "/categories").permitAll()
                         .requestMatchers(HttpMethod.POST, "/offers").permitAll()
                         .requestMatchers( "/swagger-ui/**", "/v3/api-docs/**").permitAll()
+                        .requestMatchers("/api/auth/google").permitAll()
                         .anyRequest().permitAll()
                 )
                 .addFilterAfter(tokenFilter, UsernamePasswordAuthenticationFilter.class)

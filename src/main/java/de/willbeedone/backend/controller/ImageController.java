@@ -24,7 +24,7 @@ public class ImageController {
             @RequestParam MultipartFile file,
             @RequestParam Long offerId
     ) {
-        String url = imageService.upload(file, offerId);
+        String url = imageService.uploadImage(file, offerId);
         return new Response("Saved image URL - " + url);
     }
 }

@@ -117,6 +117,9 @@ public class User implements UserDetails {
         return blocked;
     }
 
+    public User orElseThrow(Object userNotFound) {
+        return null;
+    }
 }
 
 

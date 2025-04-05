@@ -37,8 +37,10 @@ spring:
             trust: smtp.gmail.com
 
 key:
-  access: ${ACCESS_PHRASE_SECRET}
-  refresh: ${REFRESH_PHRASE_SECRET}
+  access: ${ACCESS_PHRASE_SECRET} # для JWT доступа
+  refresh: ${REFRESH_PHRASE_SECRET} # для JWT refresh
+  google-client-id: ${GOOGLE_CLIENT_ID} # сюда добавь свой Google Client ID
+  google-client-secret: ${GOOGLE_CLIENT_SECRET} # сюда свой Google Client Secret
 
 server:
   servlet:
@@ -46,3 +48,10 @@ server:
 
 base:
   url: ${BASE_URL}
+
+# Конфигурация для Google OAuth
+google:
+  oauth:
+    client-id: ${GOOGLE_CLIENT_ID}
+    client-secret: ${GOOGLE_CLIENT_SECRET}
+    redirect-uri: ${GOOGLE_REDIRECT_URI} # для получения ответа от Google OAuth
