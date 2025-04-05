@@ -169,7 +169,7 @@ public class UserServiceImpl implements UserService {
         List<OfferFilterResponseDto> offers = pageOffers
                 .stream()
                 .filter(offer -> offer == null || "all".equals(cityName) || offer.getUser().getLocation().getCityName().equals(cityName))
-                .filter(offer -> offer == null || "all".equals(category) || offer.getCategory().equals(category))
+                .filter(offer -> offer == null || "all".equals(category) || offer.getCategory().getName().equals(category))
                 .filter(offer -> offer == null || "all".equals(keyPhrase) || offer.getUser().getFirstName().contains(keyPhrase) || offer.getUser().getLastName().contains(keyPhrase) || offer.getTitle().contains(keyPhrase) || offer.getDescription().contains(keyPhrase))
                 .map(offerMappingService::mapEntityToFilterResponseDto)
                 .toList();

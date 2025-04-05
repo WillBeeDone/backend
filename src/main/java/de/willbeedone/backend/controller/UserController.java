@@ -38,7 +38,7 @@ public class UserController {
     }
 
     @Operation(summary = "Get all pageable favourite active offers",
-            description = "Returns all pageable favourite active offers for user by his id. Returns filtrated if it's needed. Default size - 9.")
+            description = "Returns all pageable favourite active offers for user by his id. Returns filtrated if it's needed. Default size - 12.")
     @PreAuthorize("hasAuthority('ROLE_USER')")
     @GetMapping("/favourites")
     public Page<OfferFilterResponseDto> getAllFavouriteOffers(
@@ -48,7 +48,7 @@ public class UserController {
             @RequestParam(defaultValue = "0") int page,
 
             @Parameter(description = "Number of elements on the page", example = "9")
-            @RequestParam(defaultValue = "9") int size,
+            @RequestParam(defaultValue = "12") int size,
 
             @Parameter(description = "City name", example = "Berlin")
             @RequestParam(required = false, defaultValue = "all") String cityName,
