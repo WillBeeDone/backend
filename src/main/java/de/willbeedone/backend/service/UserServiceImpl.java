@@ -29,7 +29,6 @@ import org.springframework.web.multipart.MultipartFile;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 
 @Service
@@ -117,7 +116,7 @@ public class UserServiceImpl implements UserService {
         String imageUrl = null;
 
         if (profilePicture != null && !profilePicture.isEmpty()) {
-            imageUrl = imageService.upload(profilePicture, existingUser.getId());
+            imageUrl = imageService.uploadImage(profilePicture);
             existingUser.setProfilePicture(imageUrl);
         }
     }
@@ -170,7 +169,7 @@ public class UserServiceImpl implements UserService {
         List<OfferFilterResponseDto> offers = pageOffers
                 .stream()
                 .filter(offer -> offer == null || "all".equals(cityName) || offer.getUser().getLocation().getCityName().equals(cityName))
-                .filter(offer -> offer == null || "all".equals(category) || offer.getCategory().getName().equals(category))
+                .filter(offer -> offer == null || "all".equals(category) || offer.getCategory().equals(category))
                 .filter(offer -> offer == null || "all".equals(keyPhrase) || offer.getUser().getFirstName().contains(keyPhrase) || offer.getUser().getLastName().contains(keyPhrase) || offer.getTitle().contains(keyPhrase) || offer.getDescription().contains(keyPhrase))
                 .map(offerMappingService::mapEntityToFilterResponseDto)
                 .toList();

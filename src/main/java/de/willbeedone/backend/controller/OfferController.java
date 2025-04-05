@@ -110,16 +110,4 @@ public class OfferController {
         offerService.deleteOfferById(id);
     }
 
-    @PostMapping("/user/{userId}/add-offer")
-    public ResponseEntity<Offer> addOfferToUser(@PathVariable Long userId, @RequestBody OfferRequestDto request) {
-        Offer createdOffer = offerService.addOfferToUser(userId, request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(createdOffer);
-    }
-
-    @GetMapping("/user/{userId}/offers")
-    public ResponseEntity<List<Offer>> getUserOffers(@PathVariable Long userId) {
-        List<Offer> offers = userService.getUserOffers(userId);
-        return ResponseEntity.ok(offers);
-    }
-
 }

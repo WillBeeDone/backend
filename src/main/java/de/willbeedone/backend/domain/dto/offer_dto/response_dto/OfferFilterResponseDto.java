@@ -29,7 +29,7 @@ public class OfferFilterResponseDto {
     private String title;
 
     @NotNull
-    @Schema(description = "Offer category")
+    @Schema(description = "Offer categoryDto")
     private CategoryDto categoryDto;
 
     @NotNull(message = "Price per hour cannot be empty")

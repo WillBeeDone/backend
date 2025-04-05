@@ -1,8 +1,10 @@
 package de.willbeedone.backend.controller;
 
+import de.willbeedone.backend.domain.dto.offer_dto.request_dto.OfferRequestDto;
 import de.willbeedone.backend.domain.dto.offer_dto.response_dto.OfferFilterResponseDto;
 import de.willbeedone.backend.domain.dto.user_dto.request_dto.UserForOfferRequestDto;
 import de.willbeedone.backend.domain.dto.user_dto.response_dto.UserProfileResponseDto;
+import de.willbeedone.backend.domain.entity.Offer;
 import de.willbeedone.backend.exceptions.Response;
 import de.willbeedone.backend.security.sec_service.TokenService;
 import de.willbeedone.backend.service.interfaces.OfferService;
@@ -139,12 +141,12 @@ public class UserController {
             description = "Adds new user's offer.")
     @PreAuthorize("hasAuthority('ROLE_USER')")
     @PostMapping("/offers")
-    public Response addNewOffer(
-            @RequestHeader("Authorization") String token
-    ) {
+    public Offer addNewOffer(
+            @RequestHeader("Authorization") String token,
+            @RequestBody OfferRequestDto offerDto
+            ) {
         String email = tokenService.extractEmailFromToken(token);
-        //offerService.addNewOffer();
-        return new Response("OK");
+        return offerService.addNewOffer(offerDto, email);
     }
 
 }
