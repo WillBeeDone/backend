@@ -1,10 +1,9 @@
 package de.willbeedone.backend.domain.dto.offer_dto.request_dto;
 
-import de.willbeedone.backend.domain.dto.category_dto.CategoryDto;
-import de.willbeedone.backend.domain.entity.ImageGallery;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 import jakarta.validation.constraints.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
 import java.util.Set;
@@ -21,14 +20,14 @@ public class OfferRequestDto {
     @Schema(description = "Price per hour", example = "65.00")
     private BigDecimal pricePerHour;
 
-//    @NotBlank(message = "Description cannot be empty")
+    @NotBlank(message = "Description cannot be empty")
     @Size(min = 10, max = 1000, message = "Description must be between 10 and 1000 characters")
     @Schema(description = "Offer detailed description")
     private String description;
 
     @NotNull
-    @Schema(description = "Offer category")
-    private CategoryDto categoryDto;
+    @Schema(description = "Offer category name")
+    private String categoryName;
 
     @NotBlank(message = "Title cannot be empty")
     @Size(min = 3, max = 255, message = "Title must be between 3 and 255 characters")
@@ -36,10 +35,10 @@ public class OfferRequestDto {
     private String title;
 
     @Schema(description = "Photo gallery of work results")
-    private Set<ImageGallery> images;
+    private Set<MultipartFile> images;
 
     @Override
     public String toString() {
-        return String.format("Offer: title - %s, description - %s, pricePerHour - %.2f, categoryDto - %s, images - %s", title, description, pricePerHour, categoryDto, images);
+        return String.format("Offer: title - %s, description - %s, pricePerHour - %.2f, categoryName - %s, images - %s", title, description, pricePerHour, categoryName, images);
     }
 }

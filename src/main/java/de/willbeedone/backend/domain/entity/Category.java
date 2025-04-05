@@ -30,7 +30,7 @@ public class Category {
 
         @JsonIgnore
         @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, orphanRemoval = true)
-        private List<Offer> offers = new ArrayList<>();
+        private List<Offer> offers;
 
 
     @Override

@@ -19,6 +19,6 @@ public class LocationDto {
 
     @Override
     public String toString() {
-        return String.format("LocationResponseDto: cityName - %s", cityName);
+        return String.format("LocationDto: cityName - %s", cityName);
     }
 }
