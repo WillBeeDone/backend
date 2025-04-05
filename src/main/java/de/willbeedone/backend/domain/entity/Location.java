@@ -33,7 +33,7 @@ public class Location {
 
     @JsonIgnore
     @OneToMany(mappedBy = "location", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<User> users = new ArrayList<>();
+    private List<User> users;
 
     @Override
     public String toString() {

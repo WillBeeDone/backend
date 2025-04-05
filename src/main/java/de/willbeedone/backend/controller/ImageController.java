@@ -1,11 +1,9 @@
 package de.willbeedone.backend.controller;
 
 import de.willbeedone.backend.exceptions.Response;
+import de.willbeedone.backend.security.sec_service.TokenService;
 import de.willbeedone.backend.service.interfaces.ImageService;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 @RestController
@@ -13,18 +11,20 @@ import org.springframework.web.multipart.MultipartFile;
 public class ImageController {
 
     private final ImageService imageService;
+    private final TokenService tokenService;
 
-
-    public ImageController(ImageService imageService) {
+    public ImageController(ImageService imageService, TokenService tokenService) {
         this.imageService = imageService;
+        this.tokenService = tokenService;
     }
 
     @PostMapping
     public Response upload(
             @RequestParam MultipartFile file,
-            @RequestParam Long offerId
+            @RequestHeader("Authorization") String token
     ) {
-        String url = imageService.upload(file, offerId);
+        String email = tokenService.extractEmailFromToken(token);
+        String url = imageService.uploadImage(file);
         return new Response("Saved image URL - " + url);
     }
 }
