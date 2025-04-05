@@ -5,7 +5,7 @@ import de.willbeedone.backend.domain.dto.user_dto.request_dto.UserEmailRequestDt
 import de.willbeedone.backend.domain.dto.user_dto.request_dto.UserForOfferRequestDto;
 import de.willbeedone.backend.domain.dto.user_dto.request_dto.UserPasswordRequestDto;
 import de.willbeedone.backend.domain.dto.user_dto.request_dto.UserRequestDto;
-import de.willbeedone.backend.domain.dto.user_dto.response_dto.UpdatedUserResponseDto;
+import de.willbeedone.backend.domain.dto.user_dto.response_dto.UserProfileResponseDto;
 import de.willbeedone.backend.domain.entity.*;
 import de.willbeedone.backend.exceptions.custom_exceptions.AlreadyExistException;
 import de.willbeedone.backend.exceptions.custom_exceptions.ConfirmationCodeIsInvalidException;
@@ -36,6 +36,7 @@ import java.util.Set;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
+    private final OfferRepository offerRepository;
     private final ConfirmationCodeRepository confirmationCodeRepository;
     private final ResetCodeRepository resetCodeRepository;
     private final LocationService locationService;
@@ -44,10 +45,9 @@ public class UserServiceImpl implements UserService {
     private final UserMappingService userMappingService;
     private final OfferMappingService offerMappingService;
     private final BCryptPasswordEncoder encoder;
-    private final ImageGalleryService imageGalleryService;
-    private final OfferRepository offerRepository;
+    private final ImageService imageService;
 
-    public UserServiceImpl(UserRepository userRepository, ConfirmationCodeRepository confirmationCodeRepository, ResetCodeRepository resetCodeRepository, LocationService locationService, RoleService roleService, EmailService emailService, UserMappingService userMappingService, OfferMappingService offerMappingService, BCryptPasswordEncoder encoder, ImageGalleryService imageGalleryService, OfferRepository offerRepository) {
+    public UserServiceImpl(UserRepository userRepository, ConfirmationCodeRepository confirmationCodeRepository, ResetCodeRepository resetCodeRepository, LocationService locationService, RoleService roleService, EmailService emailService, UserMappingService userMappingService, OfferMappingService offerMappingService, BCryptPasswordEncoder encoder, ImageService imageService, OfferRepository offerRepository) {
         this.userRepository = userRepository;
         this.confirmationCodeRepository = confirmationCodeRepository;
         this.resetCodeRepository = resetCodeRepository;
@@ -57,10 +57,9 @@ public class UserServiceImpl implements UserService {
         this.userMappingService = userMappingService;
         this.offerMappingService = offerMappingService;
         this.encoder = encoder;
-        this.imageGalleryService = imageGalleryService;
+        this.imageService = imageService;
         this.offerRepository = offerRepository;
     }
-
 
     private boolean checkIfUserExists(String email) {
         return userRepository.findUserByEmail(email).isPresent();
@@ -79,12 +78,18 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Optional<User> getUserByEmail(String email) {
-        try {
-            return userRepository.findUserByEmail(email);
-        } catch (Exception e) {
-            throw new UserNotFoundException();
-        }
+    public User getUserByEmail(String email) {
+        return userRepository.findUserByEmail(email)
+                .filter(User::isActive)
+                .filter(user -> !user.isBlocked())
+                .orElseThrow(
+                        () -> new UserNotFoundException("User with email " + email + " not found")
+                );
+    }
+
+    @Override
+    public UserProfileResponseDto getUserProfile(String email) {
+        return userMappingService.mapEntityToProfileResponseDto(getUserByEmail(email));
     }
 
     @Override
@@ -99,8 +104,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public UpdatedUserResponseDto updateUser(UserForOfferRequestDto dto, Long id) {
-        User existingUser = getActiveValidUserById(id);
+    public void updateUser(UserForOfferRequestDto dto, String email) {
+        User existingUser = getUserByEmail(email);
         Location location = locationService.getLocationByCity(dto.getLocationDto().getCityName());
 
         existingUser.setFirstName(dto.getFirstName());
@@ -112,18 +117,9 @@ public class UserServiceImpl implements UserService {
         String imageUrl = null;
 
         if (profilePicture != null && !profilePicture.isEmpty()) {
-            imageUrl = imageGalleryService.upload(profilePicture, existingUser.getId());
+            imageUrl = imageService.upload(profilePicture, existingUser.getId());
             existingUser.setProfilePicture(imageUrl);
         }
-
-        return new UpdatedUserResponseDto(
-                existingUser.getFirstName(),
-                existingUser.getLastName(),
-                existingUser.getEmail(),  // если нужно
-                existingUser.getPhoneNumber(),
-                existingUser.getLocation(),
-                imageUrl
-        );
     }
 
     @Override
@@ -148,10 +144,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public void addOfferToFavourite(String email, Long offerId) {
-        User user = userRepository.findUserByEmail(email)
-                .orElseThrow(
-                        () -> new UserNotFoundException("User with email "  + email + " not found")
-                );
+        User user = getUserByEmail(email);
         Offer offer = offerRepository.getReferenceById(offerId);
         user.getFavourites().addOffer(offer);
     }
@@ -159,10 +152,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public void removeOfferFromFavourite(String email, Long offerId) {
-        User user = userRepository.findUserByEmail(email)
-                .orElseThrow(
-                        () -> new UserNotFoundException("User with email "  + email + " not found")
-                );
+        User user = getUserByEmail(email);
         user.getFavourites().removeOfferById(offerId);
     }
 
@@ -191,10 +181,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public void removeAllOffersFromFavourite(String email) {
-        User user = userRepository.findUserByEmail(email)
-                .orElseThrow(
-                        () -> new UserNotFoundException("User with email "  + email + " not found")
-                );
+        User user = getUserByEmail(email);
         user.getFavourites().clear();
     }
 
@@ -242,10 +229,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public void forgotPassword(UserEmailRequestDto dto) throws AuthException {
-        User foundUser = userRepository.findUserByEmail(dto.getEmail())
-                .orElseThrow(
-                        () -> new UserNotFoundException("User with email '" + dto.getEmail() + "' not found")
-                );
+        User foundUser = getUserByEmail(dto.getEmail());
 
         if (!foundUser.isEnabled()) {
             throw new AuthException("User is not activated");

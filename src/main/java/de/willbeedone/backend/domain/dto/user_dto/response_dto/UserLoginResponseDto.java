@@ -72,4 +72,9 @@ public class UserLoginResponseDto {
     @Schema(description = "User's refresh token")
     private String refreshToken;
 
+    @Override
+    public String toString() {
+        return String.format("UserLoginResponseDto: id - %d, firstName - %s, lastName - %s, email - %s, phoneNumber - %s, locationDto - %s, profilePicture - %s, roles - %s, active - %s, blocked - %s", id, firstName, lastName, email, phoneNumber, locationDto, profilePicture, roles, active ? "Yes" : "No", blocked ? "Yes" : "No");
+    }
+
 }

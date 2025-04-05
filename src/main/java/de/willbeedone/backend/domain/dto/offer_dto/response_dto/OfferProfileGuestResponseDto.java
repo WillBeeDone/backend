@@ -4,10 +4,7 @@ import de.willbeedone.backend.domain.dto.category_dto.CategoryDto;
 import de.willbeedone.backend.domain.dto.user_dto.response_dto.UserFilterResponseDto;
 import de.willbeedone.backend.domain.entity.ImageGallery;
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.DecimalMin;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import lombok.*;
 
 import java.math.BigDecimal;
@@ -41,6 +38,7 @@ public class OfferProfileGuestResponseDto {
     @Schema(description = "Price per hour", example = "65.00")
     private BigDecimal pricePerHour;
 
+    @NotBlank(message = "Description cannot be empty")
     @Size(min = 10, max = 1000, message = "Description must be between 10 and 1000 characters")
     @Schema(description = "Offer detailed description")
     private String description;
@@ -48,6 +46,7 @@ public class OfferProfileGuestResponseDto {
     @Schema(description = "Photo gallery of work results")
     private Set<ImageGallery> images;
 
+    @NotNull
     @Schema(description = "The fields from User: first name, last name, location, profile picture")
     private UserFilterResponseDto userFilterResponseDto;
 

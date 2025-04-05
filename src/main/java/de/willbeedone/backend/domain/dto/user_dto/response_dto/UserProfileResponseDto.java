@@ -1,16 +1,16 @@
-package de.willbeedone.backend.domain.dto.user_dto.request_dto;
+package de.willbeedone.backend.domain.dto.user_dto.response_dto;
 
 import de.willbeedone.backend.domain.dto.location_dto.LocationDto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.*;
 import lombok.*;
-import org.springframework.web.multipart.MultipartFile;
 
+@Schema(description = "A class that defines the User DTO for his profile responses.")
 @Getter
 @Setter
-@NoArgsConstructor
 @EqualsAndHashCode
-public class UserForOfferRequestDto {
+@NoArgsConstructor
+public class UserProfileResponseDto {
 
     @NotBlank
     @Pattern(
@@ -29,6 +29,11 @@ public class UserForOfferRequestDto {
     private String lastName;
 
     @NotBlank
+    @Email
+    @Schema(description = "User's e-mail", example = "john@gmail.com")
+    private String email;
+
+    @NotBlank
     @Pattern(
             regexp = "^\\+?[0-9]{7,15}$",
             message = "Phone number should contain only digits and can start with +"
@@ -42,10 +47,11 @@ public class UserForOfferRequestDto {
 
     @NotBlank
     @Schema(description = "User's profile photo")
-    private MultipartFile profilePicture;
+    private String profilePicture;
 
     @Override
     public String toString() {
-        return String.format("UserForOfferRequestDto: firstName - %s, lastName - %s, phoneNumber - %s, locationDto - %s, profilePicture - %s", firstName, lastName, phoneNumber, locationDto, profilePicture);
+        return String.format("UserProfileResponseDto: firstName - %s, lastName - %s, email - %s, phoneNumber - %s, locationDto - %s, profilePicture - %s", firstName, lastName, email, phoneNumber, locationDto, profilePicture);
     }
+
 }

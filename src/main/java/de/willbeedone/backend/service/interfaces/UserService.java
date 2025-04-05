@@ -5,7 +5,7 @@ import de.willbeedone.backend.domain.dto.user_dto.request_dto.UserEmailRequestDt
 import de.willbeedone.backend.domain.dto.user_dto.request_dto.UserForOfferRequestDto;
 import de.willbeedone.backend.domain.dto.user_dto.request_dto.UserPasswordRequestDto;
 import de.willbeedone.backend.domain.dto.user_dto.request_dto.UserRequestDto;
-import de.willbeedone.backend.domain.dto.user_dto.response_dto.UpdatedUserResponseDto;
+import de.willbeedone.backend.domain.dto.user_dto.response_dto.UserProfileResponseDto;
 import de.willbeedone.backend.domain.entity.Offer;
 import de.willbeedone.backend.domain.entity.User;
 import jakarta.security.auth.message.AuthException;
@@ -14,8 +14,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
 import java.util.List;
-import java.util.Optional;
-import java.util.Set;
 
 public interface UserService extends UserDetailsService {
 
@@ -23,11 +21,13 @@ public interface UserService extends UserDetailsService {
 
     List<User> getAllUsers();
 
-    Optional<User> getUserByEmail(String email);
+    User getUserByEmail(String email);
+
+    UserProfileResponseDto getUserProfile(String email);
 
     User getActiveValidUserById(Long id);
 
-    UpdatedUserResponseDto updateUser(UserForOfferRequestDto dto, Long id);
+    void updateUser(UserForOfferRequestDto dto, String email);
 
     void deleteUserById(Long id);
 
