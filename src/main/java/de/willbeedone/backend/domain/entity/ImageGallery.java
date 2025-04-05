@@ -1,12 +1,10 @@
 package de.willbeedone.backend.domain.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import lombok.*;
 
-import java.util.Objects;
 
 @Entity
 @EqualsAndHashCode
@@ -31,7 +29,6 @@ public class ImageGallery {
     private String imageUrl;
 
     @ManyToOne
-    @JsonIgnore
     @JoinColumn(name = "offer_id")
     private Offer offer;
 
