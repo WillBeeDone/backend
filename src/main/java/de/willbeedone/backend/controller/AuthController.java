@@ -1,21 +1,21 @@
 package de.willbeedone.backend.controller;
-
-import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
-import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
-import com.google.api.client.http.javanet.NetHttpTransport;
-import com.google.api.client.json.jackson2.JacksonFactory;
+import de.willbeedone.backend.domain.dto.user_dto.request_dto.UserRequestDto;
+import de.willbeedone.backend.domain.entity.JwtAuthenticationResponse;
 import de.willbeedone.backend.domain.entity.User;
 import de.willbeedone.backend.repository.UserRepository;
 import de.willbeedone.backend.service.JwtService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Collections;
 import java.util.Map;
 
 @RestController("googleAuthController")
@@ -34,47 +34,26 @@ public class AuthController {
     @Value("${google.oauth.redirect-uri}")
     private String googleRedirectUri;
 
+    @Autowired
+    private AuthenticationManager authenticationManager;
+
     public AuthController(UserRepository userRepository, JwtService jwtService) {
         this.userRepository = userRepository;
         this.jwtService = jwtService;
     }
 
 
-    @PostMapping("/google")
-    public ResponseEntity<?> googleLogin(@RequestBody Map<String, String> payload) {
-        String idTokenString = payload.get("token");
+    @PostMapping("/login")
+    public ResponseEntity<JwtAuthenticationResponse> login(@RequestBody UserRequestDto request) {
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
+        );
+        User user = (User) authentication.getPrincipal();
+        // Генерируем токен
+        String jwt = jwtService.generateToken(user);
 
-        GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier
-                .Builder(new NetHttpTransport(), new JacksonFactory())
-                .setAudience(Collections.singletonList(googleClientId)) // используем client-id
-                .build();
-
-        try {
-            GoogleIdToken idToken = verifier.verify(idTokenString);
-            if (idToken != null) {
-                GoogleIdToken.Payload googlePayload = idToken.getPayload();
-
-                String email = googlePayload.getEmail();
-                String name = (String) googlePayload.get("name");
-
-                User user = userRepository.findByEmail(email);
-
-                if (user == null) {
-                    // Создать нового пользователя
-                    user = new User();
-                    user.setEmail(email);
-                    user.setFirstName(name);
-                    userRepository.save(user);
-                }
-                String jwt = jwtService.generateToken(email);
-
-                return ResponseEntity.ok(Map.of("jwt", jwt));
-            } else {
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid token");
-            }
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Token verification failed");
-        }
+        // Возвращаем токен клиенту
+        return ResponseEntity.ok(new JwtAuthenticationResponse(jwt));
     }
 
     @PostMapping("/refresh-token")

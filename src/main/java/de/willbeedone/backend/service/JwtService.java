@@ -1,5 +1,6 @@
 package de.willbeedone.backend.service;
 
+import de.willbeedone.backend.domain.entity.User;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
@@ -31,10 +32,10 @@ public class JwtService {
         return jws.getBody(); // Возвращает тело токена (Claims)
     }
 
-    public String generateToken(String email) {
+    public String generateToken(User user) {
         long expirationTime = 1000 * 60 * 60 * 24; // 24 часа
         return Jwts.builder()
-                .setSubject(email)
+                .setSubject(user.getEmail()) // Используем email пользователя
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + expirationTime))
                 .signWith(getSigningKey())
