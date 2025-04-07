@@ -4,6 +4,7 @@ import de.willbeedone.backend.domain.dto.offer_dto.response_dto.OfferFilterRespo
 import de.willbeedone.backend.service.interfaces.OfferService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Tag(name = "Controller for the Home Page", description = "Controller for various operations on the Home Page.")
 public class HomePageController {
 
+    @Autowired
     private final OfferService offerService;
 
     public HomePageController(OfferService offerService) {

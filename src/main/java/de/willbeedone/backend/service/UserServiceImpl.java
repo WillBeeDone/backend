@@ -1,5 +1,6 @@
 package de.willbeedone.backend.service;
 
+import de.willbeedone.backend.domain.dto.change_password_dto.ChangePasswordDto;
 import de.willbeedone.backend.domain.dto.offer_dto.response_dto.OfferFilterResponseDto;
 import de.willbeedone.backend.domain.dto.user_dto.request_dto.UserEmailRequestDto;
 import de.willbeedone.backend.domain.dto.user_dto.request_dto.UserForOfferRequestDto;
@@ -9,6 +10,7 @@ import de.willbeedone.backend.domain.dto.user_dto.response_dto.UserProfileRespon
 import de.willbeedone.backend.domain.entity.*;
 import de.willbeedone.backend.exceptions.custom_exceptions.AlreadyExistException;
 import de.willbeedone.backend.exceptions.custom_exceptions.ConfirmationCodeIsInvalidException;
+import de.willbeedone.backend.exceptions.custom_exceptions.PasswordException;
 import de.willbeedone.backend.exceptions.custom_exceptions.UserNotFoundException;
 import de.willbeedone.backend.exceptions.custom_validation_exceptions.UserValidationException;
 import de.willbeedone.backend.repository.*;
@@ -17,6 +19,7 @@ import de.willbeedone.backend.service.mapping.OfferMappingService;
 import de.willbeedone.backend.service.mapping.UserMappingService;
 import jakarta.security.auth.message.AuthException;
 import jakarta.transaction.Transactional;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -35,16 +38,27 @@ import java.util.stream.Collectors;
 @Service
 public class UserServiceImpl implements UserService {
 
+    @Autowired
     private final UserRepository userRepository;
+    @Autowired
     private final OfferRepository offerRepository;
+    @Autowired
     private final ConfirmationCodeRepository confirmationCodeRepository;
+    @Autowired
     private final ResetCodeRepository resetCodeRepository;
+    @Autowired
     private final LocationService locationService;
+    @Autowired
     private final RoleService roleService;
+    @Autowired
     private final EmailService emailService;
+    @Autowired
     private final UserMappingService userMappingService;
+    @Autowired
     private final OfferMappingService offerMappingService;
+    @Autowired
     private final BCryptPasswordEncoder encoder;
+    @Autowired
     private final ImageService imageService;
 
     public UserServiceImpl(UserRepository userRepository, ConfirmationCodeRepository confirmationCodeRepository, ResetCodeRepository resetCodeRepository, LocationService locationService, RoleService roleService, EmailService emailService, UserMappingService userMappingService, OfferMappingService offerMappingService, BCryptPasswordEncoder encoder, ImageService imageService, OfferRepository offerRepository) {
@@ -85,7 +99,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User getUserByEmail(String email) {
+    public User getActiveValidUserByEmail(String email) {
         return userRepository.findUserByEmail(email)
                 .filter(User::isActive)
                 .filter(user -> !user.isBlocked())
@@ -96,33 +110,13 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserProfileResponseDto getUserProfile(String email) {
-        return userMappingService.mapEntityToProfileResponseDto(getUserByEmail(email));
-    }
-
-    @Override
-    public User getActiveValidUserById(Long id) {
-        return userRepository.findById(id)
-                .filter(User::isActive)
-                .filter(user -> !user.isBlocked())
-                .orElseThrow(
-                        () -> new UserNotFoundException(id)
-                );
-    }
-
-    @Override
-    public User getActiveValidUserByEmail(String email) {
-        return userRepository.findUserByEmail(email)
-                .filter(User::isActive)
-                .filter(user -> !user.isBlocked())
-                .orElseThrow(
-                        () -> new UserNotFoundException(email)
-                );
+        return userMappingService.mapEntityToProfileResponseDto(getActiveValidUserByEmail(email));
     }
 
     @Override
     @Transactional
     public void updateUser(UserForOfferRequestDto dto, String email) {
-        User existingUser = getUserByEmail(email);
+        User existingUser = getActiveValidUserByEmail(email);
         Location location = locationService.getLocationByCity(dto.getLocationDto().getCityName());
 
         existingUser.setFirstName(dto.getFirstName());
@@ -161,7 +155,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public void addOfferToFavourite(String email, Long offerId) {
-        User user = getUserByEmail(email);
+        User user = getActiveValidUserByEmail(email);
         Offer offer = offerRepository.getReferenceById(offerId);
         user.getFavourites().addOffer(offer);
     }
@@ -169,7 +163,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public void removeOfferFromFavourite(String email, Long offerId) {
-        User user = getUserByEmail(email);
+        User user = getActiveValidUserByEmail(email);
         user.getFavourites().removeOfferById(offerId);
     }
 
@@ -198,7 +192,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public void removeAllOffersFromFavourite(String email) {
-        User user = getUserByEmail(email);
+        User user = getActiveValidUserByEmail(email);
         user.getFavourites().clear();
     }
 
@@ -246,7 +240,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public void forgotPassword(UserEmailRequestDto dto) throws AuthException {
-        User foundUser = getUserByEmail(dto.getEmail());
+        User foundUser = getActiveValidUserByEmail(dto.getEmail());
 
         if (!foundUser.isEnabled()) {
             throw new AuthException("User is not activated");
@@ -270,6 +264,17 @@ public class UserServiceImpl implements UserService {
         codeEntity.getUser().setPassword(encoder.encode(dto.getPassword()));
 
         resetCodeRepository.delete(codeEntity);
+    }
+
+    @Override
+    public void changePassword(ChangePasswordDto changePasswordDto, String email) {
+        User user = getActiveValidUserByEmail(email);
+
+        if (encoder.matches(changePasswordDto.getOldPassword(), user.getPassword())) {
+            user.setPassword(encoder.encode(changePasswordDto.getNewPassword()));
+        } else {
+            throw new PasswordException("Passwords don't match.");
+        }
     }
 
     //By email (= username)

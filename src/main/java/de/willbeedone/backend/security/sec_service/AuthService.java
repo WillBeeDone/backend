@@ -5,6 +5,7 @@ import de.willbeedone.backend.security.sec_dto.TokenResponseDto;
 import de.willbeedone.backend.service.interfaces.UserService;
 import io.jsonwebtoken.Claims;
 import jakarta.security.auth.message.AuthException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -14,9 +15,14 @@ import java.util.Map;
 
 @Service
 public class AuthService {
+
+    @Autowired
     private final UserService userService;
+    @Autowired
     private final TokenService tokenService;
+    @Autowired
     private final Map<String, String> refreshStorage;
+    @Autowired
     private final BCryptPasswordEncoder passwordEncoder;
 
     public AuthService(UserService userService, TokenService tokenService, BCryptPasswordEncoder passwordEncoder) {
