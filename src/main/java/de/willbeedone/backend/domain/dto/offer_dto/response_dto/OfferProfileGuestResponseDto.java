@@ -2,6 +2,7 @@ package de.willbeedone.backend.domain.dto.offer_dto.response_dto;
 
 import de.willbeedone.backend.domain.dto.category_dto.CategoryDto;
 import de.willbeedone.backend.domain.dto.user_dto.response_dto.UserFilterResponseDto;
+import de.willbeedone.backend.domain.dto.user_dto.response_dto.UserProfileResponseDto;
 import de.willbeedone.backend.domain.entity.ImageGallery;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.*;
@@ -46,21 +47,13 @@ public class OfferProfileGuestResponseDto {
     @Schema(description = "Photo gallery of work results")
     private Set<ImageGallery> images;
 
-    @Email(message = "Invalid email format")
-    @Schema(description = "User email", example = "user@example.com")
-    private String email;
-
-    @Pattern(regexp = "^\\+?[0-9]{7,15}$", message = "Invalid phone number format")
-    @Schema(description = "User phone number", example = "+1234567890")
-    private String phoneNumber;
-
     @NotNull
-    @Schema(description = "The fields from User: first name, last name, location, profile picture")
-    private UserFilterResponseDto userFilterResponseDto;
+    @Schema(description = "The fields from User: first name, last name, location, profile picture, email, phoneNumber")
+    private UserProfileResponseDto userProfileResponseDto;
 
     @Override
     public String toString() {
 
-        return String.format("OfferProfileGuestResponseDto: id - %d, title - %s, categoryResponseDto - %s, pricePerHour - %.2f, description - %s, images - %s, email -%s, phoneNumber - %s, userFilterResponseDto - %s", id, title, categoryDto, pricePerHour, description, images, email, phoneNumber, userFilterResponseDto);
+        return String.format("OfferProfileGuestResponseDto: id - %d, title - %s, categoryResponseDto - %s, pricePerHour - %.2f, description - %s, images - %s, userProfileResponseDto - %s", id, title, categoryDto, pricePerHour, description, images, userProfileResponseDto);
     }
 }
