@@ -27,6 +27,7 @@ public interface OfferRepository extends JpaRepository<Offer, Long>, JpaSpecific
 
     Optional<List<Offer>> findOffersByUser(User user);
 
+
     @Query("SELECT o FROM Offer o WHERE o.active = true ORDER BY o.pricePerHour ASC")
     Page<Offer> findActiveOffers(Pageable pageable);
 
