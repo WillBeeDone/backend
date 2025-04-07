@@ -21,7 +21,6 @@ public class AuthService {
     @Autowired
     private final TokenService tokenService;
     private final Map<String, String> refreshStorage;
-    @Autowired
     private final BCryptPasswordEncoder passwordEncoder;
 
     public AuthService(UserService userService, TokenService tokenService, BCryptPasswordEncoder passwordEncoder) {

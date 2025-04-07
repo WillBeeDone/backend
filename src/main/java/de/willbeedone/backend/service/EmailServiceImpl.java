@@ -21,9 +21,7 @@ import java.util.Map;
 @Service
 public class EmailServiceImpl implements EmailService {
 
-    @Autowired
     private final JavaMailSender sender;
-    @Autowired
     private final Configuration mailConfig;
     @Autowired
     private final ConfirmationService confirmationService;
