@@ -54,6 +54,6 @@ public class OfferProfileGuestResponseDto {
     @Override
     public String toString() {
 
-        return String.format("OfferProfileGuestResponseDto: id - %d, title - %s, categoryResponseDto - %s, pricePerHour - %.2f, description - %s, images - %s, email -%s, phoneNumber - %s, userProfileResponseDto - %s", id, title, categoryDto, pricePerHour, description, images, userProfileResponseDto);
+        return String.format("OfferProfileGuestResponseDto: id - %d, title - %s, categoryResponseDto - %s, pricePerHour - %.2f, description - %s, images - %s, userProfileResponseDto - %s", id, title, categoryDto, pricePerHour, description, images, userProfileResponseDto);
     }
 }
