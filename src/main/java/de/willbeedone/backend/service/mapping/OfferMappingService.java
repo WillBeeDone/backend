@@ -6,6 +6,8 @@ import de.willbeedone.backend.domain.entity.Offer;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
+import java.util.List;
+
 @Mapper(componentModel = "spring", uses = {UserMappingService.class, CategoryMappingService.class})
 public interface OfferMappingService {
 
@@ -23,4 +25,5 @@ public interface OfferMappingService {
     @Mapping(source = "user", target = "userFilterResponseDto")
     @Mapping(source = "category", target = "categoryDto")
     OfferProfileGuestResponseDto mapEntityToProfileGuestResponseDto(Offer entity);
+
 }

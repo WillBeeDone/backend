@@ -61,3 +61,4 @@ public class Offer {
         return String.format("Offer: id - %d, title - %s, pricePerHour - %.2f, category - %s, gallery - %s, description - %s, active - %s", id, title, pricePerHour, category, images, description, active ? "Yes" : "No");
     }
 }
+

@@ -9,6 +9,7 @@ import de.willbeedone.backend.exceptions.Response;
 import de.willbeedone.backend.security.sec_service.TokenService;
 import de.willbeedone.backend.service.interfaces.OfferService;
 import de.willbeedone.backend.service.interfaces.UserService;
+
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -19,6 +20,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/users")
@@ -185,6 +187,16 @@ public class UserController {
         String email = tokenService.extractEmailFromToken(token);
         offerService.deleteOfferById(email, offerId);
         return new Response("OK");
+    }
+
+    @Operation(summary = "Show user offers",
+            description = "Show user offers for page MyOffers.")
+    @PreAuthorize("hasAuthority('ROLE_USER')")
+    @GetMapping("/offers")
+    public Set<OfferFilterResponseDto> getMyOffers(@RequestHeader("Authorization") String token) {
+        String email = tokenService.extractEmailFromToken(token);
+
+        return userService.getOffersByUserId(email);
     }
 
 }

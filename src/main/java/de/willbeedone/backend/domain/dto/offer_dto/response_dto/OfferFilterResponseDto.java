@@ -46,9 +46,20 @@ public class OfferFilterResponseDto {
     @Schema(description = "The fields from User: first name, last name, location, profile picture")
     private UserFilterResponseDto userFilterResponseDto;
 
+    @Email(message = "Invalid email format")
+    @Schema(description = "User email", example = "user@example.com")
+    private String email;
+
+    @Pattern(regexp = "^\\+?[0-9]{7,15}$", message = "Invalid phone number format")
+    @Schema(description = "User phone number", example = "+1234567890")
+    private String phoneNumber;
+
     @Override
     public String toString() {
-        return String.format("OfferFilterResponseDto: id - %d, title - %s, categoryResponseDto - %s, pricePerHour - %.2f, description - %s, userFilterResponseDto - %s", id, title, categoryDto, pricePerHour, description, userFilterResponseDto);
+        return String.format(
+                "OfferFilterResponseDto: id - %d, title - %s, categoryResponseDto - %s, pricePerHour - %.2f, description - %s, userFilterResponseDto - %s, email - %s, phoneNumber - %s",
+                id, title, categoryDto, pricePerHour, description, userFilterResponseDto, email, phoneNumber
+        );
     }
 }
 
