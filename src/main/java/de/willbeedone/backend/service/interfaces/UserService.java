@@ -21,7 +21,7 @@ public interface UserService extends UserDetailsService {
 
     public List<Offer> getUserOffers(Long userId);
 
-    Set<OfferFilterResponseDto> getOffersByUserId(String email);
+    List<OfferFilterResponseDto> getOffersByUserId(String email);
 
     List<User> getAllUsers();
 
