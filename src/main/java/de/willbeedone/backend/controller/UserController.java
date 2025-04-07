@@ -20,6 +20,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 import java.util.Set;
 
 @RestController
@@ -193,7 +195,7 @@ public class UserController {
             description = "Show user offers for page MyOffers.")
     @PreAuthorize("hasAuthority('ROLE_USER')")
     @GetMapping("/offers")
-    public Set<OfferFilterResponseDto> getMyOffers(@RequestHeader("Authorization") String token) {
+    public List<OfferFilterResponseDto> getMyOffers(@RequestHeader("Authorization") String token) {
         String email = tokenService.extractEmailFromToken(token);
 
         return userService.getOffersByUserId(email);

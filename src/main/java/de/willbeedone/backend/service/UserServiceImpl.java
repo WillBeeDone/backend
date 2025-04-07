@@ -31,6 +31,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -87,10 +88,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Set<OfferFilterResponseDto> getOffersByUserId(String email) {
+    public List<OfferFilterResponseDto> getOffersByUserId(String email) {
         return  getActiveValidUserByEmail(email).getOffers().stream()
                 .map(offerMappingService::mapEntityToFilterResponseDto)
-                .collect(Collectors.toSet());
+                .sorted(Comparator.comparing(OfferFilterResponseDto::getPricePerHour))
+                .toList();
     }
 
     @Override
