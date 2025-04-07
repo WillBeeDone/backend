@@ -119,7 +119,6 @@ public class UserServiceImpl implements UserService {
                 );
     }
 
-
     @Override
     @Transactional
     public void updateUser(UserForOfferRequestDto dto, String email) {
