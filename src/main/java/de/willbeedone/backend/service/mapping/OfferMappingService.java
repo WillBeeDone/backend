@@ -22,7 +22,7 @@ public interface OfferMappingService {
     @Mapping(source = "category", target = "categoryDto")
     OfferFilterResponseDto mapEntityToFilterResponseDto(Offer entity);
 
-    @Mapping(source = "user", target = "userFilterResponseDto")
+    @Mapping(source = "user", target = "userProfileResponseDto")
     @Mapping(source = "category", target = "categoryDto")
     OfferProfileGuestResponseDto mapEntityToProfileGuestResponseDto(Offer entity);
 
