@@ -57,7 +57,6 @@ public class UserServiceImpl implements UserService {
     private final UserMappingService userMappingService;
     @Autowired
     private final OfferMappingService offerMappingService;
-    @Autowired
     private final BCryptPasswordEncoder encoder;
     @Autowired
     private final ImageService imageService;
