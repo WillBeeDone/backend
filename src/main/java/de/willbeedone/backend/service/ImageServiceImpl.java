@@ -45,11 +45,9 @@ public class ImageServiceImpl implements ImageService {
 
             // Загружаем файл в S3
             client.putObject(request);
-            // Получаем URL загруженного файла
-            String url = client.getUrl("will-bee-done", uniqueName).toString();
 
             // Возвращаем URL изображения
-            return url;
+            return client.getUrl("will-bee-done", uniqueName).toString();
         } catch (AmazonServiceException | IOException e) {
             // Обработка ошибок загрузки (например, если S3 не доступен)
             throw new ImageUploadException((AmazonServiceException) e);
