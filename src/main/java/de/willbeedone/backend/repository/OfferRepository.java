@@ -27,6 +27,7 @@ public interface OfferRepository extends JpaRepository<Offer, Long>, JpaSpecific
 
     Optional<List<Offer>> findOffersByUser(User user);
 
+
     @Query("SELECT o FROM Offer o WHERE o.active = true ORDER BY o.pricePerHour ASC")
     Page<Offer> findActiveOffers(Pageable pageable);
 
@@ -35,4 +36,7 @@ public interface OfferRepository extends JpaRepository<Offer, Long>, JpaSpecific
 
     @Query("from Offer")
     List<Offer> findAllOffersByPageRequest(PageRequest pageRequest);
+
+    @Query("SELECT o FROM Offer o JOIN FETCH o.user LEFT JOIN FETCH o.images WHERE o.id = :id")
+    Optional<Offer> findByIdWithUser(@Param("id") Long id);
 }

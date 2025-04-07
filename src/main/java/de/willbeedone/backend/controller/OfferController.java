@@ -3,16 +3,13 @@ package de.willbeedone.backend.controller;
 import de.willbeedone.backend.domain.dto.offer_dto.response_dto.OfferFilterResponseDto;
 import de.willbeedone.backend.domain.dto.offer_dto.response_dto.OfferProfileGuestResponseDto;
 import de.willbeedone.backend.service.interfaces.OfferService;
-import de.willbeedone.backend.service.interfaces.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.DecimalMin;
-import jakarta.validation.constraints.Pattern;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
 
@@ -27,11 +24,9 @@ public class OfferController {
 
     @Autowired
     private final OfferService offerService;
-    private final UserService userService;
 
-    public OfferController(OfferService offerService, UserService userService) {
+    public OfferController(OfferService offerService) {
         this.offerService = offerService;
-        this.userService = userService;
     }
 
     @Operation(summary = "Getting all active offers",
@@ -77,13 +72,6 @@ public class OfferController {
         PageRequest pageRequest = PageRequest.of(page, size, sortOrder);
 
         return offerService.getFilteredOffers(cityName, category, keyPhrase, minPrice, maxPrice, pageRequest);
-    }
-
-    @Operation(summary = "Delete an offer by id",
-            description = "Deletes an offer by its unique identifier.")
-    @DeleteMapping("/{id}")
-    public void deleteOfferById(@PathVariable Long id) {
-        offerService.deleteOfferById(id);
     }
 
 }

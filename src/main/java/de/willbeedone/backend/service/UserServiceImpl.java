@@ -30,6 +30,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -72,6 +73,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public Set<OfferFilterResponseDto> getOffersByUserId(String email) {
+        return  getActiveValidUserByEmail(email).getOffers().stream()
+                .map(offerMappingService::mapEntityToFilterResponseDto)
+                .collect(Collectors.toSet());
+    }
+
+    @Override
     public List<User> getAllUsers() {
         return userRepository.findAll();
     }
@@ -100,6 +108,17 @@ public class UserServiceImpl implements UserService {
                         () -> new UserNotFoundException(id)
                 );
     }
+
+    @Override
+    public User getActiveValidUserByEmail(String email) {
+        return userRepository.findUserByEmail(email)
+                .filter(User::isActive)
+                .filter(user -> !user.isBlocked())
+                .orElseThrow(
+                        () -> new UserNotFoundException(email)
+                );
+    }
+
 
     @Override
     @Transactional

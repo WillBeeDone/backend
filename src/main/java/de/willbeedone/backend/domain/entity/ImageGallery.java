@@ -9,10 +9,10 @@ import lombok.*;
 import java.util.Objects;
 
 @Entity
-@EqualsAndHashCode
-@NoArgsConstructor
 @Getter
 @Setter
+@EqualsAndHashCode(exclude = "offer")
+@NoArgsConstructor
 @Table(name = "image_gallery")
 public class ImageGallery {
 
@@ -30,7 +30,7 @@ public class ImageGallery {
     )
     private String imageUrl;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JsonIgnore
     @JoinColumn(name = "offer_id")
     private Offer offer;

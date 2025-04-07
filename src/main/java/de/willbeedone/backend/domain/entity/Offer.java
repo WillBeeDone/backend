@@ -6,17 +6,20 @@ import jakarta.validation.constraints.*;
 import lombok.*;
 
 import java.math.BigDecimal;
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
 @Getter
 @Setter
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @NoArgsConstructor
 @Table(name = "offer")
 public class Offer {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @EqualsAndHashCode.Include
     @Setter(AccessLevel.NONE)
     @Column(name = "id")
     private Long id;
@@ -41,7 +44,7 @@ public class Offer {
     private Category category;
 
     @OneToMany(mappedBy = "offer", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<ImageGallery> images;
+    private Set<ImageGallery> images = new HashSet<>();
 
     @NotNull
     @Column(name = "active", columnDefinition = "BOOLEAN DEFAULT TRUE")
@@ -49,7 +52,7 @@ public class Offer {
 
     @NotNull
     @JsonIgnore
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
 
@@ -58,3 +61,4 @@ public class Offer {
         return String.format("Offer: id - %d, title - %s, pricePerHour - %.2f, category - %s, gallery - %s, description - %s, active - %s", id, title, pricePerHour, category, images, description, active ? "Yes" : "No");
     }
 }
+

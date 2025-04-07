@@ -13,9 +13,7 @@ spring:
     hibernate:
       ddl-auto: update
     show-sql: true
-    properties:
-      hibernate:
-        format_sql: true
+
 
   liquibase:
     enabled: false

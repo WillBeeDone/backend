@@ -3,26 +3,23 @@ package de.willbeedone.backend.service;
 import de.willbeedone.backend.domain.dto.offer_dto.request_dto.OfferRequestDto;
 import de.willbeedone.backend.domain.dto.offer_dto.response_dto.OfferFilterResponseDto;
 import de.willbeedone.backend.domain.dto.offer_dto.response_dto.OfferProfileGuestResponseDto;
-import de.willbeedone.backend.domain.entity.Category;
-import de.willbeedone.backend.domain.entity.ImageGallery;
-import de.willbeedone.backend.domain.entity.Offer;
-import de.willbeedone.backend.domain.entity.User;
+import de.willbeedone.backend.domain.entity.*;
+import de.willbeedone.backend.exceptions.custom_exceptions.OfferNotBelongToUserException;
 import de.willbeedone.backend.exceptions.custom_exceptions.OfferNotFoundException;
 import de.willbeedone.backend.exceptions.custom_exceptions.UserNotFoundException;
 import de.willbeedone.backend.exceptions.custom_validation_exceptions.OfferValidationException;
 import de.willbeedone.backend.repository.CategoryRepository;
+import de.willbeedone.backend.repository.FavouriteRepository;
 import de.willbeedone.backend.repository.OfferRepository;
 import de.willbeedone.backend.service.interfaces.CategoryService;
 import de.willbeedone.backend.service.interfaces.ImageService;
 import de.willbeedone.backend.service.interfaces.OfferService;
 import de.willbeedone.backend.service.interfaces.UserService;
 import de.willbeedone.backend.service.mapping.OfferMappingService;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.*;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
@@ -35,19 +32,27 @@ public class OfferServiceImpl implements OfferService {
 
     @Autowired
     private final OfferRepository offerRepository;
+    @Autowired
     private final UserService userService;
+    @Autowired
     private final CategoryService categoryService;
+    @Autowired
     private final ImageService imageService;
+    @Autowired
     private final OfferMappingService offerMappingService;
+    @Autowired
     private final CategoryRepository categoryRepository;
+    @Autowired
+    private final FavouriteRepository favouriteRepository;
 
-    public OfferServiceImpl(OfferRepository offerRepository, UserService userService, CategoryService categoryService, ImageService imageService, OfferMappingService offerMappingService, CategoryRepository categoryRepository) {
+    public OfferServiceImpl(OfferRepository offerRepository, UserService userService, CategoryService categoryService, ImageService imageService, OfferMappingService offerMappingService, CategoryRepository categoryRepository, FavouriteRepository favouriteRepository) {
         this.offerRepository = offerRepository;
         this.userService = userService;
         this.categoryService = categoryService;
         this.imageService = imageService;
         this.offerMappingService = offerMappingService;
         this.categoryRepository = categoryRepository;
+        this.favouriteRepository = favouriteRepository;
     }
 
     @Override
@@ -73,6 +78,43 @@ public class OfferServiceImpl implements OfferService {
         }
 
         return offerRepository.save(offer);
+    }
+
+    @Override
+    @Transactional
+    public void deactivateOfferById(String email, Offer offer) {
+        if (offer.getUser().getEmail().equals(email)) {
+            offer.setActive(false);
+        } else {
+            throw new OfferNotBelongToUserException(offer.getId(), email);
+        }
+    }
+
+    @Override
+    @Transactional
+    public void activateOfferById(String email, Offer offer) {
+        if (offer.getUser().getEmail().equals(email)) {
+            offer.setActive(true);
+        } else {
+            throw new OfferNotBelongToUserException(offer.getId(), email);
+        }
+    }
+
+    @Override
+    @Transactional
+    public void deleteOfferById(String email, Long offerId) {
+        Offer offer = getOfferEntityById(offerId);
+
+        if (!offer.getUser().getEmail().equals(email)) {
+            throw new OfferNotBelongToUserException(offerId, email);
+        }
+
+        List<Favourite> favouritesWithOffer = favouriteRepository.findAllByOffersContaining(offer);
+        for (Favourite favourite : favouritesWithOffer) {
+            favourite.getOffers().remove(offer);
+        }
+
+        offerRepository.delete(offer);
     }
 
     @Override
@@ -158,7 +200,6 @@ public class OfferServiceImpl implements OfferService {
                 };
     }
 
-
     @Override
     public Optional<List<OfferFilterResponseDto>> getOfferByTitle(String title) {
         return Optional.of(offerRepository.findOfferByTitleAndActiveIsTrue(title)
@@ -184,11 +225,19 @@ public class OfferServiceImpl implements OfferService {
     }
 
     @Override
-    public Offer getActiveOfferEntityById(Long id) {
-        return offerRepository.findById(id)
+    public Offer getOfferEntityById(Long offerId) {
+        return offerRepository.findById(offerId)
+                .orElseThrow(
+                        () -> new OfferNotFoundException(offerId)
+                );
+    }
+
+    @Override
+    public Offer getActiveOfferEntityById(Long offerId) {
+        return offerRepository.findById(offerId)
                 .filter(Offer::isActive)
                 .orElseThrow(
-                        () -> new OfferNotFoundException(id));
+                        () -> new OfferNotFoundException(offerId));
     }
 
     @Override
@@ -203,14 +252,6 @@ public class OfferServiceImpl implements OfferService {
                     return existingOffer;
                 })
                 .orElseThrow(() -> new OfferNotFoundException(id));
-    }
-
-    @Override
-    public void deleteOfferById(Long id) {
-        if (!offerRepository.existsById(id)) {
-            throw new OfferNotFoundException(id);
-        }
-        offerRepository.deleteById(id);
     }
 
 }

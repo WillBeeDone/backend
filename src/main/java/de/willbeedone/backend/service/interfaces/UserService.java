@@ -1,6 +1,7 @@
 package de.willbeedone.backend.service.interfaces;
 
 import de.willbeedone.backend.domain.dto.offer_dto.response_dto.OfferFilterResponseDto;
+import de.willbeedone.backend.domain.dto.offer_dto.response_dto.OfferFilterResponseDto;
 import de.willbeedone.backend.domain.dto.user_dto.request_dto.UserEmailRequestDto;
 import de.willbeedone.backend.domain.dto.user_dto.request_dto.UserForOfferRequestDto;
 import de.willbeedone.backend.domain.dto.user_dto.request_dto.UserPasswordRequestDto;
@@ -14,16 +15,22 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
 import java.util.List;
+import java.util.Set;
 
 public interface UserService extends UserDetailsService {
 
     public List<Offer> getUserOffers(Long userId);
+
+    Set<OfferFilterResponseDto> getOffersByUserId(String email);
 
     List<User> getAllUsers();
 
     User getUserByEmail(String email);
 
     UserProfileResponseDto getUserProfile(String email);
+
+    User getActiveValidUserByEmail(String email);
+
 
     User getActiveValidUserById(Long id);
 

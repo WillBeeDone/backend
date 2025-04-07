@@ -1,9 +1,6 @@
 package de.willbeedone.backend.exceptions;
 
-import de.willbeedone.backend.exceptions.custom_exceptions.AlreadyExistException;
-import de.willbeedone.backend.exceptions.custom_exceptions.ConfirmationCodeIsInvalidException;
-import de.willbeedone.backend.exceptions.custom_exceptions.OfferNotFoundException;
-import de.willbeedone.backend.exceptions.custom_exceptions.UserNotFoundException;
+import de.willbeedone.backend.exceptions.custom_exceptions.*;
 import de.willbeedone.backend.exceptions.custom_validation_exceptions.OfferValidationException;
 import de.willbeedone.backend.exceptions.custom_validation_exceptions.UserValidationException;
 import io.swagger.v3.oas.annotations.Hidden;
@@ -86,6 +83,12 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(ConstraintViolationException.class)
     public ResponseEntity<String> handleConstraintViolation(ConstraintViolationException e) {
         return ResponseEntity.badRequest().body("Invalid parameter: " + e.getMessage());
+    }
+
+    @ExceptionHandler(OfferNotBelongToUserException.class)
+    public ResponseEntity<Response> handleException(OfferNotBelongToUserException e) {
+        Response response = new Response(e.getMessage());
+        return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
     }
 
 }
