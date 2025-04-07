@@ -23,6 +23,7 @@ public class ImageServiceImpl implements ImageService {
 
     @Autowired
     private final AmazonS3 client;
+    @Autowired
     private final ImageGalleryMappingService imageGalleryMappingService;
 
     public ImageServiceImpl(AmazonS3 client, ImageGalleryMappingService imageGalleryMappingService) {

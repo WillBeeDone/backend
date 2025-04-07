@@ -3,6 +3,7 @@ package de.willbeedone.backend.controller;
 import de.willbeedone.backend.service.interfaces.CategoryService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -12,6 +13,7 @@ import java.util.List;
 @Tag(name = "Category controller", description = "Controller for various operations with Offers' categories.")
 public class CategoryController {
 
+    @Autowired
     private final CategoryService categoryService;
 
     public CategoryController(CategoryService categoryService) {

@@ -1,6 +1,6 @@
 package de.willbeedone.backend.service.interfaces;
 
-import de.willbeedone.backend.domain.dto.offer_dto.response_dto.OfferFilterResponseDto;
+import de.willbeedone.backend.domain.dto.change_password_dto.ChangePasswordDto;
 import de.willbeedone.backend.domain.dto.offer_dto.response_dto.OfferFilterResponseDto;
 import de.willbeedone.backend.domain.dto.user_dto.request_dto.UserEmailRequestDto;
 import de.willbeedone.backend.domain.dto.user_dto.request_dto.UserForOfferRequestDto;
@@ -25,14 +25,9 @@ public interface UserService extends UserDetailsService {
 
     List<User> getAllUsers();
 
-    User getUserByEmail(String email);
-
     UserProfileResponseDto getUserProfile(String email);
 
     User getActiveValidUserByEmail(String email);
-
-
-    User getActiveValidUserById(Long id);
 
     void updateUser(UserForOfferRequestDto dto, String email);
 
@@ -55,5 +50,7 @@ public interface UserService extends UserDetailsService {
     void forgotPassword(UserEmailRequestDto dto) throws AuthException;
 
     void resetPassword(String code, UserPasswordRequestDto dto);
+
+    void changePassword(ChangePasswordDto changePasswordDto, String email);
 
 }
