@@ -4,6 +4,7 @@ import de.willbeedone.backend.domain.dto.offer_dto.request_dto.OfferRequestDto;
 import de.willbeedone.backend.domain.dto.offer_dto.response_dto.OfferFilterResponseDto;
 import de.willbeedone.backend.domain.dto.offer_dto.response_dto.OfferProfileGuestResponseDto;
 import de.willbeedone.backend.domain.entity.Offer;
+import jakarta.security.auth.message.AuthException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -15,6 +16,12 @@ import java.util.Optional;
 public interface OfferService {
 
     Offer addNewOffer(OfferRequestDto request, String email);
+
+    void deactivateOfferById(String email, Offer offer);
+
+    void activateOfferById(String email, Offer offer);
+
+    void deleteOfferById(String email, Long offerId);
 
     Page<OfferFilterResponseDto> getActiveOffersByCity(String cityName, Pageable pageable);
 
@@ -30,11 +37,11 @@ public interface OfferService {
 
     Optional<OfferProfileGuestResponseDto> getActiveOfferById(Long id);
 
-    Offer getActiveOfferEntityById(Long id);
+    Offer getOfferEntityById(Long offerId);
+
+    Offer getActiveOfferEntityById(Long offerId);
 
     Offer updateOffer(OfferRequestDto dto, Long id);
-
-    void deleteOfferById(Long id);
 
 }
 

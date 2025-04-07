@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -31,7 +32,8 @@ public class Favourite {
             joinColumns = @JoinColumn(name = "favourite_id"),
             inverseJoinColumns = @JoinColumn(name = "offer_id")
     )
-    private Set<Offer> offers;
+    private Set<Offer> offers = new HashSet<>();
+    ;
 
     //Add new offer to favourites
     public void addOffer(Offer offer) {

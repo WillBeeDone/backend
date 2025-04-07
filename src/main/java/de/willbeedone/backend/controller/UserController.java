@@ -113,8 +113,8 @@ public class UserController {
         return new Response("OK");
     }
 
-    @Operation(summary = "Update user's profile",
-            description = "Updates user's profile, filling all missing fields.")
+    @Operation(summary = "Show user's profile",
+            description = "Shows user's profile.")
     @PreAuthorize("hasAuthority('ROLE_USER')")
     @GetMapping
     public UserProfileResponseDto getUserProfile(
@@ -131,7 +131,7 @@ public class UserController {
     public Response updateUserProfileForOffer(
             @RequestHeader("Authorization") String token,
             @RequestBody UserForOfferRequestDto userDto
-            ) {
+    ) {
         String email = tokenService.extractEmailFromToken(token);
         userService.updateUser(userDto, email);
         return new Response("OK");
@@ -144,9 +144,44 @@ public class UserController {
     public Offer addNewOffer(
             @RequestHeader("Authorization") String token,
             @RequestBody OfferRequestDto offerDto
-            ) {
+    ) {
         String email = tokenService.extractEmailFromToken(token);
         return offerService.addNewOffer(offerDto, email);
+    }
+
+    @Operation(summary = "Deactivate offer",
+            description = "Deactivate user's offer by its id.")
+    @PreAuthorize("hasAuthority('ROLE_USER')")
+    @PutMapping("/offers/{offerId}")
+    public Response changeOfferActivation(
+            @RequestHeader("Authorization") String token,
+
+            @Parameter(description = "Offer unique identifier", example = "1")
+            @PathVariable Long offerId
+    ) {
+        String email = tokenService.extractEmailFromToken(token);
+        Offer offer = offerService.getOfferEntityById(offerId);
+        if (!offer.isActive()) {
+            offerService.activateOfferById(email, offer);
+            return new Response("OK");
+        }
+        offerService.deactivateOfferById(email, offer);
+        return new Response("OK");
+    }
+
+    @Operation(summary = "Delete offer",
+            description = "Delete user's offer by its id.")
+    @PreAuthorize(" hasAuthority('ROLE_USER')")
+    @DeleteMapping("/offers/{offerId}")
+    public Response deleteOfferById(
+            @RequestHeader("Authorization") String token,
+
+            @Parameter(description = "Offer unique identifier", example = "1")
+            @PathVariable Long offerId
+    ) {
+        String email = tokenService.extractEmailFromToken(token);
+        offerService.deleteOfferById(email, offerId);
+        return new Response("OK");
     }
 
 }

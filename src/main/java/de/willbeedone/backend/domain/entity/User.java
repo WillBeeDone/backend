@@ -19,7 +19,7 @@ import java.util.Set;
 @Entity
 @Getter
 @Setter
-@EqualsAndHashCode
+@EqualsAndHashCode(exclude = {"offers", "favourites"})
 @NoArgsConstructor
 @Table(name = "user")
 public class User implements UserDetails {
