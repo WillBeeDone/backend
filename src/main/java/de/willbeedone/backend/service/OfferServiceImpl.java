@@ -16,7 +16,6 @@ import de.willbeedone.backend.service.interfaces.ImageService;
 import de.willbeedone.backend.service.interfaces.OfferService;
 import de.willbeedone.backend.service.interfaces.UserService;
 import de.willbeedone.backend.service.mapping.OfferMappingService;
-import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.*;
@@ -63,7 +62,7 @@ public class OfferServiceImpl implements OfferService {
         Category category = categoryRepository.findCategoryByName(offerDto.getCategoryName());
         offer.setCategory(category);
 
-        User user = userService.getUserByEmail(email);
+        User user = userService.getActiveValidUserByEmail(email);
         if (user == null) {
             throw new UserNotFoundException("User with email " + email + " not found");
         }
