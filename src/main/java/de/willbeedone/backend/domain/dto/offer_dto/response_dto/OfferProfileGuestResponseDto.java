@@ -30,6 +30,7 @@ public class OfferProfileGuestResponseDto {
     @Schema(description = "Short offer description", example = "Super sexy plumber will fix your pipes.")
     private String title;
 
+    @NotNull
     @Schema(description = "Offer categoryDto")
     private CategoryDto categoryDto;
 
@@ -46,10 +47,12 @@ public class OfferProfileGuestResponseDto {
     @Schema(description = "Photo gallery of work results")
     private Set<ImageGallery> images;
 
+    @NotBlank(message = "Description cannot be empty")
     @Email(message = "Invalid email format")
     @Schema(description = "User email", example = "user@example.com")
     private String email;
 
+    @NotBlank(message = "Description cannot be empty")
     @Pattern(regexp = "^\\+?[0-9]{7,15}$", message = "Invalid phone number format")
     @Schema(description = "User phone number", example = "+1234567890")
     private String phoneNumber;
