@@ -45,8 +45,8 @@ public class OfferController {
         return offerService.getActiveOfferById(id);
     }
     
-    @Operation(summary = "Getting all or filtered pageable offers",
-            description = "Returns all pageable active offers or filtered by Category, Location or Key phrase from searching field. Filtration can include all, part or none of these fields.")
+    @Operation(summary = "Getting filtered pageable offers",
+            description = "Returns pageable offers filtered by Category, Location or Key phrase from searching field. Filtration can include all, part or none of these fields.")
     @GetMapping
     public Page<OfferFilterResponseDto> getFilteredOffers(
             @Parameter(description = "City name", example = "Berlin")

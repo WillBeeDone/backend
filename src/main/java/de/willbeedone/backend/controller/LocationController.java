@@ -25,26 +25,4 @@ public class LocationController {
         return locationService.getAllLocationsCityNames();
     }
 
-//    @GetMapping("/{id}")
-//    public Location getLocationById(@PathVariable Long id) {
-//        return locationService.getLocationById(id);
-//    }
-//
-//    //GET /locations/search?cityName=Berlin
-//    @GetMapping("/search")
-//    public List<Location> getLocationByCity(String cityName) {
-//        return locationService.getLocationByCity(cityName);
-//    }
-//
-//   //@PreAuthorize("hasRole('ADMIN')")
-//    @PostMapping("/new")
-//    public Location addNewLocation(@RequestBody Location location) {
-//        return locationService.addNewLocation(location); //dto если нужно создам
-//    }
-//
-//    @DeleteMapping("/{id}")
-//    public void deleteLocation(@PathVariable Long id) {
-//        locationService.deleteLocation(id);
-//    }
-
 }
