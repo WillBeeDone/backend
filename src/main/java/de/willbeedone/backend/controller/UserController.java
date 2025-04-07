@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -127,10 +128,10 @@ public class UserController {
     @Operation(summary = "Update user's profile",
             description = "Updates user's profile, filling all missing fields.")
     @PreAuthorize("hasAuthority('ROLE_USER')")
-    @PutMapping
+    @PutMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public Response updateUserProfileForOffer(
             @RequestHeader("Authorization") String token,
-            @RequestBody UserForOfferRequestDto userDto
+            @ModelAttribute UserForOfferRequestDto userDto
     ) {
         String email = tokenService.extractEmailFromToken(token);
         userService.updateUser(userDto, email);
@@ -140,10 +141,12 @@ public class UserController {
     @Operation(summary = "Add new offer",
             description = "Adds new user's offer.")
     @PreAuthorize("hasAuthority('ROLE_USER')")
-    @PostMapping("/offers")
+    @PostMapping(
+            value = "/offers",
+            consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public Offer addNewOffer(
             @RequestHeader("Authorization") String token,
-            @RequestBody OfferRequestDto offerDto
+            @ModelAttribute OfferRequestDto offerDto
     ) {
         String email = tokenService.extractEmailFromToken(token);
         return offerService.addNewOffer(offerDto, email);
