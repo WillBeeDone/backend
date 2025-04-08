@@ -270,6 +270,10 @@ public class UserServiceImpl implements UserService {
                         () -> new RuntimeException("Reset code not found")
                 );
 
+        if (encoder.matches(dto.getPassword(), codeEntity.getUser().getPassword())) {
+            throw new PasswordException("New password must differ from the old password.");
+        }
+
         codeEntity.getUser().setPassword(encoder.encode(dto.getPassword()));
 
         resetCodeRepository.delete(codeEntity);
