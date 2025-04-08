@@ -3,95 +3,134 @@ package de.willbeedone.backend.service;
 import de.willbeedone.backend.domain.dto.offer_dto.request_dto.OfferRequestDto;
 import de.willbeedone.backend.domain.dto.offer_dto.response_dto.OfferFilterResponseDto;
 import de.willbeedone.backend.domain.dto.offer_dto.response_dto.OfferProfileGuestResponseDto;
-import de.willbeedone.backend.domain.entity.Category;
-import de.willbeedone.backend.domain.entity.Offer;
-import de.willbeedone.backend.domain.entity.User;
+import de.willbeedone.backend.domain.entity.*;
+import de.willbeedone.backend.exceptions.custom_exceptions.OfferNotBelongToUserException;
 import de.willbeedone.backend.exceptions.custom_exceptions.OfferNotFoundException;
 import de.willbeedone.backend.exceptions.custom_exceptions.UserNotFoundException;
 import de.willbeedone.backend.exceptions.custom_validation_exceptions.OfferValidationException;
 import de.willbeedone.backend.repository.CategoryRepository;
+import de.willbeedone.backend.repository.FavouriteRepository;
 import de.willbeedone.backend.repository.OfferRepository;
-import de.willbeedone.backend.repository.UserRepository;
 import de.willbeedone.backend.service.interfaces.CategoryService;
+import de.willbeedone.backend.service.interfaces.ImageService;
 import de.willbeedone.backend.service.interfaces.OfferService;
+import de.willbeedone.backend.service.interfaces.UserService;
 import de.willbeedone.backend.service.mapping.OfferMappingService;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.*;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
 public class OfferServiceImpl implements OfferService {
 
     @Autowired
-    private final OfferRepository repository;
+    private final OfferRepository offerRepository;
+    @Autowired
+    private final UserService userService;
+    @Autowired
     private final CategoryService categoryService;
-    private final OfferMappingService mappingService;
+    @Autowired
+    private final ImageService imageService;
+    @Autowired
+    private final OfferMappingService offerMappingService;
+    @Autowired
     private final CategoryRepository categoryRepository;
-    private final UserRepository userRepository;
+    @Autowired
+    private final FavouriteRepository favouriteRepository;
 
-    public OfferServiceImpl(OfferRepository repository, CategoryService categoryService, OfferMappingService mappingService, CategoryRepository categoryRepository, UserRepository userRepository) {
-        this.repository = repository;
+    public OfferServiceImpl(OfferRepository offerRepository, UserService userService, CategoryService categoryService, ImageService imageService, OfferMappingService offerMappingService, CategoryRepository categoryRepository, FavouriteRepository favouriteRepository) {
+        this.offerRepository = offerRepository;
+        this.userService = userService;
         this.categoryService = categoryService;
-        this.mappingService = mappingService;
+        this.imageService = imageService;
+        this.offerMappingService = offerMappingService;
         this.categoryRepository = categoryRepository;
-        this.userRepository = userRepository;
+        this.favouriteRepository = favouriteRepository;
     }
 
     @Override
-    public Offer addOfferToUser(Long userId, OfferRequestDto request) {
-        try {
-            User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
+    @Transactional
+    public Offer addNewOffer(OfferRequestDto offerDto, String email) {
+        Offer offer = offerMappingService.mapRequestDtoToEntity(offerDto);
 
-            Category category = categoryService.getCategoryByName(request.getCategoryDto().getName());
-            Offer newOffer = mappingService.mapRequestDtoToEntity(request);
+        Category category = categoryRepository.findCategoryByName(offerDto.getCategoryName());
+        offer.setCategory(category);
 
-            newOffer.setCategory(category);
-            newOffer.setUser(user);
+        User user = userService.getActiveValidUserByEmail(email);
+        if (user == null) {
+            throw new UserNotFoundException("User with email " + email + " not found");
+        }
+        offer.setUser(user);
 
-            return repository.save(newOffer);
-        } catch (DataIntegrityViolationException e) {
-            throw new OfferValidationException(e);
+        if (offerDto.getImages() != null && !offerDto.getImages().isEmpty()) {
+            Set<ImageGallery> images = offerDto.getImages().stream()
+                    .map(imageGallery -> imageService.mapFileToImageGalleryDto(imageGallery, offer))
+                    .collect(Collectors.toSet());
+
+            offer.setImages(images);
+        }
+
+        return offerRepository.save(offer);
+    }
+
+    @Override
+    @Transactional
+    public void deactivateOfferById(String email, Offer offer) {
+        if (offer.getUser().getEmail().equals(email)) {
+            offer.setActive(false);
+        } else {
+            throw new OfferNotBelongToUserException(offer.getId(), email);
         }
     }
 
     @Override
-    public Offer addNewOffer(OfferRequestDto request) {
-        try {
-            Category category = categoryService.getCategoryByName(request.getCategoryDto().getName());
-            Offer newOffer = mappingService.mapRequestDtoToEntity(request);
-            newOffer.setCategory(category);
-            return repository.save(newOffer);
-        } catch (DataIntegrityViolationException e) {
-            throw new OfferValidationException(e);
+    @Transactional
+    public void activateOfferById(String email, Offer offer) {
+        if (offer.getUser().getEmail().equals(email)) {
+            offer.setActive(true);
+        } else {
+            throw new OfferNotBelongToUserException(offer.getId(), email);
         }
+    }
+
+    @Override
+    @Transactional
+    public void deleteOfferById(String email, Long offerId) {
+        Offer offer = getOfferEntityById(offerId);
+
+        if (!offer.getUser().getEmail().equals(email)) {
+            throw new OfferNotBelongToUserException(offerId, email);
+        }
+
+        List<Favourite> favouritesWithOffer = favouriteRepository.findAllByOffersContaining(offer);
+        for (Favourite favourite : favouritesWithOffer) {
+            favourite.getOffers().remove(offer);
+        }
+
+        offerRepository.delete(offer);
     }
 
     @Override
     public List<OfferFilterResponseDto> getAllActiveOffers() {
-        return repository
+        return offerRepository
                 .findAll()
                 .stream()
                 .filter(Offer::isActive)
                 .sorted(Comparator.comparing(Offer::getPricePerHour))
-                .map(mappingService::mapEntityToFilterResponseDto)
+                .map(offerMappingService::mapEntityToFilterResponseDto)
                 .toList();
     }
 
     @Override
     public Page<OfferFilterResponseDto> getAllActiveOffers(Pageable pageable) {
-        return repository.findActiveOffers(pageable)
-                .map(mappingService::mapEntityToFilterResponseDto);
+        return offerRepository.findActiveOffers(pageable)
+                .map(offerMappingService::mapEntityToFilterResponseDto);
     }
 
     @Override
@@ -121,10 +160,10 @@ public class OfferServiceImpl implements OfferService {
             spec = spec.and((root, query, cb) -> cb.lessThanOrEqualTo(root.get("pricePerHour"), maxPrice));
         }
 
-        Page<Offer> pagedData = repository.findAll(spec, pageRequest);
+        Page<Offer> pagedData = offerRepository.findAll(spec, pageRequest);
 
         List<OfferFilterResponseDto> offerDtos = pagedData.getContent().stream()
-                .map(mappingService::mapEntityToFilterResponseDto)
+                .map(offerMappingService::mapEntityToFilterResponseDto)
                 .collect(Collectors.toList());
 
         return new PageImpl<>(offerDtos, pageRequest, pagedData.getTotalElements());
@@ -160,59 +199,58 @@ public class OfferServiceImpl implements OfferService {
                 };
     }
 
-
     @Override
     public Optional<List<OfferFilterResponseDto>> getOfferByTitle(String title) {
-        return Optional.of(repository.findOfferByTitleAndActiveIsTrue(title)
+        return Optional.of(offerRepository.findOfferByTitleAndActiveIsTrue(title)
                 .stream()
-                .map(mappingService::mapEntityToFilterResponseDto)
+                .map(offerMappingService::mapEntityToFilterResponseDto)
                 .toList());
     }
 
     @Override
-    public  Optional<OfferProfileGuestResponseDto> getActiveOfferById(Long id) {
-        return Optional.ofNullable(mappingService.mapEntityToProfileGuestResponseDto(getActiveOfferEntityById(id)));
+    public Optional<OfferProfileGuestResponseDto> getActiveOfferById(Long id) {
+        return Optional.ofNullable(offerMappingService.mapEntityToProfileGuestResponseDto(getActiveOfferEntityById(id)));
 
     }
 
     @Override
     public Page<OfferFilterResponseDto> getActiveOffersByCity(String cityName, Pageable pageable) {
-        Page<Offer> offerPage = repository.findByCity(cityName, pageable);
+        Page<Offer> offerPage = offerRepository.findByCity(cityName, pageable);
 
         if (offerPage.isEmpty()) {
             throw new OfferNotFoundException("No active offers found in city: " + cityName);
         }
-        return offerPage.map(mappingService::mapEntityToFilterResponseDto);
+        return offerPage.map(offerMappingService::mapEntityToFilterResponseDto);
     }
 
     @Override
-    public Offer getActiveOfferEntityById(Long id) {
-        return repository.findById(id)
+    public Offer getOfferEntityById(Long offerId) {
+        return offerRepository.findById(offerId)
+                .orElseThrow(
+                        () -> new OfferNotFoundException(offerId)
+                );
+    }
+
+    @Override
+    public Offer getActiveOfferEntityById(Long offerId) {
+        return offerRepository.findById(offerId)
                 .filter(Offer::isActive)
                 .orElseThrow(
-                        () -> new OfferNotFoundException(id));
+                        () -> new OfferNotFoundException(offerId));
     }
 
     @Override
     public Offer updateOffer(OfferRequestDto dto, Long id) {
-        Category category = categoryService.getCategoryByName(dto.getCategoryDto().getName());
+        Category category = categoryService.getCategoryByName(dto.getCategoryName());
 
-        return repository.findById(id)
+        return offerRepository.findById(id)
                 .map(existingOffer -> {
-                    if (dto.getCategoryDto().getName() != null) existingOffer.setCategory(category);
+                    if (dto.getCategoryName() != null) existingOffer.setCategory(category);
                     if (dto.getDescription() != null) existingOffer.setDescription(dto.getDescription());
                     if (dto.getTitle() != null) existingOffer.setTitle(dto.getTitle());
                     return existingOffer;
                 })
                 .orElseThrow(() -> new OfferNotFoundException(id));
-    }
-
-    @Override
-    public void deleteOfferById(Long id) {
-        if (!repository.existsById(id)) {
-            throw new OfferNotFoundException(id);
-        }
-        repository.deleteById(id);
     }
 
 }

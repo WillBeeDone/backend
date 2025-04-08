@@ -4,6 +4,7 @@ import de.willbeedone.backend.domain.dto.offer_dto.response_dto.OfferFilterRespo
 import de.willbeedone.backend.service.interfaces.OfferService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Tag(name = "Controller for the Home Page", description = "Controller for various operations on the Home Page.")
 public class HomePageController {
 
+    @Autowired
     private final OfferService offerService;
 
     public HomePageController(OfferService offerService) {
@@ -22,11 +24,11 @@ public class HomePageController {
     }
 
     @Operation(summary = "Getting all pageable active offers",
-            description = "Returns all pageable active offers for the gallery. Default size - 9.")
+            description = "Returns all pageable active offers for the gallery. Default size - 12.")
     @GetMapping("/")
     public Page<OfferFilterResponseDto> getAllActiveOffers(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "9") int size
+            @RequestParam(defaultValue = "12") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
         return offerService.getAllActiveOffers(pageable);

@@ -8,5 +8,5 @@ import java.util.Optional;
 
 @Repository
 public interface ImageGalleryRepository extends JpaRepository<ImageGallery, Long> {
-
+    void deleteByOfferId(Long offerId);
 }

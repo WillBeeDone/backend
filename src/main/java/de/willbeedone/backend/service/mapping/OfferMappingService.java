@@ -6,14 +6,15 @@ import de.willbeedone.backend.domain.entity.Offer;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
+import java.util.List;
+
 @Mapper(componentModel = "spring", uses = {UserMappingService.class, CategoryMappingService.class})
 public interface OfferMappingService {
 
     @Mapping(target = "id", ignore = true)
-    @Mapping(target = "description", ignore = true)
+    @Mapping(target = "category", ignore = true)
     @Mapping(target = "images", ignore = true)
     @Mapping(target = "user", ignore = true)
-    @Mapping(target = "category", ignore = true)
     @Mapping(target = "active", constant = "true")
     Offer mapRequestDtoToEntity(OfferRequestDto dto);
 
@@ -21,7 +22,8 @@ public interface OfferMappingService {
     @Mapping(source = "category", target = "categoryDto")
     OfferFilterResponseDto mapEntityToFilterResponseDto(Offer entity);
 
-    @Mapping(source = "user", target = "userFilterResponseDto")
+    @Mapping(source = "user", target = "userProfileResponseDto")
     @Mapping(source = "category", target = "categoryDto")
     OfferProfileGuestResponseDto mapEntityToProfileGuestResponseDto(Offer entity);
+
 }

@@ -2,6 +2,7 @@ package de.willbeedone.backend.domain.dto.offer_dto.response_dto;
 
 import de.willbeedone.backend.domain.dto.category_dto.CategoryDto;
 import de.willbeedone.backend.domain.dto.user_dto.response_dto.UserFilterResponseDto;
+import de.willbeedone.backend.domain.dto.user_dto.response_dto.UserProfileResponseDto;
 import de.willbeedone.backend.domain.entity.ImageGallery;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.*;
@@ -30,7 +31,7 @@ public class OfferProfileGuestResponseDto {
     @Schema(description = "Short offer description", example = "Super sexy plumber will fix your pipes.")
     private String title;
 
-    @Schema(description = "Offer category")
+    @Schema(description = "Offer categoryDto")
     private CategoryDto categoryDto;
 
     @NotNull(message = "Price per hour cannot be empty")
@@ -47,12 +48,12 @@ public class OfferProfileGuestResponseDto {
     private Set<ImageGallery> images;
 
     @NotNull
-    @Schema(description = "The fields from User: first name, last name, location, profile picture")
-    private UserFilterResponseDto userFilterResponseDto;
+    @Schema(description = "The fields from User: first name, last name, location, profile picture, email, phoneNumber")
+    private UserProfileResponseDto userProfileResponseDto;
 
     @Override
     public String toString() {
 
-        return String.format("OfferProfileGuestResponseDto: id - %d, title - %s, categoryResponseDto - %s, pricePerHour - %.2f, description - %s, images - %s, userFilterResponseDto - %s", id, title, categoryDto, pricePerHour, description, images, userFilterResponseDto);
+        return String.format("OfferProfileGuestResponseDto: id - %d, title - %s, categoryResponseDto - %s, pricePerHour - %.2f, description - %s, images - %s, userProfileResponseDto - %s", id, title, categoryDto, pricePerHour, description, images, userProfileResponseDto);
     }
 }

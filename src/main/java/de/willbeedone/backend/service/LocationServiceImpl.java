@@ -3,6 +3,7 @@ package de.willbeedone.backend.service;
 import de.willbeedone.backend.domain.entity.Location;
 import de.willbeedone.backend.repository.LocationRepository;
 import de.willbeedone.backend.service.interfaces.LocationService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -10,6 +11,7 @@ import java.util.List;
 @Service
 public class LocationServiceImpl  implements LocationService {
 
+    @Autowired
     private final LocationRepository locationRepository;
 
     public LocationServiceImpl(LocationRepository locationRepository) {

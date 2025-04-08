@@ -3,6 +3,7 @@ package de.willbeedone.backend.controller;
 import de.willbeedone.backend.service.interfaces.LocationService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -12,6 +13,7 @@ import java.util.List;
 @Tag(name = "Location controller", description = "Controller for various operations with Users' (Offers') Locations.")
 public class LocationController {
 
+    @Autowired
     private final LocationService locationService;
 
     public LocationController(LocationService locationService) {

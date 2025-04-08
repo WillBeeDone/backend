@@ -3,6 +3,7 @@ package de.willbeedone.backend.controller;
 import de.willbeedone.backend.service.interfaces.CategoryService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -12,14 +13,15 @@ import java.util.List;
 @Tag(name = "Category controller", description = "Controller for various operations with Offers' categories.")
 public class CategoryController {
 
+    @Autowired
     private final CategoryService categoryService;
 
     public CategoryController(CategoryService categoryService) {
         this.categoryService = categoryService;
     }
 
-    @Operation(summary = "Getting all category names",
-            description = "Returns the list of all category names (e.g. for dropdown on the Home Page.")
+    @Operation(summary = "Getting all categoryDto names",
+            description = "Returns the list of all categoryDto names (e.g. for dropdown on the Home Page.")
     @GetMapping
     public List<String> getAllCategoriesNames() {
         return categoryService.getAllCategoriesNames();
@@ -32,14 +34,14 @@ public class CategoryController {
 //
 //    //@PreAuthorize("hasRole('ADMIN')")
 //    @PostMapping("/new")
-//    public Category addNewCategory(@RequestBody Category category) {
-//        return categoryService.addNewCategory(category);
+//    public Category addNewCategory(@RequestBody Category categoryDto) {
+//        return categoryService.addNewCategory(categoryDto);
 //    }
 //
 //    @PutMapping("/{id}")
 //    @PreAuthorize("hasRole('ADMIN')")
-//    public Category updateCategory(@PathVariable Long id, @RequestBody Category category) {
-//        return categoryService.updateCategory(id, category);
+//    public Category updateCategory(@PathVariable Long id, @RequestBody Category categoryDto) {
+//        return categoryService.updateCategory(id, categoryDto);
 //    }
 //
 //    //@PreAuthorize("hasRole('ADMIN')")

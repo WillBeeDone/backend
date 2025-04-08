@@ -4,6 +4,7 @@ import de.willbeedone.backend.domain.dto.user_dto.request_dto.UserRequestDto;
 import de.willbeedone.backend.service.interfaces.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 @Tag(name = "Registration controller", description = "Controller for registration and registration confirmation.")
 public class RegistrationController {
 
+    @Autowired
     private final UserService userService;
 
     public RegistrationController(UserService userService) {

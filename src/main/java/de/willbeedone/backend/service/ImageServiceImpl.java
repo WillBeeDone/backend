@@ -22,34 +22,17 @@ import java.util.UUID;
 @Service
 public class ImageServiceImpl implements ImageService {
 
-    @Autowired
     private final AmazonS3 client;
-    private final OfferRepository repository;
-    private final OfferServiceImpl offerService;
-
     @Autowired
-    @Lazy
-    private ImageServiceImpl self;
+    private final ImageGalleryMappingService imageGalleryMappingService;
 
-    public ImageServiceImpl(AmazonS3 client, OfferRepository repository, OfferServiceImpl offerService) {
+    public ImageServiceImpl(AmazonS3 client, ImageGalleryMappingService imageGalleryMappingService) {
         this.client = client;
-        this.repository = repository;
-        this.offerService = offerService;
+        this.imageGalleryMappingService = imageGalleryMappingService;
     }
 
-
-
-        private String generateUniqueFileName(MultipartFile file) {
-            // Генерация уникального имени файла
-            String sourceFileName = file.getOriginalFilename();
-            int dotIndex = sourceFileName.lastIndexOf(".");
-            String filename = sourceFileName.substring(0, dotIndex);
-            String extension = sourceFileName.substring(dotIndex);
-            return String.format("%s-%s%s", filename, UUID.randomUUID(), extension);
-        }
-
     @Override
-    public String uploadImage(MultipartFile file,Long userId) {
+    public String uploadImage(MultipartFile file) {
         try {
             // Генерация уникального имени файла
             String uniqueName = generateUniqueFileName(file);
@@ -63,33 +46,31 @@ public class ImageServiceImpl implements ImageService {
 
             // Загружаем файл в S3
             client.putObject(request);
-            // Получаем URL загруженного файла
-            String url = client.getUrl("will-bee-done", uniqueName).toString();
-
-            // Получаем активное предложение по userId
-            Offer offer = offerService.getActiveOfferEntityById(userId);
-            if (offer == null) {
-                throw new OfferNotFoundException(userId); // Если предложение не найдено, выбрасываем исключение
-            }
-
-            // Создаем новый объект ImageGallery
-            ImageGallery newImage = new ImageGallery();
-            newImage.setImageUrl(url); // Устанавливаем URL изображения
-            newImage.setOffer(offer); // Привязываем к предложению
-
-            // Добавляем новое изображение в список изображений предложения
-            offer.getImages().add(newImage);
-
-            // Сохраняем обновленное предложение в базе
-            repository.save(offer);
 
             // Возвращаем URL изображения
-            return url;
+            return client.getUrl("will-bee-done", uniqueName).toString();
         } catch (AmazonServiceException | IOException e) {
             // Обработка ошибок загрузки (например, если S3 не доступен)
             throw new ImageUploadException((AmazonServiceException) e);
         }
     }
+
+    @Override
+    public ImageGallery mapFileToImageGalleryDto(MultipartFile file, Offer offer) {
+        String imageUrl = uploadImage(file);
+        ImageGalleryDto dto = new ImageGalleryDto();
+        dto.setImageUrl(imageUrl);
+        dto.setOffer(offer);
+        return imageGalleryMappingService.mapRequestDtoToEntity(dto);
     }
 
+    private String generateUniqueFileName(MultipartFile file) {
+        // Генерация уникального имени файла
+        String sourceFileName = file.getOriginalFilename();
+        int dotIndex = sourceFileName.lastIndexOf(".");
+        String filename = sourceFileName.substring(0, dotIndex);
+        String extension = sourceFileName.substring(dotIndex);
+        return String.format("%s-%s%s", filename, UUID.randomUUID(), extension);
+    }
+}
 

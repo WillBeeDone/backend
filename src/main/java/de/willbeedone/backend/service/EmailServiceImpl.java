@@ -8,6 +8,7 @@ import freemarker.cache.ClassTemplateLoader;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import jakarta.mail.internet.MimeMessage;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -22,7 +23,9 @@ public class EmailServiceImpl implements EmailService {
 
     private final JavaMailSender sender;
     private final Configuration mailConfig;
+    @Autowired
     private final ConfirmationService confirmationService;
+    @Autowired
     private final ResetService resetService;
 
     @Value("${mail.from}")

@@ -29,7 +29,7 @@ public class OfferFilterResponseDto {
     private String title;
 
     @NotNull
-    @Schema(description = "Offer category")
+    @Schema(description = "Offer categoryDto")
     private CategoryDto categoryDto;
 
     @NotNull(message = "Price per hour cannot be empty")
@@ -42,13 +42,20 @@ public class OfferFilterResponseDto {
     @Schema(description = "Offer detailed description")
     private String description;
 
+    @NotBlank
+    @Schema(description = "Offer's activity status")
+    private boolean active;
+
     @NotNull
     @Schema(description = "The fields from User: first name, last name, location, profile picture")
     private UserFilterResponseDto userFilterResponseDto;
 
     @Override
     public String toString() {
-        return String.format("OfferFilterResponseDto: id - %d, title - %s, categoryResponseDto - %s, pricePerHour - %.2f, description - %s, userFilterResponseDto - %s", id, title, categoryDto, pricePerHour, description, userFilterResponseDto);
+        return String.format(
+                "OfferFilterResponseDto: id - %d, title - %s, categoryResponseDto - %s, pricePerHour - %.2f, description - %s, active - %s, userFilterResponseDto - %s",
+                id, title, categoryDto, pricePerHour, description, active ? "Yes" : "No", userFilterResponseDto
+        );
     }
 }
 

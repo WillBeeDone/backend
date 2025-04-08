@@ -1,5 +1,6 @@
 package de.willbeedone.backend.service.interfaces;
 
+import de.willbeedone.backend.domain.dto.change_password_dto.ChangePasswordDto;
 import de.willbeedone.backend.domain.dto.offer_dto.response_dto.OfferFilterResponseDto;
 import de.willbeedone.backend.domain.dto.user_dto.request_dto.UserEmailRequestDto;
 import de.willbeedone.backend.domain.dto.user_dto.request_dto.UserForOfferRequestDto;
@@ -14,18 +15,19 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
 import java.util.List;
+import java.util.Set;
 
 public interface UserService extends UserDetailsService {
 
     public List<Offer> getUserOffers(Long userId);
 
-    List<User> getAllUsers();
+    List<OfferFilterResponseDto> getOffersByUserId(String email);
 
-    User getUserByEmail(String email);
+    List<User> getAllUsers();
 
     UserProfileResponseDto getUserProfile(String email);
 
-    User getActiveValidUserById(Long id);
+    User getActiveValidUserByEmail(String email);
 
     void updateUser(UserForOfferRequestDto dto, String email);
 
@@ -48,5 +50,7 @@ public interface UserService extends UserDetailsService {
     void forgotPassword(UserEmailRequestDto dto) throws AuthException;
 
     void resetPassword(String code, UserPasswordRequestDto dto);
+
+    void changePassword(ChangePasswordDto changePasswordDto, String email);
 
 }
