@@ -4,6 +4,8 @@ import de.willbeedone.backend.domain.dto.user_dto.request_dto.UserRequestDto;
 import de.willbeedone.backend.service.interfaces.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -20,7 +22,7 @@ public class RegistrationController {
     @Operation(summary = "User registration",
             description = "Creates new user in database and sends confirmation e-mail to user.")
     @PostMapping
-    public Long register(@RequestBody UserRequestDto inboundUser) {
+    public Long register(@Valid @RequestBody UserRequestDto inboundUser) {
        return userService.register(inboundUser);
     }
 

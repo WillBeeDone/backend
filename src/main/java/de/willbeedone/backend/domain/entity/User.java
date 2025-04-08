@@ -51,7 +51,6 @@ public class User implements UserDetails {
 
     @Column(name = "password")
     @NotBlank(message = "Password cannot be empty")
-    @Size(min = 8, message = "Password must be at least 8 characters long")
     private String password;
 
     @Column(name = "phone_number")

@@ -9,6 +9,7 @@ import de.willbeedone.backend.domain.dto.user_dto.response_dto.UserProfileRespon
 import de.willbeedone.backend.domain.entity.*;
 import de.willbeedone.backend.exceptions.custom_exceptions.AlreadyExistException;
 import de.willbeedone.backend.exceptions.custom_exceptions.ConfirmationCodeIsInvalidException;
+import de.willbeedone.backend.exceptions.custom_exceptions.PasswordException;
 import de.willbeedone.backend.exceptions.custom_exceptions.UserNotFoundException;
 import de.willbeedone.backend.exceptions.custom_validation_exceptions.UserValidationException;
 import de.willbeedone.backend.repository.*;
@@ -203,6 +204,10 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public Long register(UserRequestDto dto) {
+        if (dto.getEmail().equals(dto.getPassword())) {
+            throw new PasswordException("Password must differ from E-mail.");
+        }
+
         if (userRepository.findUserByEmail(dto.getEmail()).isPresent()) {
             throw new AlreadyExistException(dto.getEmail());
         }
