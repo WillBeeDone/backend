@@ -17,4 +17,5 @@ public class DOProperties {
     private String secretKey;
     private String endpoint;
     private String region;
+
 }

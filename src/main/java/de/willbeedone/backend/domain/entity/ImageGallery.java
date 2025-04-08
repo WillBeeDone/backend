@@ -6,8 +6,6 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import lombok.*;
 
-import java.util.Objects;
-
 @Entity
 @Getter
 @Setter
