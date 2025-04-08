@@ -199,6 +199,10 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public Long register(UserRequestDto dto) {
+        if (dto.getEmail().equals(dto.getPassword())) {
+            throw new PasswordException("Password must differ from E-mail.");
+        }
+
         if (userRepository.findUserByEmail(dto.getEmail()).isPresent()) {
             throw new AlreadyExistException(dto.getEmail());
         }

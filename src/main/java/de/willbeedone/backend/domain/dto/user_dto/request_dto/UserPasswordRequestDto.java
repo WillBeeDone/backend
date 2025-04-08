@@ -11,8 +11,11 @@ import lombok.*;
 public class UserPasswordRequestDto {
 
     @NotBlank(message = "Password cannot be empty")
-    @Size(min = 8, message = "Password must be at least 8 characters long")
-    @Schema(description = "User's password", example = "11111111")
+    @Pattern(
+            regexp = "^(?!.*\\s)(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[\\W_]).{8,}$",
+            message = "Password must not contain spaces, must be at least 8 characters long, contain at least one lowercase letter, one uppercase letter, one digit, and one special character."
+    )
+    @Schema(description = "User's password", example = "abHh7$_R")
     private String password;
 
     @Override
