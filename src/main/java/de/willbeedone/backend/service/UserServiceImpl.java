@@ -275,6 +275,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public void changePassword(ChangePasswordDto changePasswordDto, String email) {
         User user = getActiveValidUserByEmail(email);
 
