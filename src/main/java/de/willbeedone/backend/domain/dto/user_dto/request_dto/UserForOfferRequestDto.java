@@ -40,7 +40,6 @@ public class UserForOfferRequestDto {
     @Schema(description = "User's city")
     private LocationDto locationDto;
 
-    @NotBlank
     @Schema(description = "User's profile photo")
     private MultipartFile profilePicture;
 
