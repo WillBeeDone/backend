@@ -82,7 +82,7 @@ public class AuthController {
     @PutMapping("/change")
     public Response changePassword(
             @RequestHeader("Authorization") String token,
-            @RequestBody ChangePasswordDto changePasswordDto
+            @Valid @RequestBody ChangePasswordDto changePasswordDto
     ) {
         if (changePasswordDto.getOldPassword().equals(changePasswordDto.getNewPassword())) {
             throw new PasswordException("New password must differ from the old password.");
