@@ -4,7 +4,6 @@ import de.willbeedone.backend.domain.dto.offer_dto.request_dto.OfferRequestDto;
 import de.willbeedone.backend.domain.dto.offer_dto.response_dto.OfferFilterResponseDto;
 import de.willbeedone.backend.domain.dto.offer_dto.response_dto.OfferProfileGuestResponseDto;
 import de.willbeedone.backend.domain.entity.Offer;
-import jakarta.security.auth.message.AuthException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;

@@ -4,7 +4,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.*;
 import lombok.*;
 
-
 @Schema(description = "A class that defines the Category DTO for requests and responses.")
 @Getter
 @Setter
