@@ -155,8 +155,8 @@ public class UserController {
         return offerService.addNewOffer(offerDto, email);
     }
 
-    @Operation(summary = "Deactivate offer",
-            description = "Deactivate user's offer by its id.")
+    @Operation(summary = "Activate/Deactivate offer",
+            description = "Activates or Deactivate user's offer by its id.")
     @PreAuthorize("hasAuthority('ROLE_USER')")
     @PutMapping("/offers/{offerId}")
     public Response changeOfferActivation(
