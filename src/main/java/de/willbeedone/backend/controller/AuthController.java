@@ -1,4 +1,5 @@
 package de.willbeedone.backend.controller;
+
 import de.willbeedone.backend.domain.dto.user_dto.request_dto.UserRequestDto;
 import de.willbeedone.backend.domain.entity.JwtAuthenticationResponse;
 import de.willbeedone.backend.domain.entity.User;
@@ -11,10 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
@@ -25,13 +23,13 @@ public class AuthController {
     private final UserRepository userRepository;
     private final JwtService jwtService;
 
-    @Value("${google.oauth.client-id}")
+    @Value("${GOOGLE_CLIENT_ID}")
     private String googleClientId;
 
-    @Value("${google.oauth.client-secret}")
+    @Value("${GOOGLE_CLIENT_ID}")
     private String googleClientSecret;
 
-    @Value("${google.oauth.redirect-uri}")
+    @Value("${GOOGLE_REDIRECT_URI}")
     private String googleRedirectUri;
 
     @Autowired
@@ -67,5 +65,13 @@ public class AuthController {
         } else {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid refresh token");
         }
+    }
+
+    @GetMapping("/success")
+    public String authSuccess(@RequestParam String accessToken, @RequestParam String refreshToken) {
+        System.out.println("=== AUTH SUCCESS ===");
+        return "✅ Авторизация прошла успешно!\n\n" +
+                "🔐 Access token:\n" + accessToken + "\n\n" +
+                "♻️ Refresh token:\n" + refreshToken;
     }
 }

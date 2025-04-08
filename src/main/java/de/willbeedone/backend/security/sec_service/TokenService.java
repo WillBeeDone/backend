@@ -2,13 +2,14 @@ package de.willbeedone.backend.security.sec_service;
 
 import de.willbeedone.backend.domain.entity.Role;
 import de.willbeedone.backend.domain.entity.User;
+import de.willbeedone.backend.exceptions.custom_exceptions.UserNotFoundException;
 import de.willbeedone.backend.repository.RoleRepository;
+import de.willbeedone.backend.repository.UserRepository;
 import de.willbeedone.backend.security.AuthInfo;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -23,16 +24,18 @@ public class TokenService {
 
     private SecretKey accessKey;
     private SecretKey refreshKey;
-    @Autowired
-    private RoleRepository roleRepository;
+    private final RoleRepository roleRepository;
+    private final UserRepository userRepository;
 
     public TokenService(
             @Value("${key.access}") String accessPhrase,
             @Value("${key.refresh}") String refreshPhrase,
-            RoleRepository roleRepository) {
+            RoleRepository roleRepository,
+            UserRepository userRepository) {
         this.accessKey = Keys.hmacShaKeyFor(Decoders.BASE64.decode(accessPhrase));
         this.refreshKey = Keys.hmacShaKeyFor(Decoders.BASE64.decode(refreshPhrase));
         this.roleRepository = roleRepository;
+        this.userRepository = userRepository;
     }
 
     public String generateAccessToken(User user) {
@@ -117,5 +120,18 @@ public class TokenService {
             roleRepository.findByTitle(roleTitle).ifPresent(roles::add);
         }
         return new AuthInfo(email, roles);
+    }
+
+
+    public String generateAccessTokenByEmail(String email) {
+        User user = userRepository.findUserByEmail(email)
+                .orElseThrow(() -> new UserNotFoundException(email));
+        return generateAccessToken(user);
+    }
+
+    public String generateRefreshTokenByEmail(String email) {
+        User user = userRepository.findUserByEmail(email)
+                .orElseThrow(() -> new UserNotFoundException(email));
+        return generateRefreshToken(user);
     }
 }
