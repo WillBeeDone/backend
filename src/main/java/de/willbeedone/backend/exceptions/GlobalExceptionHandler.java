@@ -92,6 +92,13 @@ public class GlobalExceptionHandler {
         return ResponseEntity.badRequest().body("Invalid parameter: " + e.getMessage());
     }
 
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<Map<String, String>> handleException(IllegalArgumentException e) {
+        Map<String, String> errorResponse = new HashMap<>();
+        errorResponse.put("error", "Invalid parameter: " + e.getMessage());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+    }
+
     @ExceptionHandler(OfferNotBelongToUserException.class)
     public ResponseEntity<Response> handleException(OfferNotBelongToUserException e) {
         Response response = new Response(e.getMessage());
