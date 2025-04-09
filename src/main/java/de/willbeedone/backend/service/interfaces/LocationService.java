@@ -8,6 +8,8 @@ public interface LocationService {
 
     List<String> getAllLocationsCityNames();
 
+    boolean existsByCityName(String cityName);
+
     Location getLocationById(Long id);
 
     Location getLocationByCity(String cityName);

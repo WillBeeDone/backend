@@ -11,10 +11,7 @@ import de.willbeedone.backend.exceptions.custom_validation_exceptions.OfferValid
 import de.willbeedone.backend.repository.CategoryRepository;
 import de.willbeedone.backend.repository.FavouriteRepository;
 import de.willbeedone.backend.repository.OfferRepository;
-import de.willbeedone.backend.service.interfaces.CategoryService;
-import de.willbeedone.backend.service.interfaces.ImageService;
-import de.willbeedone.backend.service.interfaces.OfferService;
-import de.willbeedone.backend.service.interfaces.UserService;
+import de.willbeedone.backend.service.interfaces.*;
 import de.willbeedone.backend.service.mapping.OfferMappingService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
@@ -39,17 +36,20 @@ public class OfferServiceImpl implements OfferService {
     @Autowired
     private final ImageService imageService;
     @Autowired
+    private final LocationService locationService;
+    @Autowired
     private final OfferMappingService offerMappingService;
     @Autowired
     private final CategoryRepository categoryRepository;
     @Autowired
     private final FavouriteRepository favouriteRepository;
 
-    public OfferServiceImpl(OfferRepository offerRepository, UserService userService, CategoryService categoryService, ImageService imageService, OfferMappingService offerMappingService, CategoryRepository categoryRepository, FavouriteRepository favouriteRepository) {
+    public OfferServiceImpl(OfferRepository offerRepository, UserService userService, CategoryService categoryService, ImageService imageService, LocationService locationService, OfferMappingService offerMappingService, CategoryRepository categoryRepository, FavouriteRepository favouriteRepository) {
         this.offerRepository = offerRepository;
         this.userService = userService;
         this.categoryService = categoryService;
         this.imageService = imageService;
+        this.locationService = locationService;
         this.offerMappingService = offerMappingService;
         this.categoryRepository = categoryRepository;
         this.favouriteRepository = favouriteRepository;
@@ -143,6 +143,9 @@ public class OfferServiceImpl implements OfferService {
         Specification<Offer> spec = getBaseSpecification();
 
         if (!"all".equals(cityName)) {
+            if (!locationService.existsByCityName(cityName)) {
+                throw new OfferValidationException("Invalid city name: " + cityName);
+            }
             spec = spec.and(filterByCity(cityName));
         }
         if (!"all".equals(category)) {

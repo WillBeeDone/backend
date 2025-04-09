@@ -25,6 +25,11 @@ public class LocationServiceImpl  implements LocationService {
     }
 
     @Override
+    public boolean existsByCityName(String cityName) {
+        return locationRepository.existsByCityName(cityName);
+    }
+
+    @Override
     public Location getLocationById(Long id) {
         return locationRepository.findById(id).orElseThrow(() -> new RuntimeException("Location not found"));
     }
