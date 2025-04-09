@@ -35,7 +35,7 @@ public class Offer {
     private BigDecimal pricePerHour;
 
     @NotBlank
-    @Size(min = 10, max = 1000, message = "Description must be between 10 and 1000 characters")
+    @Size(min = 3, max = 1500, message = "Description must be between 10 and 1000 characters")
     @Column(name = "description", columnDefinition = "MEDIUMTEXT")
     private String description;
 

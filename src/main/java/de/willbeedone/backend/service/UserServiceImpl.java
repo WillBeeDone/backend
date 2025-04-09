@@ -34,7 +34,6 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -200,6 +199,10 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public Long register(UserRequestDto dto) {
+        if (dto.getEmail().equals(dto.getPassword())) {
+            throw new PasswordException("Password must differ from E-mail.");
+        }
+
         if (userRepository.findUserByEmail(dto.getEmail()).isPresent()) {
             throw new AlreadyExistException(dto.getEmail());
         }
@@ -262,12 +265,17 @@ public class UserServiceImpl implements UserService {
                         () -> new RuntimeException("Reset code not found")
                 );
 
+        if (encoder.matches(dto.getPassword(), codeEntity.getUser().getPassword())) {
+            throw new PasswordException("New password must differ from the old password.");
+        }
+
         codeEntity.getUser().setPassword(encoder.encode(dto.getPassword()));
 
         resetCodeRepository.delete(codeEntity);
     }
 
     @Override
+    @Transactional
     public void changePassword(ChangePasswordDto changePasswordDto, String email) {
         User user = getActiveValidUserByEmail(email);
 

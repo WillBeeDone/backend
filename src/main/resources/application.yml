@@ -50,14 +50,18 @@ spring:
             token-uri: https://oauth2.googleapis.com/token
             user-info-uri: https://www.googleapis.com/oauth2/v3/userinfo
             user-name-attribute: email
-
-server:
   servlet:
-    context-path: /api
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 5MB
 
 key:
   access: ${ACCESS_PHRASE_SECRET}
   refresh: ${REFRESH_PHRASE_SECRET}
+
+server:
+  servlet:
+    context-path: /api
 
 base:
   url: ${BASE_URL}

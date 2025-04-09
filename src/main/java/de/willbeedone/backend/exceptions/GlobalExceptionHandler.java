@@ -94,7 +94,19 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(PasswordException.class)
     public ResponseEntity<Response> handleException(PasswordException e) {
         Response response = new Response(e.getMessage());
+        if (e.getMessage().contains("mail")) {
+            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+        } else if (e.getMessage().contains("old")) {
+            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+        }
         return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
     }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<Response> handleIllegalArgument(IllegalArgumentException e) {
+        Response response = new Response("Bad request: " + e.getMessage());
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+    }
+
 
 }

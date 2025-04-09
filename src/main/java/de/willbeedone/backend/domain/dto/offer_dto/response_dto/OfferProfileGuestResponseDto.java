@@ -1,7 +1,6 @@
 package de.willbeedone.backend.domain.dto.offer_dto.response_dto;
 
 import de.willbeedone.backend.domain.dto.category_dto.CategoryDto;
-import de.willbeedone.backend.domain.dto.user_dto.response_dto.UserFilterResponseDto;
 import de.willbeedone.backend.domain.dto.user_dto.response_dto.UserProfileResponseDto;
 import de.willbeedone.backend.domain.entity.ImageGallery;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -22,8 +21,7 @@ public class OfferProfileGuestResponseDto {
     @Schema(
             description = "Offer unique identifier",
             example = "1",
-            accessMode = Schema.AccessMode.READ_ONLY
-    )
+            accessMode = Schema.AccessMode.READ_ONLY)
     private Long id;
 
     @NotBlank(message = "Title cannot be empty")
@@ -40,7 +38,7 @@ public class OfferProfileGuestResponseDto {
     private BigDecimal pricePerHour;
 
     @NotBlank(message = "Description cannot be empty")
-    @Size(min = 10, max = 1000, message = "Description must be between 10 and 1000 characters")
+    @Size(min = 3, max = 1500, message = "Description must be between 10 and 1000 characters")
     @Schema(description = "Offer detailed description")
     private String description;
 

@@ -2,7 +2,6 @@ package de.willbeedone.backend.service.mapping;
 
 import de.willbeedone.backend.domain.dto.image_gallery_dto.ImageGalleryDto;
 import de.willbeedone.backend.domain.entity.ImageGallery;
-import de.willbeedone.backend.domain.entity.Offer;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 

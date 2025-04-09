@@ -17,6 +17,7 @@ import de.willbeedone.backend.service.mapping.UserMappingService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.security.auth.message.AuthException;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -70,7 +71,7 @@ public class AuthController {
     @PostMapping("/reset/{code}")
     public Response confirmRegistration(
             @PathVariable String code,
-            @RequestBody UserPasswordRequestDto dto
+            @Valid @RequestBody UserPasswordRequestDto dto
             ) {
         userService.resetPassword(code, dto);
         return new Response("OK");
@@ -81,7 +82,7 @@ public class AuthController {
     @PutMapping("/change")
     public Response changePassword(
             @RequestHeader("Authorization") String token,
-            @RequestBody ChangePasswordDto changePasswordDto
+            @Valid @RequestBody ChangePasswordDto changePasswordDto
     ) {
         if (changePasswordDto.getOldPassword().equals(changePasswordDto.getNewPassword())) {
             throw new PasswordException("New password must differ from the old password.");

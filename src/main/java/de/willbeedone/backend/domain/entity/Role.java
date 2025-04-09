@@ -1,18 +1,15 @@
 package de.willbeedone.backend.domain.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 
-import java.util.Objects;
-
-
 @Entity
 @Getter
 @Setter
 @NoArgsConstructor
+@EqualsAndHashCode
 @Table(name = "role")
 public class Role implements GrantedAuthority {
 
@@ -30,18 +27,6 @@ public class Role implements GrantedAuthority {
     @Override
     public String getAuthority() {
         return title;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Role role)) return false;
-        return Objects.equals(id, role.id) && Objects.equals(title, role.title);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, title);
     }
 
     @Override
