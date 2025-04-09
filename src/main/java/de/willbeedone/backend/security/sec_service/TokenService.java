@@ -1,13 +1,15 @@
 package de.willbeedone.backend.security.sec_service;
 
 import de.willbeedone.backend.domain.entity.Role;
+import de.willbeedone.backend.domain.entity.User;
+import de.willbeedone.backend.exceptions.custom_exceptions.UserNotFoundException;
 import de.willbeedone.backend.repository.RoleRepository;
+import de.willbeedone.backend.repository.UserRepository;
 import de.willbeedone.backend.security.AuthInfo;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -22,26 +24,28 @@ public class TokenService {
 
     private SecretKey accessKey;
     private SecretKey refreshKey;
-    @Autowired
-    private RoleRepository roleRepository;
+    private final RoleRepository roleRepository;
+    private final UserRepository userRepository;
 
     public TokenService(
             @Value("${key.access}") String accessPhrase,
             @Value("${key.refresh}") String refreshPhrase,
-            RoleRepository roleRepository) {
+            RoleRepository roleRepository,
+            UserRepository userRepository) {
         this.accessKey = Keys.hmacShaKeyFor(Decoders.BASE64.decode(accessPhrase));
         this.refreshKey = Keys.hmacShaKeyFor(Decoders.BASE64.decode(refreshPhrase));
         this.roleRepository = roleRepository;
+        this.userRepository = userRepository;
     }
 
-    public String generateAccessToken(UserDetails user) {
+    public String generateAccessToken(User user) {
         LocalDateTime currentDate = LocalDateTime.now();
         Instant expiration = currentDate.plusWeeks(1).atZone(ZoneId.systemDefault()).toInstant();
         Date expirationDate = Date.from(expiration);
 
         return Jwts.builder()
-                .subject(user.getUsername())
-                .expiration(expirationDate)
+                .setSubject(user.getUsername()) // Заменено на setSubject
+                .setExpiration(expirationDate)
                 .signWith(accessKey)
                 .claim("roles", user.getAuthorities())
                 .claim("name", user.getUsername())
@@ -54,8 +58,8 @@ public class TokenService {
         Date expirationDate = Date.from(expiration);
 
         return Jwts.builder()
-                .subject(user.getUsername())
-                .expiration(expirationDate)
+                .setSubject(user.getUsername()) // Заменено на setSubject
+                .setExpiration(expirationDate)
                 .signWith(refreshKey)
                 .compact();
     }
@@ -70,10 +74,11 @@ public class TokenService {
 
     public boolean validateToken(String token, SecretKey key) {
         try {
-            Jwts.parser()
-                    .verifyWith(key)
+            // Используем parserBuilder для валидации
+            Jwts.parserBuilder()
+                    .setSigningKey(key) // Установка ключа
                     .build()
-                    .parseSignedClaims(token);
+                    .parseClaimsJws(token); // Парсинг и валидация токена
             return true;
         } catch (Exception e) {
             return false;
@@ -89,18 +94,19 @@ public class TokenService {
     }
 
     public Claims getClaims(String token, SecretKey key) {
-        return Jwts.parser()
-                .verifyWith(key)
+        // Используем parserBuilder для парсинга
+        return Jwts.parserBuilder()
+                .setSigningKey(key) // Установка ключа
                 .build()
-                .parseSignedClaims(token)
-                .getPayload();
+                .parseClaimsJws(token) // Парсинг JWT
+                .getBody(); // Получение тела токена (Claims)
     }
 
-    //Method for extracting e-mail from token
+    // Метод для извлечения email из токена
     public String extractEmailFromToken(String jwt) {
-        String token = jwt.substring(7);
+        String token = jwt.substring(7); // Убираем "Bearer " из начала токена
         Claims claims = getAccessClaims(token);
-        return claims.getSubject();
+        return claims.getSubject(); // Извлекаем subject (email)
     }
 
     public AuthInfo mapClaimsToAuthInfo(Claims claims) {
@@ -114,5 +120,18 @@ public class TokenService {
             roleRepository.findByTitle(roleTitle).ifPresent(roles::add);
         }
         return new AuthInfo(email, roles);
+    }
+
+
+    public String generateAccessTokenByEmail(String email) {
+        User user = userRepository.findUserByEmail(email)
+                .orElseThrow(() -> new UserNotFoundException(email));
+        return generateAccessToken(user);
+    }
+
+    public String generateRefreshTokenByEmail(String email) {
+        User user = userRepository.findUserByEmail(email)
+                .orElseThrow(() -> new UserNotFoundException(email));
+        return generateRefreshToken(user);
     }
 }
