@@ -82,19 +82,20 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
-    public ResponseEntity<String> handleTypeMismatch(MethodArgumentTypeMismatchException e) {
+    public ResponseEntity<String> handleException(MethodArgumentTypeMismatchException e) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
                 .body("Resource not found");
     }
 
     @ExceptionHandler(ConstraintViolationException.class)
-    public ResponseEntity<String> handleConstraintViolation(ConstraintViolationException e) {
+    public ResponseEntity<String> handleException(ConstraintViolationException e) {
         return ResponseEntity.badRequest().body("Invalid parameter: " + e.getMessage());
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<String> handleException(IllegalArgumentException e) {
-        return ResponseEntity.badRequest().body("Invalid parameter: " + e.getMessage());
+    public ResponseEntity<Response> handleIllegalArgument(IllegalArgumentException e) {
+        Response response = new Response("Bad request: " + e.getMessage());
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(OfferNotBelongToUserException.class)
@@ -113,14 +114,5 @@ public class GlobalExceptionHandler {
         }
         return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
     }
-
-    @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<Response> handleIllegalArgument(IllegalArgumentException e) {
-        Response response = new Response("Bad request: " + e.getMessage());
-        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
-    }
-
-
-
 
 }
