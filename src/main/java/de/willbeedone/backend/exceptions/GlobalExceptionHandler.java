@@ -48,7 +48,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(OfferValidationException.class)
     public ResponseEntity<Response> handleException(OfferValidationException e) {
         Response response = new Response(e.getMessage());
-        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(ConfirmationCodeIsInvalidException.class)
