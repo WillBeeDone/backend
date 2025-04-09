@@ -16,6 +16,8 @@ import de.willbeedone.backend.service.interfaces.ImageService;
 import de.willbeedone.backend.service.interfaces.OfferService;
 import de.willbeedone.backend.service.interfaces.UserService;
 import de.willbeedone.backend.service.mapping.OfferMappingService;
+import jakarta.persistence.criteria.Expression;
+import jakarta.persistence.criteria.Join;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.*;
@@ -187,16 +189,18 @@ public class OfferServiceImpl implements OfferService {
     }
 
     private Specification<Offer> filterByKeyPhrase(String keyPhrase) {
-        return "all".equals(keyPhrase) ? null :
-                (root, query, cb) -> {
-                    String pattern = "%" + keyPhrase + "%";
-                    return cb.or(
-                            cb.like(root.get("title"), pattern),
-                            cb.like(root.get("description"), pattern),
-                            cb.like(root.join("user").get("firstName"), pattern),
-                            cb.like(root.join("user").get("lastName"), pattern)
-                    );
-                };
+        return "all".equals(keyPhrase) ? null : (root, query, cb) -> {
+            String pattern = "%" + keyPhrase + "%";
+            Join<Offer, User> userJoin = root.join("user");
+            Expression<String> fullName = cb.concat(cb.concat(userJoin.get("firstName"), " "), userJoin.get("lastName"));
+            return cb.or(
+                    cb.like(root.get("title"), pattern),
+                    cb.like(root.get("description"), pattern),
+                    cb.like(userJoin.get("firstName"), pattern),
+                    cb.like(userJoin.get("lastName"), pattern),
+                    cb.like(fullName, pattern)
+            );
+        };
     }
 
     @Override
