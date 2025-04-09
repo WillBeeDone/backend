@@ -17,18 +17,14 @@ import lombok.Setter;
 public class ChangePasswordDto {
 
     @NotBlank(message = "Password cannot be empty")
-    @Pattern(
-            regexp = "^(?!.*\\s)(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[\\W_]).{8,}$",
-            message = "Password must not contain spaces, must be at least 8 characters long, contain at least one lowercase letter, one uppercase letter, one digit, and one special character."
-    )
+    @Pattern(regexp = "^(?=.*\\p{Ll})(?=.*\\p{Lu})(?=.*\\d)(?=.*[^\\p{L}\\p{N}\\s]).{8,}$",
+            message = "Password must be at least 8 characters, contain uppercase, lowercase, a digit, and a special symbol, and can include German letters.")
     @Schema(description = "User's password", example = "abHh7$_R")
     private String oldPassword;
 
     @NotBlank(message = "Password cannot be empty")
-    @Pattern(
-            regexp = "^(?!.*\\s)(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[\\W_]).{8,}$",
-            message = "Password must not contain spaces, must be at least 8 characters long, contain at least one lowercase letter, one uppercase letter, one digit, and one special character."
-    )
+    @Pattern(regexp = "^(?=.*\\p{Ll})(?=.*\\p{Lu})(?=.*\\d)(?=.*[^\\p{L}\\p{N}\\s]).{8,}$",
+            message = "Password must be at least 8 characters, contain uppercase, lowercase, a digit, and a special symbol, and can include German letters.")
     @Schema(description = "User's password", example = "abHh7$_R")
     private String newPassword;
 
