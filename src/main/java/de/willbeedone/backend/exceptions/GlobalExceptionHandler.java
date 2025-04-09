@@ -82,14 +82,21 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
-    public ResponseEntity<String> handleTypeMismatch(MethodArgumentTypeMismatchException e) {
+    public ResponseEntity<String> handleException(MethodArgumentTypeMismatchException e) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
                 .body("Resource not found");
     }
 
     @ExceptionHandler(ConstraintViolationException.class)
-    public ResponseEntity<String> handleConstraintViolation(ConstraintViolationException e) {
+    public ResponseEntity<String> handleException(ConstraintViolationException e) {
         return ResponseEntity.badRequest().body("Invalid parameter: " + e.getMessage());
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<Map<String, String>> handleException(IllegalArgumentException e) {
+        Map<String, String> errorResponse = new HashMap<>();
+        errorResponse.put("error", "Invalid parameter: " + e.getMessage());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
     }
 
     @ExceptionHandler(OfferNotBelongToUserException.class)
