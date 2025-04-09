@@ -9,12 +9,9 @@ import de.willbeedone.backend.domain.dto.image_gallery_dto.ImageGalleryDto;
 import de.willbeedone.backend.domain.entity.ImageGallery;
 import de.willbeedone.backend.domain.entity.Offer;
 import de.willbeedone.backend.exceptions.custom_exceptions.ImageUploadException;
-import de.willbeedone.backend.exceptions.custom_exceptions.OfferNotFoundException;
-import de.willbeedone.backend.repository.OfferRepository;
 import de.willbeedone.backend.service.interfaces.ImageService;
 import de.willbeedone.backend.service.mapping.ImageGalleryMappingService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
