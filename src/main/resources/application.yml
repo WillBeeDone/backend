@@ -33,6 +33,11 @@ spring:
             protocols: TLSv1.2
             trust: smtp.gmail.com
 
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 5MB
+
 key:
   access: ${ACCESS_PHRASE_SECRET}
   refresh: ${REFRESH_PHRASE_SECRET}
