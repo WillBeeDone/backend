@@ -12,9 +12,8 @@ public class UserPasswordRequestDto {
 
     @NotBlank(message = "Password cannot be empty")
     @Pattern(
-            regexp = "^(?!.*\\s)(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[\\W_]).{8,}$",
-            message = "Password must not contain spaces, must be at least 8 characters long, contain at least one lowercase letter, one uppercase letter, one digit, and one special character."
-    )
+            regexp = "^(?!.*\\s)(?=.*\\p{Ll})(?=.*\\p{Lu})(?=.*\\d)(?=.*[^\\p{L}\\p{N}\\s]).{8,}$",
+            message = "Password must be at least 8 characters long, contain uppercase and lowercase letters, a digit, a special character, and must not contain spaces.")
     @Schema(description = "User's password", example = "abHh7$_R")
     private String password;
 

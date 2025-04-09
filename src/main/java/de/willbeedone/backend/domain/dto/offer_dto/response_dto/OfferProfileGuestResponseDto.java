@@ -21,8 +21,7 @@ public class OfferProfileGuestResponseDto {
     @Schema(
             description = "Offer unique identifier",
             example = "1",
-            accessMode = Schema.AccessMode.READ_ONLY
-    )
+            accessMode = Schema.AccessMode.READ_ONLY)
     private Long id;
 
     @NotBlank(message = "Title cannot be empty")
