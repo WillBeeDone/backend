@@ -26,7 +26,7 @@ public class Category {
 
         @NotBlank
         @Column(name = "name")
-        @Pattern(regexp = "^[A-Za-zА-Яа-я0-9\\s-]{3,50}$", message = "Name must be between 3 and 50 characters and contain only letters, numbers, spaces, or hyphens")
+        @Pattern(regexp = "^[A-Za-zА-Яа-я0-9\\s-&]{3,50}$", message = "Name must be between 3 and 50 characters and contain only letters, numbers, spaces, or hyphens")
         private String name;
 
         @JsonIgnore
