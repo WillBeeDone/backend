@@ -25,7 +25,7 @@ public class Offer {
     private Long id;
 
     @NotBlank(message = "Title cannot be empty")
-    @Size(min = 3, max = 255, message = "Title must be between 3 and 255 characters")
+    @Size(min = 3, max = 40, message = "Title must be between 3 and 255 characters")
     @Column(name = "title")
     private String title;
 
@@ -35,7 +35,7 @@ public class Offer {
     private BigDecimal pricePerHour;
 
     @NotBlank
-    @Size(min = 3, max = 1500, message = "Description must be between 10 and 1000 characters")
+    @Size(min = 3, max = 4000, message = "Description must be between 10 and 1000 characters")
     @Column(name = "description", columnDefinition = "MEDIUMTEXT")
     private String description;
 
