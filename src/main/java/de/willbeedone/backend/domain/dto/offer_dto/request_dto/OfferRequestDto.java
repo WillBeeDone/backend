@@ -21,7 +21,7 @@ public class OfferRequestDto {
     private BigDecimal pricePerHour;
 
     @NotBlank(message = "Description cannot be empty")
-    @Size(min = 3, max = 1500, message = "Description must be between 10 and 1000 characters")
+    @Size(min = 3, max = 4000, message = "Description must be between 10 and 1000 characters")
     @Schema(description = "Offer detailed description")
     private String description;
 
@@ -30,7 +30,7 @@ public class OfferRequestDto {
     private String categoryName;
 
     @NotBlank(message = "Title cannot be empty")
-    @Size(min = 3, max = 255, message = "Title must be between 3 and 255 characters")
+    @Size(min = 3, max = 40, message = "Title must be between 3 and 255 characters")
     @Schema(description = "Short offer description", example = "Super sexy plumber will fix your pipes.")
     private String title;
 
