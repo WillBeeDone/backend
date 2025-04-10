@@ -34,7 +34,7 @@ public interface OfferService {
 
     Optional<List<OfferFilterResponseDto>> getOfferByTitle(String title);
 
-    Optional<OfferProfileGuestResponseDto> getActiveOfferById(Long id);
+    OfferProfileGuestResponseDto getActiveOfferById(Long offerId, String token);
 
     Offer getOfferEntityById(Long offerId);
 

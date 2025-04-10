@@ -11,6 +11,7 @@ import de.willbeedone.backend.exceptions.custom_validation_exceptions.OfferValid
 import de.willbeedone.backend.repository.CategoryRepository;
 import de.willbeedone.backend.repository.FavouriteRepository;
 import de.willbeedone.backend.repository.OfferRepository;
+import de.willbeedone.backend.security.sec_service.TokenService;
 import de.willbeedone.backend.service.interfaces.*;
 import de.willbeedone.backend.service.mapping.OfferMappingService;
 import jakarta.persistence.criteria.Expression;
@@ -39,18 +40,21 @@ public class OfferServiceImpl implements OfferService {
     @Autowired
     private final LocationService locationService;
     @Autowired
+    private final TokenService tokenService;
+    @Autowired
     private final OfferMappingService offerMappingService;
     @Autowired
     private final CategoryRepository categoryRepository;
     @Autowired
     private final FavouriteRepository favouriteRepository;
 
-    public OfferServiceImpl(OfferRepository offerRepository, UserService userService, CategoryService categoryService, ImageService imageService, LocationService locationService, OfferMappingService offerMappingService, CategoryRepository categoryRepository, FavouriteRepository favouriteRepository) {
+    public OfferServiceImpl(OfferRepository offerRepository, UserService userService, CategoryService categoryService, ImageService imageService, LocationService locationService, TokenService tokenService, OfferMappingService offerMappingService, CategoryRepository categoryRepository, FavouriteRepository favouriteRepository) {
         this.offerRepository = offerRepository;
         this.userService = userService;
         this.categoryService = categoryService;
         this.imageService = imageService;
         this.locationService = locationService;
+        this.tokenService = tokenService;
         this.offerMappingService = offerMappingService;
         this.categoryRepository = categoryRepository;
         this.favouriteRepository = favouriteRepository;
@@ -215,12 +219,6 @@ public class OfferServiceImpl implements OfferService {
     }
 
     @Override
-    public Optional<OfferProfileGuestResponseDto> getActiveOfferById(Long id) {
-        return Optional.ofNullable(offerMappingService.mapEntityToProfileGuestResponseDto(getActiveOfferEntityById(id)));
-
-    }
-
-    @Override
     public Page<OfferFilterResponseDto> getActiveOffersByCity(String cityName, Pageable pageable) {
         Page<Offer> offerPage = offerRepository.findByCity(cityName, pageable);
 
@@ -228,6 +226,17 @@ public class OfferServiceImpl implements OfferService {
             throw new OfferNotFoundException("No active offers found in city: " + cityName);
         }
         return offerPage.map(offerMappingService::mapEntityToFilterResponseDto);
+    }
+
+    @Override
+    public OfferProfileGuestResponseDto getActiveOfferById(Long offerId, String token) {
+        if (token != null) {
+            String email = tokenService.extractEmailFromToken(token);
+            if (getOfferEntityById(offerId).getUser().getEmail().equals(email)) {
+                return offerMappingService.mapEntityToProfileGuestResponseDto(getOfferEntityById(offerId));
+            }
+        }
+        return offerMappingService.mapEntityToProfileGuestResponseDto(getActiveOfferEntityById(offerId));
     }
 
     @Override
