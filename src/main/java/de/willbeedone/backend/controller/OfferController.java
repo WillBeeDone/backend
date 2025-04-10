@@ -39,10 +39,12 @@ public class OfferController {
     @Operation(summary = "Getting offer by id",
             description = "Returns precise offer by id for its profile card.")
     @GetMapping("/{id}")
-    public Optional<OfferProfileGuestResponseDto> getActiveOfferByIdGuest(
+    public OfferProfileGuestResponseDto getActiveOfferByIdGuest(
+            @RequestHeader(value = "Authorization", required = false) String token,
+
             @Parameter(description = "Offer unique identifier", example = "1")
             @PathVariable Long id) {
-        return offerService.getActiveOfferById(id);
+        return offerService.getActiveOfferById(id, token);
     }
     
     @Operation(summary = "Getting all or filtered pageable offers",
