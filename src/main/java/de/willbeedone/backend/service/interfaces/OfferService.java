@@ -14,7 +14,9 @@ import java.util.Optional;
 
 public interface OfferService {
 
-    Offer addNewOffer(OfferRequestDto request, String email);
+    void addNewOffer(OfferRequestDto offerRequestDto, String email);
+
+    void updateOffer(OfferRequestDto offerRequestDto, Long offerId, String email);
 
     void deactivateOfferById(String email, Offer offer);
 
@@ -39,8 +41,6 @@ public interface OfferService {
     Offer getOfferEntityById(Long offerId);
 
     Offer getActiveOfferEntityById(Long offerId);
-
-    Offer updateOffer(OfferRequestDto dto, Long id);
 
 }
 

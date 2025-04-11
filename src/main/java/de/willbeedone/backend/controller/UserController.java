@@ -147,12 +147,30 @@ public class UserController {
     @PostMapping(
             value = "/offers",
             consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public Offer addNewOffer(
+    public Response addNewOffer(
             @RequestHeader("Authorization") String token,
-            @ModelAttribute OfferRequestDto offerDto
+            @ModelAttribute OfferRequestDto offerRequestDto
     ) {
         String email = tokenService.extractEmailFromToken(token);
-        return offerService.addNewOffer(offerDto, email);
+        offerService.addNewOffer(offerRequestDto, email);
+        return new Response("OK");
+    }
+
+    @Operation(summary = "Update offer",
+            description = "Updates user's offer.")
+    @PreAuthorize("hasAuthority('ROLE_USER')")
+    @PutMapping(
+            value = "/offers/{offerId}",
+            consumes = MediaType.MULTIPART_FORM_DATA_VALUE
+    )
+    public Response updateOffer(
+            @RequestHeader("Authorization") String token,
+            @ModelAttribute OfferRequestDto offerRequestDto,
+            @PathVariable Long offerId
+    ) {
+        String email = tokenService.extractEmailFromToken(token);
+        offerService.updateOffer(offerRequestDto, offerId, email);
+        return new Response("OK");
     }
 
     @Operation(summary = "Activate/Deactivate offer",

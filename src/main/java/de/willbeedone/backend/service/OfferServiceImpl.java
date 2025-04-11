@@ -62,10 +62,10 @@ public class OfferServiceImpl implements OfferService {
 
     @Override
     @Transactional
-    public Offer addNewOffer(OfferRequestDto offerDto, String email) {
-        Offer offer = offerMappingService.mapRequestDtoToEntity(offerDto);
+    public void addNewOffer(OfferRequestDto offerRequestDto, String email) {
+        Offer offer = offerMappingService.mapRequestDtoToEntity(offerRequestDto);
 
-        Category category = categoryRepository.findCategoryByName(offerDto.getCategoryName());
+        Category category = categoryRepository.findCategoryByName(offerRequestDto.getCategoryName());
         offer.setCategory(category);
 
         User user = userService.getActiveValidUserByEmail(email);
@@ -74,15 +74,40 @@ public class OfferServiceImpl implements OfferService {
         }
         offer.setUser(user);
 
-        if (offerDto.getImages() != null && !offerDto.getImages().isEmpty()) {
-            Set<ImageGallery> images = offerDto.getImages().stream()
+        if (offerRequestDto.getImages() != null && !offerRequestDto.getImages().isEmpty()) {
+            Set<ImageGallery> images = offerRequestDto.getImages().stream()
                     .map(imageGallery -> imageService.mapFileToImageGalleryDto(imageGallery, offer))
                     .collect(Collectors.toSet());
 
             offer.setImages(images);
         }
+    }
 
-        return offerRepository.save(offer);
+    @Override
+    @Transactional
+    public void updateOffer(OfferRequestDto offerRequestDto, Long offerId, String email) {
+        Offer offer = getOfferEntityById(offerId);
+
+        if (!offer.getUser().getEmail().equals(email)) {
+            throw new OfferNotBelongToUserException(offerId, email);
+        }
+
+        if (!offerRequestDto.getPricePerHour().equals(offer.getPricePerHour())) {
+            offer.setPricePerHour(offerRequestDto.getPricePerHour());
+        }
+
+        if (!offerRequestDto.getDescription().equals(offer.getDescription())) {
+            offer.setDescription(offerRequestDto.getDescription());
+        }
+
+        if (!offerRequestDto.getCategoryName().equals(offer.getCategory().getName())) {
+            offer.setCategory(categoryRepository.findCategoryByName(offerRequestDto.getCategoryName()));
+        }
+
+        if (!offerRequestDto.getTitle().equals(offer.getTitle())) {
+            offer.setTitle(offerRequestDto.getTitle());
+        }
+
     }
 
     @Override
@@ -253,20 +278,6 @@ public class OfferServiceImpl implements OfferService {
                 .filter(Offer::isActive)
                 .orElseThrow(
                         () -> new OfferNotFoundException(offerId));
-    }
-
-    @Override
-    public Offer updateOffer(OfferRequestDto dto, Long id) {
-        Category category = categoryService.getCategoryByName(dto.getCategoryName());
-
-        return offerRepository.findById(id)
-                .map(existingOffer -> {
-                    if (dto.getCategoryName() != null) existingOffer.setCategory(category);
-                    if (dto.getDescription() != null) existingOffer.setDescription(dto.getDescription());
-                    if (dto.getTitle() != null) existingOffer.setTitle(dto.getTitle());
-                    return existingOffer;
-                })
-                .orElseThrow(() -> new OfferNotFoundException(id));
     }
 
 }
