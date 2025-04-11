@@ -23,25 +23,23 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableMethodSecurity
 public class SecurityConfig {
 
-    private final String ADMIN_ROLE = "ADMIN";
-    private final String USER_ROLE = "USER";
-
     private final TokenFilter tokenFilter;
+    private final CustomOAuth2UserService customOAuth2UserService;
+    private final OAuth2AuthenticationSuccessHandler customOAuth2SuccessHandler;
 
-    public SecurityConfig(TokenFilter tokenFilter) {
+    @Autowired
+    public SecurityConfig(TokenFilter tokenFilter,
+                          CustomOAuth2UserService customOAuth2UserService,
+                          OAuth2AuthenticationSuccessHandler customOAuth2SuccessHandler) {
         this.tokenFilter = tokenFilter;
+        this.customOAuth2UserService = customOAuth2UserService;
+        this.customOAuth2SuccessHandler = customOAuth2SuccessHandler;
     }
-    @Autowired
-    private CustomOAuth2UserService customOAuth2UserService;
-
-    @Autowired
-    private OAuth2AuthenticationSuccessHandler customOAuth2SuccessHandler;
 
     @Bean
     public BCryptPasswordEncoder encoder() {
         return new BCryptPasswordEncoder();
     }
-
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
@@ -56,8 +54,11 @@ public class SecurityConfig {
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
                 .oauth2Login(oauth2 -> oauth2
-                        .userInfoEndpoint(userInfo -> userInfo
-                                .userService(customOAuth2UserService)
+                        .redirectionEndpoint(endpoint ->
+                                endpoint.baseUri("/oauth2/callback/*") // ✅ без /api!
+                        )
+                        .userInfoEndpoint(userInfo ->
+                                userInfo.userService(customOAuth2UserService)
                         )
                         .successHandler(customOAuth2SuccessHandler)
                 )
@@ -67,11 +68,11 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/register/**", "/offers/**", "/locations", "/categories").permitAll()
                         .requestMatchers(HttpMethod.POST, "/offers").permitAll()
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
+                        .requestMatchers("/api/oauth2/**").permitAll() // ✅ разрешаем путь для Google OAuth
                         .requestMatchers("/api/auth/google").permitAll()
                         .anyRequest().permitAll()
                 )
                 .addFilterAfter(tokenFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
-
 }

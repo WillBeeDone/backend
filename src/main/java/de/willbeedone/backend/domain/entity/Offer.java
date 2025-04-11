@@ -31,7 +31,7 @@ public class Offer {
 
     @NotNull(message = "Price per hour cannot be empty")
     @DecimalMin(value = "0.0", inclusive = false, message = "Price per hour must be greater than 0")
-    @Column(name = "price_per_hour")
+    @Column(name = "price_per_hour", nullable = false)
     private BigDecimal pricePerHour;
 
     @NotBlank
