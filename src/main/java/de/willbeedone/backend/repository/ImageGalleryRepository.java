@@ -6,5 +6,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface ImageGalleryRepository extends JpaRepository<ImageGallery, Long> {
-    void deleteByOfferId(Long offerId);
+
+
+
 }

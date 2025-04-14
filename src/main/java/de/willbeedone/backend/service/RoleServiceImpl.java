@@ -6,8 +6,6 @@ import de.willbeedone.backend.service.interfaces.RoleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-
 @Service
 public class RoleServiceImpl implements RoleService {
 
@@ -24,21 +22,6 @@ public class RoleServiceImpl implements RoleService {
                 .orElseThrow(
                         () -> new RuntimeException("ROLE_USER doesn't exist.")
                 );
-    }
-
-    @Override
-    public void deleteRole(Long id) {
-
-    }
-
-    @Override
-    public Role addRole(Role role) {
-        return null;
-    }
-
-    @Override
-    public List<Role> getAllRoles() {
-        return List.of();
     }
 
 }

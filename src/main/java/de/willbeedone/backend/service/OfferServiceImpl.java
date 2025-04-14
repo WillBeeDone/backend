@@ -211,24 +211,6 @@ public class OfferServiceImpl implements OfferService {
     }
 
     @Override
-    public Optional<List<OfferFilterResponseDto>> getOfferByTitle(String title) {
-        return Optional.of(offerRepository.findOfferByTitleAndActiveIsTrue(title)
-                .stream()
-                .map(offerMappingService::mapEntityToFilterResponseDto)
-                .toList());
-    }
-
-    @Override
-    public Page<OfferFilterResponseDto> getActiveOffersByCity(String cityName, Pageable pageable) {
-        Page<Offer> offerPage = offerRepository.findByCity(cityName, pageable);
-
-        if (offerPage.isEmpty()) {
-            throw new OfferNotFoundException("No active offers found in city: " + cityName);
-        }
-        return offerPage.map(offerMappingService::mapEntityToFilterResponseDto);
-    }
-
-    @Override
     public OfferProfileGuestResponseDto getActiveOfferById(Long offerId, String token) {
         if (token != null) {
             String email = tokenService.extractEmailFromToken(token);
@@ -253,20 +235,6 @@ public class OfferServiceImpl implements OfferService {
                 .filter(Offer::isActive)
                 .orElseThrow(
                         () -> new OfferNotFoundException(offerId));
-    }
-
-    @Override
-    public Offer updateOffer(OfferRequestDto dto, Long id) {
-        Category category = categoryService.getCategoryByName(dto.getCategoryName());
-
-        return offerRepository.findById(id)
-                .map(existingOffer -> {
-                    if (dto.getCategoryName() != null) existingOffer.setCategory(category);
-                    if (dto.getDescription() != null) existingOffer.setDescription(dto.getDescription());
-                    if (dto.getTitle() != null) existingOffer.setTitle(dto.getTitle());
-                    return existingOffer;
-                })
-                .orElseThrow(() -> new OfferNotFoundException(id));
     }
 
 }

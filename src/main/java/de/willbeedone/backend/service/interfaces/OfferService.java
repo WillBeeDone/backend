@@ -10,7 +10,6 @@ import org.springframework.data.domain.Pageable;
 
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.Optional;
 
 public interface OfferService {
 
@@ -22,8 +21,6 @@ public interface OfferService {
 
     void deleteOfferById(String email, Long offerId);
 
-    Page<OfferFilterResponseDto> getActiveOffersByCity(String cityName, Pageable pageable);
-
     List<OfferFilterResponseDto> getAllActiveOffers();
 
     Page<OfferFilterResponseDto> getAllActiveOffers(Pageable pageable);
@@ -32,15 +29,11 @@ public interface OfferService {
             String cityName, String category, String keyPhrase,
             BigDecimal minPrice, BigDecimal maxPrice, PageRequest pageRequest);
 
-    Optional<List<OfferFilterResponseDto>> getOfferByTitle(String title);
-
     OfferProfileGuestResponseDto getActiveOfferById(Long offerId, String token);
 
     Offer getOfferEntityById(Long offerId);
 
     Offer getActiveOfferEntityById(Long offerId);
-
-    Offer updateOffer(OfferRequestDto dto, Long id);
 
 }
 
