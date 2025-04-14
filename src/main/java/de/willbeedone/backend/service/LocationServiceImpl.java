@@ -32,23 +32,9 @@ public class LocationServiceImpl  implements LocationService {
     }
 
     @Override
-    public Location getLocationById(Long id) {
-        return locationRepository.findById(id).orElseThrow(() -> new RuntimeException("Location not found"));
-    }
-
-    @Override
     public Location getLocationByCity(String cityName) {
         return locationRepository.findByCityName(cityName)
                 .orElseThrow(() -> new RuntimeException("Location not found: " + cityName));
     }
 
-    @Override
-    public Location addNewLocation(Location location) {
-        return locationRepository.save(location);
-    }
-
-    @Override
-    public void deleteLocation(Long id) {
-        locationRepository.deleteById(id);
-    }
 }

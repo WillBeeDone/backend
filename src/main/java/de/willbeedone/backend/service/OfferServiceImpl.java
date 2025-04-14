@@ -236,24 +236,6 @@ public class OfferServiceImpl implements OfferService {
     }
 
     @Override
-    public Optional<List<OfferFilterResponseDto>> getOfferByTitle(String title) {
-        return Optional.of(offerRepository.findOfferByTitleAndActiveIsTrue(title)
-                .stream()
-                .map(offerMappingService::mapEntityToFilterResponseDto)
-                .toList());
-    }
-
-    @Override
-    public Page<OfferFilterResponseDto> getActiveOffersByCity(String cityName, Pageable pageable) {
-        Page<Offer> offerPage = offerRepository.findByCity(cityName, pageable);
-
-        if (offerPage.isEmpty()) {
-            throw new OfferNotFoundException("No active offers found in city: " + cityName);
-        }
-        return offerPage.map(offerMappingService::mapEntityToFilterResponseDto);
-    }
-
-    @Override
     public OfferProfileGuestResponseDto getActiveOfferById(Long offerId, String token) {
         if (token != null) {
             String email = tokenService.extractEmailFromToken(token);

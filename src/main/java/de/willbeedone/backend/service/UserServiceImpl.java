@@ -30,7 +30,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
@@ -79,23 +78,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<Offer> getUserOffers(Long userId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new UserNotFoundException(userId));
-    return new ArrayList<>(user.getOffers());
-    }
-
-    @Override
     public List<OfferFilterResponseDto> getOffersByUserId(String email) {
         return  getActiveValidUserByEmail(email).getOffers().stream()
                 .map(offerMappingService::mapEntityToFilterResponseDto)
                 .sorted(Comparator.comparing(OfferFilterResponseDto::getPricePerHour))
                 .toList();
-    }
-
-    @Override
-    public List<User> getAllUsers() {
-        return userRepository.findAll();
     }
 
     @Override
@@ -130,19 +117,6 @@ public class UserServiceImpl implements UserService {
         if (profilePicture != null && !profilePicture.isEmpty()) {
             imageUrl = imageService.uploadImage(profilePicture);
             existingUser.setProfilePicture(imageUrl);
-        }
-    }
-
-    @Override
-    public void deleteUserById(Long id) {
-        try {
-            if (!userRepository.existsById(id)) {
-                throw new UserNotFoundException(id);
-            } else {
-                userRepository.deleteById(id);
-            }
-        } catch (Exception e) {
-            throw new UserValidationException(e);
         }
     }
 

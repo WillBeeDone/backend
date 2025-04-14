@@ -27,23 +27,8 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public Category getCategoryById(Long id) {
-        return categoryRepository.findById(id).orElseThrow(() -> new RuntimeException("Category not found"));
-    }
-
-    @Override
     public Category getCategoryByName(String name) {
         return categoryRepository.findCategoryByName(name);
-    }
-
-    @Override
-    public Category addNewCategory(Category category) {
-        return categoryRepository.save(category);
-    }
-
-    @Override
-    public void deleteCategory(Long id) {
-        categoryRepository.deleteById(id);
     }
 
     @Override

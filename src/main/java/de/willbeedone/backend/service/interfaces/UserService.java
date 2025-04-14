@@ -18,19 +18,13 @@ import java.util.List;
 
 public interface UserService extends UserDetailsService {
 
-    public List<Offer> getUserOffers(Long userId);
-
     List<OfferFilterResponseDto> getOffersByUserId(String email);
-
-    List<User> getAllUsers();
 
     UserProfileResponseDto getUserProfile(String email);
 
     User getActiveValidUserByEmail(String email);
 
     void updateUser(UserForOfferRequestDto dto, String email);
-
-    void deleteUserById(Long id);
 
     void addOfferToFavourite(String email, Long offerId);
 
