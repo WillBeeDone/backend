@@ -33,7 +33,6 @@ public class Favourite {
             inverseJoinColumns = @JoinColumn(name = "offer_id")
     )
     private Set<Offer> offers = new HashSet<>();
-    ;
 
     //Add new offer to favourites
     public void addOffer(Offer offer) {

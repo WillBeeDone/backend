@@ -6,7 +6,6 @@ import de.willbeedone.backend.domain.dto.offer_dto.response_dto.OfferProfileGues
 import de.willbeedone.backend.domain.entity.*;
 import de.willbeedone.backend.exceptions.custom_exceptions.OfferNotBelongToUserException;
 import de.willbeedone.backend.exceptions.custom_exceptions.OfferNotFoundException;
-import de.willbeedone.backend.exceptions.custom_exceptions.UserNotFoundException;
 import de.willbeedone.backend.exceptions.custom_validation_exceptions.OfferValidationException;
 import de.willbeedone.backend.repository.CategoryRepository;
 import de.willbeedone.backend.repository.FavouriteRepository;
@@ -63,21 +62,19 @@ public class OfferServiceImpl implements OfferService {
     @Override
     @Transactional
     public void addNewOffer(OfferRequestDto offerRequestDto, String email) {
+        User user = userService.getActiveValidUserByEmail(email);
+
         Offer offer = offerMappingService.mapRequestDtoToEntity(offerRequestDto);
+
+        offer.setUser(user);
 
         Category category = categoryRepository.findCategoryByName(offerRequestDto.getCategoryName());
         offer.setCategory(category);
 
-        User user = userService.getActiveValidUserByEmail(email);
-        if (user == null) {
-            throw new UserNotFoundException("User with email " + email + " not found");
-        }
-        offer.setUser(user);
-
         if (offerRequestDto.getImages() != null && !offerRequestDto.getImages().isEmpty()) {
-            Set<ImageGallery> images = offerRequestDto.getImages().stream()
+            List<ImageGallery> images = offerRequestDto.getImages().stream()
                     .map(imageGallery -> imageService.mapFileToImageGalleryDto(imageGallery, offer))
-                    .collect(Collectors.toSet());
+                    .toList();
 
             offer.setImages(images);
         }
@@ -106,6 +103,18 @@ public class OfferServiceImpl implements OfferService {
 
         if (!offerRequestDto.getTitle().equals(offer.getTitle())) {
             offer.setTitle(offerRequestDto.getTitle());
+        }
+
+        if (offerRequestDto.getUrls() != null) {
+            offer.getImages().removeIf(imageGallery -> !offerRequestDto.getUrls().contains(imageGallery.getImageUrl()));
+        }
+
+        if (offerRequestDto.getImages() != null) {
+            List<ImageGallery> inboundImages = offerRequestDto.getImages().stream()
+                    .map(imageGallery -> imageService.mapFileToImageGalleryDto(imageGallery, offer))
+                    .collect(Collectors.toCollection(ArrayList::new));
+
+            offer.getImages().addAll(0, inboundImages);
         }
 
     }

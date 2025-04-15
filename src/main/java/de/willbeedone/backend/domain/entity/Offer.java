@@ -6,8 +6,8 @@ import jakarta.validation.constraints.*;
 import lombok.*;
 
 import java.math.BigDecimal;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -45,7 +45,7 @@ public class Offer {
     private Category category;
 
     @OneToMany(mappedBy = "offer", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<ImageGallery> images = new HashSet<>();
+    private List<ImageGallery> images = new ArrayList<>();
 
     @NotNull
     @Column(name = "active", columnDefinition = "BOOLEAN DEFAULT TRUE")

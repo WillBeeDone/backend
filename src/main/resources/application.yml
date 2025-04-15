@@ -38,6 +38,15 @@ spring:
       max-file-size: 5MB
       max-request-size: 5MB
 
+logging:
+  file:
+    name: logs/log.log
+  level:
+    root: info
+    de.willbeedone.backend: info
+    org.springframework.aop: DEBUG
+    org.aspectj: DEBUG
+
 key:
   access: ${ACCESS_PHRASE_SECRET}
   refresh: ${REFRESH_PHRASE_SECRET}
