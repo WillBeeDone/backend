@@ -6,7 +6,6 @@ import de.willbeedone.backend.domain.dto.offer_dto.response_dto.OfferProfileGues
 import de.willbeedone.backend.domain.entity.*;
 import de.willbeedone.backend.exceptions.custom_exceptions.OfferNotBelongToUserException;
 import de.willbeedone.backend.exceptions.custom_exceptions.OfferNotFoundException;
-import de.willbeedone.backend.exceptions.custom_exceptions.UserNotFoundException;
 import de.willbeedone.backend.exceptions.custom_validation_exceptions.OfferValidationException;
 import de.willbeedone.backend.repository.CategoryRepository;
 import de.willbeedone.backend.repository.FavouriteRepository;
@@ -62,27 +61,62 @@ public class OfferServiceImpl implements OfferService {
 
     @Override
     @Transactional
-    public Offer addNewOffer(OfferRequestDto offerDto, String email) {
-        Offer offer = offerMappingService.mapRequestDtoToEntity(offerDto);
-
-        Category category = categoryRepository.findCategoryByName(offerDto.getCategoryName());
-        offer.setCategory(category);
-
+    public void addNewOffer(OfferRequestDto offerRequestDto, String email) {
         User user = userService.getActiveValidUserByEmail(email);
-        if (user == null) {
-            throw new UserNotFoundException("User with email " + email + " not found");
-        }
+
+        Offer offer = offerMappingService.mapRequestDtoToEntity(offerRequestDto);
+
         offer.setUser(user);
 
-        if (offerDto.getImages() != null && !offerDto.getImages().isEmpty()) {
-            Set<ImageGallery> images = offerDto.getImages().stream()
+        Category category = categoryRepository.findCategoryByName(offerRequestDto.getCategoryName());
+        offer.setCategory(category);
+
+        if (offerRequestDto.getImages() != null && !offerRequestDto.getImages().isEmpty()) {
+            List<ImageGallery> images = offerRequestDto.getImages().stream()
                     .map(imageGallery -> imageService.mapFileToImageGalleryDto(imageGallery, offer))
-                    .collect(Collectors.toSet());
+                    .toList();
 
             offer.setImages(images);
         }
+    }
 
-        return offerRepository.save(offer);
+    @Override
+    @Transactional
+    public void updateOffer(OfferRequestDto offerRequestDto, Long offerId, String email) {
+        Offer offer = getOfferEntityById(offerId);
+
+        if (!offer.getUser().getEmail().equals(email)) {
+            throw new OfferNotBelongToUserException(offerId, email);
+        }
+
+        if (!offerRequestDto.getPricePerHour().equals(offer.getPricePerHour())) {
+            offer.setPricePerHour(offerRequestDto.getPricePerHour());
+        }
+
+        if (!offerRequestDto.getDescription().equals(offer.getDescription())) {
+            offer.setDescription(offerRequestDto.getDescription());
+        }
+
+        if (!offerRequestDto.getCategoryName().equals(offer.getCategory().getName())) {
+            offer.setCategory(categoryRepository.findCategoryByName(offerRequestDto.getCategoryName()));
+        }
+
+        if (!offerRequestDto.getTitle().equals(offer.getTitle())) {
+            offer.setTitle(offerRequestDto.getTitle());
+        }
+
+        if (offerRequestDto.getUrls() != null) {
+            offer.getImages().removeIf(imageGallery -> !offerRequestDto.getUrls().contains(imageGallery.getImageUrl()));
+        }
+
+        if (offerRequestDto.getImages() != null) {
+            List<ImageGallery> inboundImages = offerRequestDto.getImages().stream()
+                    .map(imageGallery -> imageService.mapFileToImageGalleryDto(imageGallery, offer))
+                    .collect(Collectors.toCollection(ArrayList::new));
+
+            offer.getImages().addAll(0, inboundImages);
+        }
+
     }
 
     @Override
@@ -211,24 +245,6 @@ public class OfferServiceImpl implements OfferService {
     }
 
     @Override
-    public Optional<List<OfferFilterResponseDto>> getOfferByTitle(String title) {
-        return Optional.of(offerRepository.findOfferByTitleAndActiveIsTrue(title)
-                .stream()
-                .map(offerMappingService::mapEntityToFilterResponseDto)
-                .toList());
-    }
-
-    @Override
-    public Page<OfferFilterResponseDto> getActiveOffersByCity(String cityName, Pageable pageable) {
-        Page<Offer> offerPage = offerRepository.findByCity(cityName, pageable);
-
-        if (offerPage.isEmpty()) {
-            throw new OfferNotFoundException("No active offers found in city: " + cityName);
-        }
-        return offerPage.map(offerMappingService::mapEntityToFilterResponseDto);
-    }
-
-    @Override
     public OfferProfileGuestResponseDto getActiveOfferById(Long offerId, String token) {
         if (token != null) {
             String email = tokenService.extractEmailFromToken(token);
@@ -253,20 +269,6 @@ public class OfferServiceImpl implements OfferService {
                 .filter(Offer::isActive)
                 .orElseThrow(
                         () -> new OfferNotFoundException(offerId));
-    }
-
-    @Override
-    public Offer updateOffer(OfferRequestDto dto, Long id) {
-        Category category = categoryService.getCategoryByName(dto.getCategoryName());
-
-        return offerRepository.findById(id)
-                .map(existingOffer -> {
-                    if (dto.getCategoryName() != null) existingOffer.setCategory(category);
-                    if (dto.getDescription() != null) existingOffer.setDescription(dto.getDescription());
-                    if (dto.getTitle() != null) existingOffer.setTitle(dto.getTitle());
-                    return existingOffer;
-                })
-                .orElseThrow(() -> new OfferNotFoundException(id));
     }
 
 }

@@ -6,7 +6,8 @@ import jakarta.validation.constraints.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
@@ -34,11 +35,14 @@ public class OfferRequestDto {
     @Schema(description = "Short offer description", example = "Super sexy plumber will fix your pipes.")
     private String title;
 
-    @Schema(description = "Photo gallery of work results")
-    private Set<MultipartFile> images;
+    @Schema(description = "New photos from user's device")
+    private List<MultipartFile> images = new ArrayList<>();
+
+    @Schema(description = "Old photos from offer's gallery")
+    private List<String> urls = new ArrayList<>();
 
     @Override
     public String toString() {
-        return String.format("Offer: title - %s, description - %s, pricePerHour - %.2f, categoryName - %s, images - %s", title, description, pricePerHour, categoryName, images);
+        return String.format("Offer: title - %s, description - %s, pricePerHour - %.2f, categoryName - %s, images - %s, urls - %s", title, description, pricePerHour, categoryName, images, urls);
     }
 }

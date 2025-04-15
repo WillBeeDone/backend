@@ -10,12 +10,6 @@ public interface LocationService {
 
     boolean existsByCityName(String cityName);
 
-    Location getLocationById(Long id);
-
     Location getLocationByCity(String cityName);
-
-    Location addNewLocation(Location location);
-
-    void deleteLocation(Long id);
 
 }

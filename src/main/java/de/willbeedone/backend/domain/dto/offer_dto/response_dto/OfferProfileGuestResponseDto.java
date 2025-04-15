@@ -8,7 +8,8 @@ import jakarta.validation.constraints.*;
 import lombok.*;
 
 import java.math.BigDecimal;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
@@ -29,6 +30,7 @@ public class OfferProfileGuestResponseDto {
     @Schema(description = "Short offer description", example = "Super sexy plumber will fix your pipes.")
     private String title;
 
+    @NotNull
     @Schema(description = "Offer categoryDto")
     private CategoryDto categoryDto;
 
@@ -43,7 +45,7 @@ public class OfferProfileGuestResponseDto {
     private String description;
 
     @Schema(description = "Photo gallery of work results")
-    private Set<ImageGallery> images;
+    private List<ImageGallery> images = new ArrayList<>();
 
     @NotNull
     @Schema(description = "The fields from User: first name, last name, location, profile picture, email, phoneNumber")
