@@ -13,7 +13,9 @@ import java.util.List;
 
 public interface OfferService {
 
-    Offer addNewOffer(OfferRequestDto request, String email);
+    void addNewOffer(OfferRequestDto offerRequestDto, String email);
+
+    void updateOffer(OfferRequestDto offerRequestDto, Long offerId, String email);
 
     void deactivateOfferById(String email, Offer offer);
 
