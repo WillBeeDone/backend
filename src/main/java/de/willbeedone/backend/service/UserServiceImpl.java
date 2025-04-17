@@ -260,6 +260,11 @@ public class UserServiceImpl implements UserService {
         }
     }
 
+    @Override
+    public void getUserBlockStatus(String email) {
+
+    }
+
     //By email (= username)
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {

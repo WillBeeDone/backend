@@ -46,4 +46,5 @@ public interface UserService extends UserDetailsService {
 
     void changePassword(ChangePasswordDto changePasswordDto, String email);
 
+    void getUserBlockStatus(String email);
 }
