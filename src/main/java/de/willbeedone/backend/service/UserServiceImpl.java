@@ -12,7 +12,6 @@ import de.willbeedone.backend.exceptions.custom_exceptions.AlreadyExistException
 import de.willbeedone.backend.exceptions.custom_exceptions.ConfirmationCodeIsInvalidException;
 import de.willbeedone.backend.exceptions.custom_exceptions.PasswordException;
 import de.willbeedone.backend.exceptions.custom_exceptions.UserNotFoundException;
-import de.willbeedone.backend.exceptions.custom_validation_exceptions.UserValidationException;
 import de.willbeedone.backend.repository.*;
 import de.willbeedone.backend.service.interfaces.*;
 import de.willbeedone.backend.service.mapping.OfferMappingService;
@@ -260,10 +259,6 @@ public class UserServiceImpl implements UserService {
         }
     }
 
-    @Override
-    public void getUserBlockStatus(String email) {
-
-    }
 
     //By email (= username)
     @Override

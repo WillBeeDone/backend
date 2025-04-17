@@ -7,7 +7,6 @@ import de.willbeedone.backend.domain.dto.user_dto.request_dto.UserForOfferReques
 import de.willbeedone.backend.domain.dto.user_dto.request_dto.UserPasswordRequestDto;
 import de.willbeedone.backend.domain.dto.user_dto.request_dto.UserRequestDto;
 import de.willbeedone.backend.domain.dto.user_dto.response_dto.UserProfileResponseDto;
-import de.willbeedone.backend.domain.entity.Offer;
 import de.willbeedone.backend.domain.entity.User;
 import jakarta.security.auth.message.AuthException;
 import org.springframework.data.domain.Page;
@@ -46,5 +45,4 @@ public interface UserService extends UserDetailsService {
 
     void changePassword(ChangePasswordDto changePasswordDto, String email);
 
-    void getUserBlockStatus(String email);
 }

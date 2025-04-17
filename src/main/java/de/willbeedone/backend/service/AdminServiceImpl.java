@@ -4,6 +4,7 @@ import de.willbeedone.backend.domain.entity.User;
 import de.willbeedone.backend.exceptions.custom_exceptions.UserNotFoundException;
 import de.willbeedone.backend.repository.UserRepository;
 import de.willbeedone.backend.service.interfaces.AdminService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -14,14 +15,15 @@ public class AdminServiceImpl implements AdminService {
         this.userRepository = userRepository;
     }
 
+
     @Override
-    public void blockUserByEmail(String email) {
-        email = email.trim();
-        email = email.replaceAll("\"", "").replaceAll("'", "");
-        String finalEmail = email;
+    public boolean blockUserByEmail(String email) {
         User user = userRepository.findUserByEmail(email)
-                .orElseThrow(() -> new UserNotFoundException("email " + finalEmail ));
+                .orElseThrow(() -> new UserNotFoundException("email " + email));
         user.setBlocked(!user.isBlocked());
         userRepository.save(user);
+        return user.isBlocked();
     }
+
+
 }

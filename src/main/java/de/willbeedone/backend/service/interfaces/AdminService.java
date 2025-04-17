@@ -5,5 +5,6 @@ import org.springframework.stereotype.Service;
 @Service
 public interface AdminService {
 
-    void blockUserByEmail(String email);
+    boolean blockUserByEmail(String email);
+
 }

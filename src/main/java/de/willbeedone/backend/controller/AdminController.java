@@ -3,9 +3,11 @@ package de.willbeedone.backend.controller;
 import de.willbeedone.backend.exceptions.Response;
 import de.willbeedone.backend.security.sec_service.TokenService;
 import de.willbeedone.backend.service.interfaces.AdminService;
+import de.willbeedone.backend.service.interfaces.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,28 +16,30 @@ import org.springframework.web.bind.annotation.*;
 @Tag(name = "Admin controller", description = "Controller for various administrative operations.")
 public class AdminController {
 
-    private final TokenService tokenService;
     private final AdminService adminService;
 
-    public AdminController(TokenService tokenService, AdminService adminService) {
-        this.tokenService = tokenService;
+    public AdminController(AdminService adminService) {
+
         this.adminService = adminService;
     }
 
-    @Operation(
-            summary = "Get all active favorite offers with pagination",
-            description = "Returns a paginated list of all active favorite offers for the user by their ID. Applies filters if provided. Default page size is 12."
-    )
+    @Operation(summary = "User Blocking by Administrator",
+            description = "The user's binary parameter 'blocked' toggles its value to the opposite.")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @PutMapping("/block")
-    public Response blockUserByEmail(
-            @RequestHeader("Authorization") String token,
+    public ResponseEntity<Response> blockUserByEmail(
             @Parameter(description = "User email", example = "offender@gmail.com")
             @RequestBody String email
-
     ) {
-        adminService.blockUserByEmail(email);
-        return new Response("Ok");
+        email = email.trim().replaceAll("\"", "").replaceAll("'", "");
+
+        boolean isBlocked = adminService.blockUserByEmail(email);
+
+        String message = String.format("User with email %s has been %s.",
+                email,
+                isBlocked ? "blocked" : "unblocked"
+        );
+
+        return ResponseEntity.ok(new Response(message));
     }
 }
-
