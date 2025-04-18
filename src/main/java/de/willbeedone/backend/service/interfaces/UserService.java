@@ -49,4 +49,5 @@ public interface UserService extends UserDetailsService {
 
     void toggleActiveStatus(String email);
 
+    boolean blockUserByEmail(String email);
 }

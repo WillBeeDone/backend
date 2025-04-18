@@ -1,8 +1,6 @@
 package de.willbeedone.backend.controller;
 
 import de.willbeedone.backend.exceptions.Response;
-import de.willbeedone.backend.security.sec_service.TokenService;
-import de.willbeedone.backend.service.interfaces.AdminService;
 import de.willbeedone.backend.service.interfaces.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -17,11 +15,9 @@ import org.springframework.web.bind.annotation.*;
 public class AdminController {
 
     private final UserService userService;
-    private final AdminService adminService;
 
-    public AdminController(UserService userService, AdminService adminService) {
+    public AdminController(UserService userService) {
         this.userService = userService;
-        this.adminService = adminService;
     }
 
     @Operation(summary = "User Blocking by Administrator",
@@ -33,7 +29,7 @@ public class AdminController {
             @RequestBody String email
     ) {
         email = email.trim().replaceAll("\"", "").replaceAll("'", "");
-        boolean isBlocked = adminService.blockUserByEmail(email);
+        boolean isBlocked = userService.blockUserByEmail(email);
 
         String message = isBlocked ?
                 "User " + email + " is now blocked." :

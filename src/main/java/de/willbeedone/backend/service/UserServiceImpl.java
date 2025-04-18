@@ -278,4 +278,14 @@ public class UserServiceImpl implements UserService {
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         return userRepository.findUserByEmail(email).orElseThrow(() -> new UsernameNotFoundException("User not found"));
     }
+
+    @Override
+    @Transactional
+    public boolean blockUserByEmail(String email) {
+        User user = userRepository.findUserByEmail(email)
+                .orElseThrow(() -> new UserNotFoundException("email " + email));
+        user.setBlocked(!user.isBlocked());
+        userRepository.save(user);
+        return user.isBlocked();
+    }
 }
