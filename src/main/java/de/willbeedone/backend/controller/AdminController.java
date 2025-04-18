@@ -16,10 +16,11 @@ import org.springframework.web.bind.annotation.*;
 @Tag(name = "Admin controller", description = "Controller for various administrative operations.")
 public class AdminController {
 
+    private final UserService userService;
     private final AdminService adminService;
 
-    public AdminController(AdminService adminService) {
-
+    public AdminController(UserService userService, AdminService adminService) {
+        this.userService = userService;
         this.adminService = adminService;
     }
 
@@ -32,13 +33,30 @@ public class AdminController {
             @RequestBody String email
     ) {
         email = email.trim().replaceAll("\"", "").replaceAll("'", "");
-
         boolean isBlocked = adminService.blockUserByEmail(email);
 
-        String message = String.format("User with email %s has been %s.",
-                email,
-                isBlocked ? "blocked" : "unblocked"
-        );
+        String message = isBlocked ?
+                "User " + email + " is now blocked." :
+                "User " + email + " has been unblocked.";
+
+        return ResponseEntity.ok(new Response(message));
+    }
+
+    @Operation(summary = "Toggle status of any user (admin only)",
+            description = "Allows admin to toggle the 'active' status of any user by email.")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    @PutMapping("/status")
+    public ResponseEntity<Response> toggleAnyUserStatus(
+            @Parameter(description = "User email", example = "offender@gmail.com")
+            @RequestBody String email) {
+        email = email.trim().replaceAll("\"", "").replaceAll("'", "");
+        boolean wasActive = userService.getUserStatus(email);
+        userService.toggleActiveStatus(email);
+        boolean isActive = userService.getUserStatus(email);
+
+        String message = isActive ?
+                "User " + email + " is now active." :
+                "User " + email + " has been deactivated.";
 
         return ResponseEntity.ok(new Response(message));
     }
