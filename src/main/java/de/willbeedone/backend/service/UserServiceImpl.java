@@ -258,6 +258,19 @@ public class UserServiceImpl implements UserService {
             throw new PasswordException("Passwords don't match.");
         }
     }
+    public boolean getUserStatus(String email) {
+        User user = userRepository.findUserByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        return user.isActive();
+    }
+
+    @Override
+    @Transactional
+    public void toggleActiveStatus(String email) {
+    User user = userRepository.findUserByEmail(email).orElseThrow(() -> new UsernameNotFoundException("User not found"));
+    user.setActive(!user.isActive());
+    userRepository.save(user);
+    }
 
 
     //By email (= username)

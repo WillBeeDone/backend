@@ -35,6 +35,7 @@ public class UserController {
     @Autowired
     private final TokenService tokenService;
 
+
     public UserController(UserService userService, OfferService offerService, TokenService tokenService) {
         this.userService = userService;
         this.offerService = offerService;
@@ -216,6 +217,22 @@ public class UserController {
         String email = tokenService.extractEmailFromToken(token);
 
         return userService.getOffersByUserId(email);
+    }
+
+    @Operation(summary = "Soft toggle user account status",
+            description = "Toggles the 'active' binary parameter to its opposite value, which results in either suspending or recovering the user's account.")
+    @PreAuthorize("hasAuthority('ROLE_USER') or hasAuthority('ROLE_ADMIN')")
+    @PutMapping("/status")
+    public Response toggleUserActiveStatus(
+            @RequestHeader("Authorization") String token
+
+    ) {
+        String email = tokenService.extractEmailFromToken(token);
+        boolean wasActive = userService.getUserStatus(email);
+        userService.toggleActiveStatus(email);
+        boolean isActive = userService.getUserStatus(email);
+        String message = isActive ? "User account is now active." : "User account is now deactivated.";
+        return new Response(message);
     }
 
 }
