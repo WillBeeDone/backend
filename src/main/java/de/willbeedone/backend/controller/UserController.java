@@ -2,14 +2,19 @@ package de.willbeedone.backend.controller;
 
 import de.willbeedone.backend.domain.dto.offer_dto.request_dto.OfferRequestDto;
 import de.willbeedone.backend.domain.dto.offer_dto.response_dto.OfferFilterResponseDto;
+import de.willbeedone.backend.domain.dto.user_dto.request_dto.UserEmailRequestDto;
 import de.willbeedone.backend.domain.dto.user_dto.request_dto.UserForOfferRequestDto;
 import de.willbeedone.backend.domain.dto.user_dto.response_dto.UserProfileResponseDto;
 import de.willbeedone.backend.domain.entity.Offer;
+import de.willbeedone.backend.domain.entity.Role;
 import de.willbeedone.backend.exceptions.Response;
+import de.willbeedone.backend.exceptions.custom_validation_exceptions.UserValidationException;
+import de.willbeedone.backend.security.AuthInfo;
 import de.willbeedone.backend.security.sec_service.TokenService;
 import de.willbeedone.backend.service.interfaces.OfferService;
 import de.willbeedone.backend.service.interfaces.UserService;
 
+import io.jsonwebtoken.Claims;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -22,6 +27,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/users")
@@ -222,17 +228,34 @@ public class UserController {
     @Operation(summary = "Soft toggle user account status",
             description = "Toggles the 'active' binary parameter to its opposite value, which results in either suspending or recovering the user's account.")
     @PreAuthorize("hasAuthority('ROLE_USER') or hasAuthority('ROLE_ADMIN')")
-    @PutMapping("/status")
+    @PutMapping("/active")
     public Response toggleUserActiveStatus(
-            @RequestHeader("Authorization") String token
+            @RequestHeader("Authorization") String token,
+            @RequestBody(required = false) UserEmailRequestDto userEmailRequestDto
 
     ) {
-        String email = tokenService.extractEmailFromToken(token);
-        boolean wasActive = userService.getUserStatus(email);
-        userService.toggleActiveStatus(email);
-        boolean isActive = userService.getUserStatus(email);
-        String message = isActive ? "User account is now active." : "User account is now deactivated.";
+//        Claims claims = tokenService.getAccessClaims(token);
+//        AuthInfo authInfo = tokenService.mapClaimsToAuthInfo(claims);
+//        Set<Role> roles = authInfo.getRoles();
+        Set<Role> roles = tokenService.extractRolesFromToken(token);
+        String message;
+
+        if (roles.stream().anyMatch(role -> "ROLE_ADMIN".equals(role.getTitle()))) {
+            if (userEmailRequestDto.getEmail() == null) {
+                throw new UserValidationException("Email is required for admin operations");
+            }
+            String email = userEmailRequestDto.getEmail();
+            boolean isActive = userService.toggleActiveStatus(email);
+            message = isActive ?
+                    "User " + email + " is now active." :
+                    "User " + email + " has been deactivated.";
+        } else {
+            String email = tokenService.extractEmailFromToken(token);
+            boolean isActive = userService.toggleActiveStatus(email);
+            message = "Ok";
+        }
         return new Response(message);
+
     }
 
 }

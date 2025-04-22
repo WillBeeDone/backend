@@ -45,9 +45,7 @@ public interface UserService extends UserDetailsService {
 
     void changePassword(ChangePasswordDto changePasswordDto, String email);
 
-    boolean getUserStatus(String email);
-
-    void toggleActiveStatus(String email);
+    boolean toggleActiveStatus(String email);
 
     boolean blockUserByEmail(String email);
 }

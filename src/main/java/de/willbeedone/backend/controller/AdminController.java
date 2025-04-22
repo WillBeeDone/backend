@@ -1,10 +1,12 @@
 package de.willbeedone.backend.controller;
 
+import de.willbeedone.backend.domain.dto.user_dto.request_dto.UserEmailRequestDto;
 import de.willbeedone.backend.exceptions.Response;
 import de.willbeedone.backend.service.interfaces.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -14,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 @Tag(name = "Admin controller", description = "Controller for various administrative operations.")
 public class AdminController {
 
+    @Autowired
     private final UserService userService;
 
     public AdminController(UserService userService) {
@@ -24,36 +27,36 @@ public class AdminController {
             description = "The user's binary parameter 'blocked' toggles its value to the opposite.")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @PutMapping("/block")
-    public ResponseEntity<Response> blockUserByEmail(
+    public Response blockUserByEmail(
             @Parameter(description = "User email", example = "offender@gmail.com")
-            @RequestBody String email
+            @RequestBody UserEmailRequestDto userEmailRequestDto
     ) {
-        email = email.trim().replaceAll("\"", "").replaceAll("'", "");
+
+        String email = userEmailRequestDto.getEmail();
         boolean isBlocked = userService.blockUserByEmail(email);
 
         String message = isBlocked ?
                 "User " + email + " is now blocked." :
                 "User " + email + " has been unblocked.";
 
-        return ResponseEntity.ok(new Response(message));
+        return new Response (message);
     }
 
     @Operation(summary = "Toggle status of any user (admin only)",
             description = "Allows admin to toggle the 'active' status of any user by email.")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
-    @PutMapping("/status")
-    public ResponseEntity<Response> toggleAnyUserStatus(
+    @PutMapping("/active")
+    public Response toggleAnyUserStatus(
             @Parameter(description = "User email", example = "offender@gmail.com")
-            @RequestBody String email) {
-        email = email.trim().replaceAll("\"", "").replaceAll("'", "");
-        boolean wasActive = userService.getUserStatus(email);
-        userService.toggleActiveStatus(email);
-        boolean isActive = userService.getUserStatus(email);
+            @RequestBody UserEmailRequestDto userEmailRequestDto) {
+
+        String email = userEmailRequestDto.getEmail();
+        boolean isActive = userService.toggleActiveStatus(email);
 
         String message = isActive ?
                 "User " + email + " is now active." :
                 "User " + email + " has been deactivated.";
 
-        return ResponseEntity.ok(new Response(message));
+        return new Response(message);
     }
 }

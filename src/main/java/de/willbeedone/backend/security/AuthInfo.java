@@ -3,6 +3,7 @@ package de.willbeedone.backend.security;
 import de.willbeedone.backend.domain.entity.Role;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.ToString;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -13,6 +14,7 @@ import java.util.Set;
 @AllArgsConstructor
 @EqualsAndHashCode
 @ToString
+@Getter
 public class AuthInfo implements Authentication {
     public AuthInfo(String email, Set<Role> roles) {
         this.email = email;
@@ -58,4 +60,5 @@ public class AuthInfo implements Authentication {
     public String getName() {
         return email;
     }
+
 }
