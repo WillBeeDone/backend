@@ -234,9 +234,6 @@ public class UserController {
             @RequestBody(required = false) UserEmailRequestDto userEmailRequestDto
 
     ) {
-//        Claims claims = tokenService.getAccessClaims(token);
-//        AuthInfo authInfo = tokenService.mapClaimsToAuthInfo(claims);
-//        Set<Role> roles = authInfo.getRoles();
         Set<Role> roles = tokenService.extractRolesFromToken(token);
         String message;
 
