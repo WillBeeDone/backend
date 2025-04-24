@@ -234,8 +234,7 @@ public class UserController {
             @RequestBody(required = false) UserEmailRequestDto userEmailRequestDto
 
     ) {
-        Set<Role> roles = tokenService.extractRolesFromToken(token);
-        String message;
+        List<Role> roles = tokenService.extractRolesFromToken(token);
 
         if (roles.stream().anyMatch(role -> "ROLE_ADMIN".equals(role.getTitle()))) {
             if (userEmailRequestDto.getEmail() == null) {
@@ -243,16 +242,13 @@ public class UserController {
             }
             String email = userEmailRequestDto.getEmail();
             boolean isActive = userService.toggleActiveStatus(email);
-            message = isActive ?
+            return new Response ( isActive ?
                     "User " + email + " is now active." :
-                    "User " + email + " has been deactivated.";
+                    "User " + email + " has been deactivated.");
         } else {
             String email = tokenService.extractEmailFromToken(token);
             boolean isActive = userService.toggleActiveStatus(email);
-            message = "Ok";
+            return new Response ("Ok");
         }
-        return new Response(message);
-
     }
-
 }

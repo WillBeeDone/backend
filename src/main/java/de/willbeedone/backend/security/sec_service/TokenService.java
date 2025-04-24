@@ -104,11 +104,11 @@ public class TokenService {
     }
 
     //Method for extracting roles from token
-    public Set<Role> extractRolesFromToken(String jwt) {
+    public List<Role> extractRolesFromToken(String jwt) {
         String token = jwt.substring(7);
         Claims claims = getAccessClaims(token);
-        AuthInfo authInfo = mapClaimsToAuthInfo(claims);
-        return authInfo.getRoles();
+        List<Role> roles = claims.get("role", List.class);
+        return roles;
     }
 
     public AuthInfo mapClaimsToAuthInfo(Claims claims) {

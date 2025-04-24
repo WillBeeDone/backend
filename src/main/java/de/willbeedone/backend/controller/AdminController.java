@@ -41,22 +41,4 @@ public class AdminController {
 
         return new Response (message);
     }
-
-    @Operation(summary = "Toggle status of any user (admin only)",
-            description = "Allows admin to toggle the 'active' status of any user by email.")
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
-    @PutMapping("/active")
-    public Response toggleAnyUserStatus(
-            @Parameter(description = "User email", example = "offender@gmail.com")
-            @RequestBody UserEmailRequestDto userEmailRequestDto) {
-
-        String email = userEmailRequestDto.getEmail();
-        boolean isActive = userService.toggleActiveStatus(email);
-
-        String message = isActive ?
-                "User " + email + " is now active." :
-                "User " + email + " has been deactivated.";
-
-        return new Response(message);
-    }
 }
