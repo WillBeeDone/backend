@@ -2,14 +2,19 @@ package de.willbeedone.backend.controller;
 
 import de.willbeedone.backend.domain.dto.offer_dto.request_dto.OfferRequestDto;
 import de.willbeedone.backend.domain.dto.offer_dto.response_dto.OfferFilterResponseDto;
+import de.willbeedone.backend.domain.dto.user_dto.request_dto.UserEmailRequestDto;
 import de.willbeedone.backend.domain.dto.user_dto.request_dto.UserForOfferRequestDto;
 import de.willbeedone.backend.domain.dto.user_dto.response_dto.UserProfileResponseDto;
 import de.willbeedone.backend.domain.entity.Offer;
+import de.willbeedone.backend.domain.entity.Role;
 import de.willbeedone.backend.exceptions.Response;
+import de.willbeedone.backend.exceptions.custom_validation_exceptions.UserValidationException;
+import de.willbeedone.backend.security.AuthInfo;
 import de.willbeedone.backend.security.sec_service.TokenService;
 import de.willbeedone.backend.service.interfaces.OfferService;
 import de.willbeedone.backend.service.interfaces.UserService;
 
+import io.jsonwebtoken.Claims;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -21,7 +26,9 @@ import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/users")
@@ -34,6 +41,7 @@ public class UserController {
     private final OfferService offerService;
     @Autowired
     private final TokenService tokenService;
+
 
     public UserController(UserService userService, OfferService offerService, TokenService tokenService) {
         this.userService = userService;
@@ -218,4 +226,30 @@ public class UserController {
         return userService.getOffersByUserId(email);
     }
 
+    @Operation(summary = "Soft toggle user account status",
+            description = "Toggles the 'active' binary parameter to its opposite value, which results in either suspending or recovering the user's account.")
+    @PreAuthorize("hasAuthority('ROLE_USER') or hasAuthority('ROLE_ADMIN')")
+    @PutMapping("/active")
+    public Response toggleUserActiveStatus(
+            @RequestHeader("Authorization") String token,
+            @RequestBody(required = false) UserEmailRequestDto userEmailRequestDto
+
+    ) {
+        List<LinkedHashMap<String, String>> roles = tokenService.extractRolesFromToken(token);
+
+        if (roles.stream().anyMatch(role -> "ROLE_ADMIN".equals(role.get("authority")))) {
+            if (userEmailRequestDto.getEmail() == null) {
+                throw new IllegalArgumentException("Email is required for admin operations");
+            }
+            String email = userEmailRequestDto.getEmail();
+            boolean isActive = userService.toggleActiveStatus(email);
+            return new Response ( isActive ?
+                    "User " + email + " is now active." :
+                    "User " + email + " has been deactivated.");
+        } else {
+            String email = tokenService.extractEmailFromToken(token);
+            boolean isActive = userService.toggleActiveStatus(email);
+            return new Response ("Ok");
+        }
+    }
 }
