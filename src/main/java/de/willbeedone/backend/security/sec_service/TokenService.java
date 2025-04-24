@@ -104,11 +104,10 @@ public class TokenService {
     }
 
     //Method for extracting roles from token
-    public List<Role> extractRolesFromToken(String jwt) {
+    public List<LinkedHashMap<String, String>> extractRolesFromToken(String jwt) {
         String token = jwt.substring(7);
         Claims claims = getAccessClaims(token);
-        List<Role> roles = claims.get("role", List.class);
-        return roles;
+        return (List<LinkedHashMap<String, String>>) claims.get("roles");
     }
 
     public AuthInfo mapClaimsToAuthInfo(Claims claims) {

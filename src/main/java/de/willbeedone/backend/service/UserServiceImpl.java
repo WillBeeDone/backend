@@ -91,9 +91,14 @@ public class UserServiceImpl implements UserService {
                 // отфильтровывает и заблокированных
                 .filter(user -> !user.isBlocked())
                 .orElseThrow(
-                        //Вопрос к Артему по поводу повторения текста в exceptions
-                        () -> new UserNotFoundException("User with email " + email + " not found")
+                        () -> new UserNotFoundException("email " + email)
                 );
+    }
+
+    @Override
+    public User getAllUserByEmail(String email) {
+        return userRepository.findUserByEmail(email)
+                .orElseThrow(() -> new UserNotFoundException("email " + email));
     }
 
     @Override
@@ -264,7 +269,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public boolean toggleActiveStatus(String email) {
-    User user = userRepository.findUserByEmail(email).orElseThrow(() -> new UsernameNotFoundException("User not found"));
+    User user = getAllUserByEmail(email);
     user.setActive(!user.isActive());
     return user.isActive();
     }
@@ -279,9 +284,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public boolean blockUserByEmail(String email) {
-        //не использовал getActiveValidUserByEmail, так как метод фильтрует заблокированных
-        User user = userRepository.findUserByEmail(email)
-                .orElseThrow(() -> new UserNotFoundException("email " + email));
+        User user = getAllUserByEmail(email);
         user.setBlocked(!user.isBlocked());
         return user.isBlocked();
     }

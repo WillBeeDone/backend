@@ -19,6 +19,8 @@ public interface UserService extends UserDetailsService {
 
     List<OfferFilterResponseDto> getOffersByUserId(String email);
 
+    User getAllUserByEmail(String email);
+
     UserProfileResponseDto getUserProfile(String email);
 
     User getActiveValidUserByEmail(String email);

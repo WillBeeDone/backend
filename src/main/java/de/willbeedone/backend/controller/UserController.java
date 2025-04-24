@@ -26,6 +26,7 @@ import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Set;
 
@@ -234,11 +235,11 @@ public class UserController {
             @RequestBody(required = false) UserEmailRequestDto userEmailRequestDto
 
     ) {
-        List<Role> roles = tokenService.extractRolesFromToken(token);
+        List<LinkedHashMap<String, String>> roles = tokenService.extractRolesFromToken(token);
 
-        if (roles.stream().anyMatch(role -> "ROLE_ADMIN".equals(role.getTitle()))) {
+        if (roles.stream().anyMatch(role -> "ROLE_ADMIN".equals(role.get("authority")))) {
             if (userEmailRequestDto.getEmail() == null) {
-                throw new UserValidationException("Email is required for admin operations");
+                throw new IllegalArgumentException("Email is required for admin operations");
             }
             String email = userEmailRequestDto.getEmail();
             boolean isActive = userService.toggleActiveStatus(email);
