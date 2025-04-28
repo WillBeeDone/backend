@@ -9,6 +9,9 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
+
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -39,9 +42,19 @@ public class Report {
     @Column(name = "reason", columnDefinition = "TEXT")
     private String reason;
 
+    @NotNull
+    @CreationTimestamp
+    @Column(updatable = false, name = "createdAt", columnDefinition = "DATETIME")
+    private LocalDateTime createdAt;
+
+    @NotNull
+    @Column(name = "active", columnDefinition = "BOOLEAN DEFAULT TRUE")
+    private boolean active;
+
     @Override
     public String toString() {
-        return String.format("Report: id - %d, reason - %s", id, reason);
+        return String.format(
+                "Report{id=%d, reason='%s', createdAt=%s, active=%s, userId=%s, offerId=%s}",id,reason,createdAt,active,user,offer );
     }
 
 }
