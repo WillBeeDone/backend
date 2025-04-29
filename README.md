@@ -7,6 +7,8 @@ It features user authentication, CRUD operations, filtering, favorites, email in
 
 The backend is built using Spring Boot, Spring Security, JPA/Hibernate, MySQL, and supports external services like email and DigitalOcean.
 
+🌎 Deployment: https://monkfish-app-73239.ondigitalocean.app/
+
 📋 Features
 - User registration and login with JWT authentication
 - Secure token management (Access and Refresh tokens)
