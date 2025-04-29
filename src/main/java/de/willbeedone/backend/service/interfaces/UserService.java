@@ -7,7 +7,6 @@ import de.willbeedone.backend.domain.dto.user_dto.request_dto.UserForOfferReques
 import de.willbeedone.backend.domain.dto.user_dto.request_dto.UserPasswordRequestDto;
 import de.willbeedone.backend.domain.dto.user_dto.request_dto.UserRequestDto;
 import de.willbeedone.backend.domain.dto.user_dto.response_dto.UserProfileResponseDto;
-import de.willbeedone.backend.domain.entity.Offer;
 import de.willbeedone.backend.domain.entity.User;
 import jakarta.security.auth.message.AuthException;
 import org.springframework.data.domain.Page;
@@ -19,6 +18,8 @@ import java.util.List;
 public interface UserService extends UserDetailsService {
 
     List<OfferFilterResponseDto> getOffersByUserId(String email);
+
+    User getAllUserByEmail(String email);
 
     UserProfileResponseDto getUserProfile(String email);
 
@@ -46,4 +47,7 @@ public interface UserService extends UserDetailsService {
 
     void changePassword(ChangePasswordDto changePasswordDto, String email);
 
+    boolean toggleActiveStatus(String email);
+
+    boolean blockUserByEmail(String email);
 }

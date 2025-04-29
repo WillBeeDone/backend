@@ -12,7 +12,6 @@ import de.willbeedone.backend.exceptions.custom_exceptions.AlreadyExistException
 import de.willbeedone.backend.exceptions.custom_exceptions.ConfirmationCodeIsInvalidException;
 import de.willbeedone.backend.exceptions.custom_exceptions.PasswordException;
 import de.willbeedone.backend.exceptions.custom_exceptions.UserNotFoundException;
-import de.willbeedone.backend.exceptions.custom_validation_exceptions.UserValidationException;
 import de.willbeedone.backend.repository.*;
 import de.willbeedone.backend.service.interfaces.*;
 import de.willbeedone.backend.service.mapping.OfferMappingService;
@@ -89,10 +88,17 @@ public class UserServiceImpl implements UserService {
     public User getActiveValidUserByEmail(String email) {
         return userRepository.findUserByEmail(email)
                 .filter(User::isActive)
+                // отфильтровывает и заблокированных
                 .filter(user -> !user.isBlocked())
                 .orElseThrow(
-                        () -> new UserNotFoundException("User with email " + email + " not found")
+                        () -> new UserNotFoundException("email " + email)
                 );
+    }
+
+    @Override
+    public User getAllUserByEmail(String email) {
+        return userRepository.findUserByEmail(email)
+                .orElseThrow(() -> new UserNotFoundException("email " + email));
     }
 
     @Override
@@ -260,9 +266,26 @@ public class UserServiceImpl implements UserService {
         }
     }
 
+    @Override
+    @Transactional
+    public boolean toggleActiveStatus(String email) {
+    User user = getAllUserByEmail(email);
+    user.setActive(!user.isActive());
+    return user.isActive();
+    }
+
+
     //By email (= username)
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         return userRepository.findUserByEmail(email).orElseThrow(() -> new UsernameNotFoundException("User not found"));
+    }
+
+    @Override
+    @Transactional
+    public boolean blockUserByEmail(String email) {
+        User user = getAllUserByEmail(email);
+        user.setBlocked(!user.isBlocked());
+        return user.isBlocked();
     }
 }
