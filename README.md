@@ -2,7 +2,7 @@
 
 WillBeeDone Backend
 
-WillBeeDone is a backend service for a web application that manages offers (ads).
+This is a backend repository of WillBeeDOne project - service for a web application that manages offers (ads).
 It features user authentication, CRUD operations, filtering, favorites, email integration, and secure token management.
 
 The backend is built using Spring Boot, Spring Security, JPA/Hibernate, MySQL, and supports external services like email and DigitalOcean.
