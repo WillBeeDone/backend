@@ -1,14 +1,13 @@
 package de.willbeedone.backend.domain.dto.report_dto.response_dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.persistence.Column;
 import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
 
@@ -22,25 +21,24 @@ public class ReportResponseDto {
     @Schema(description = "Report ID", example = "1")
     private Long id;
 
-    @NotNull
+    @NotBlank
     @Schema(description = "Reason for report", example = "Invalid contacts")
     private String reason;
 
-    @Email
+    @NotBlank
     @Schema(description = "Email of the user who reports", example = "john.doe@example.com")
     private String reporterEmail;
 
-    @Email
+    @NotBlank
     @Schema(description = "Email of the user being reported", example = "jane.doe@example.com")
     private String reportedEmail;
 
     @NotNull
-    @CreationTimestamp
-    @Column(updatable = false, name = "createdAt", columnDefinition = "DATETIME")
+    @Schema(description = "Date and time when the report was created (ISO format)", example = "2025-04-29T15:30:00")
     private LocalDateTime createdAt;
 
     @NotNull
-    @Column(name = "active", columnDefinition = "BOOLEAN DEFAULT TRUE")
+    @Schema(description = "Indicates whether the report is currently active", example = "true")
     private boolean active;
 
     public String toString() {
