@@ -29,9 +29,9 @@ public class ReportResponseDto {
     @Schema(description = "Email of the user who reports", example = "john.doe@example.com")
     private String reporterEmail;
 
-    @NotBlank
-    @Schema(description = "Email of the user being reported", example = "jane.doe@example.com")
-    private String reportedEmail;
+    @NotNull
+    @Schema(description = "Offer ID", example = "12")
+    private Long offerId;
 
     @NotNull
     @Schema(description = "Date and time when the report was created (ISO format)", example = "2025-04-29T15:30:00")
@@ -42,7 +42,7 @@ public class ReportResponseDto {
     private boolean active;
 
     public String toString() {
-        return String.format("Report: id - %d, reporterEmail - %s, reportedEmail - %s, reason - %s, active=%s, createdAt=%s, ", id, reporterEmail, reportedEmail, reason, active, createdAt);
+        return String.format("Report: id - %d, reporterEmail - %s, offer ID - %d, reason - %s, active=%s, createdAt=%s", id, reporterEmail, offerId, reason, active, createdAt);
     }
 
 }

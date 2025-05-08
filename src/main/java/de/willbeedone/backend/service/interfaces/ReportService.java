@@ -10,8 +10,11 @@ public interface ReportService {
 
     void addNewReport (ReportRequestDto reportRequestDto);
     void activateReportById(Long id);
-    void getReportById(Long id);
+    List<ReportResponseDto> getAllActiveReports();
+    ReportResponseDto getReportById(Long id);
     List <ReportResponseDto> getAllReport ();
     List <ReportResponseDto> getAllReportByReporterEmail (String email);
-    List <ReportResponseDto> getAllReportByReportedEmail (String email);
+    List <ReportResponseDto> getAllReportByReportedEmail (String email); //reportED
+    List<ReportResponseDto> getReportsByOfferId(Long offerId);
+
 }

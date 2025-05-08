@@ -16,6 +16,10 @@ import lombok.Setter;
 @Schema(description = "A class that defines the Report DTO for requests")
 public class ReportRequestDto {
 
+    @NotNull
+    @Schema(description = "Offer ID", example = "12")
+    private Long offerId;
+
     @NotBlank
     @Schema(description = "Reason for report", example = "Invalid contacts")
     private String reason;
@@ -25,13 +29,9 @@ public class ReportRequestDto {
     @Schema(description = "Email of the user who reports", example = "john.doe@example.com")
     private String reporterEmail;
 
-    @NotBlank
-    @Email
-    @Schema(description = "Email of the user being reported", example = "jane.doe@example.com")
-    private String reportedEmail;
 
     public String toString() {
-        return String.format("Report: reporterEmail - %s, reportedEmail - %s, reason - %s", reporterEmail, reportedEmail, reason);
+        return String.format("Report: offer ID - %d, reporterEmail - %s, reason - %s",offerId, reporterEmail,reason);
     }
 
 
