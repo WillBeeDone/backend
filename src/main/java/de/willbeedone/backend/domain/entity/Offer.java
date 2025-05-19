@@ -47,6 +47,9 @@ public class Offer {
     @OneToMany(mappedBy = "offer", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ImageGallery> images = new ArrayList<>();
 
+    @OneToMany(mappedBy = "offer", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Report> reports = new ArrayList<>();
+
     @NotNull
     @Column(name = "active", columnDefinition = "BOOLEAN DEFAULT TRUE")
     private boolean active;
