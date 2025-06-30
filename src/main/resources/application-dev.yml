@@ -58,6 +58,5 @@ server:
 base:
   url: ${BASE_URL}
 
-
-  messages:
-    hello: Hello from DO application!
+messages:
+  hello: Hello from local application!

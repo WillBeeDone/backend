@@ -45,6 +45,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/register/**", "/offers/**", "/offers", "/locations", "/categories").permitAll()
                         .requestMatchers(HttpMethod.POST, "/offers").permitAll()
                         .requestMatchers( "/swagger-ui/**", "/v3/api-docs/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/hello").permitAll()
                         .anyRequest().permitAll()
                 )
                 .addFilterAfter(tokenFilter, UsernamePasswordAuthenticationFilter.class)
