@@ -3,13 +3,13 @@ spring:
     name: WillBeeDone
 
   datasource:
-    url: jdbc:mysql://${LDB_HOST}:${LDB_PORT}/${LDB_NAME}
-    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:postgresql://${LDB_HOST}:${LDB_PORT}/${LDB_NAME}
+    driver-class-name: org.postgresql.Driver
     username: ${LDB_USERNAME}
     password: ${LDB_PASSWORD}
 
   jpa:
-    database-platform: org.hibernate.dialect.MySQLDialect
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
       ddl-auto: update
     show-sql: true
