@@ -23,9 +23,7 @@ public class EmailServiceImpl implements EmailService {
 
     private final JavaMailSender sender;
     private final Configuration mailConfig;
-    @Autowired
     private final ConfirmationService confirmationService;
-    @Autowired
     private final ResetService resetService;
 
     @Value("${mail.from}")
