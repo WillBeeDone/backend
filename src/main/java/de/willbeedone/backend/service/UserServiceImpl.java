@@ -36,26 +36,26 @@ import java.util.Set;
 @Service
 public class UserServiceImpl implements UserService {
 
-    @Autowired
+
     private final UserRepository userRepository;
-    @Autowired
+
     private final OfferRepository offerRepository;
-    @Autowired
+
     private final ConfirmationCodeRepository confirmationCodeRepository;
-    @Autowired
+
     private final ResetCodeRepository resetCodeRepository;
-    @Autowired
+
     private final LocationService locationService;
-    @Autowired
+
     private final RoleService roleService;
-    @Autowired
+
     private final EmailService emailService;
-    @Autowired
+
     private final UserMappingService userMappingService;
-    @Autowired
+
     private final OfferMappingService offerMappingService;
     private final BCryptPasswordEncoder encoder;
-    @Autowired
+
     private final ImageService imageService;
 
     public UserServiceImpl(UserRepository userRepository, ConfirmationCodeRepository confirmationCodeRepository, ResetCodeRepository resetCodeRepository, LocationService locationService, RoleService roleService, EmailService emailService, UserMappingService userMappingService, OfferMappingService offerMappingService, BCryptPasswordEncoder encoder, ImageService imageService, OfferRepository offerRepository) {
