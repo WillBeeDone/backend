@@ -13,7 +13,6 @@ import java.util.UUID;
 @Service
 public class ResetServiceImpl implements ResetService {
 
-    @Autowired
     private final ResetCodeRepository codeRepository;
 
     public ResetServiceImpl(ResetCodeRepository codeRepository) {

@@ -13,7 +13,6 @@ import java.util.UUID;
 @Service
 public class ConfirmationServiceImpl implements ConfirmationService {
 
-    @Autowired
     private final ConfirmationCodeRepository codeRepository;
 
     public ConfirmationServiceImpl(ConfirmationCodeRepository codeRepository) {
