@@ -7,10 +7,11 @@ import org.springframework.context.annotation.Bean;
 public class FreeMarkerConfig {
 
     @Bean
-    public Configuration freemarkerConfiguration() throws Exception {
+    public freemarker.template.Configuration freemarkerConfiguration() {
         Configuration config = new Configuration(Configuration.VERSION_2_3_31);
         config.setClassForTemplateLoading(this.getClass(), "/mail/");
         config.setDefaultEncoding("UTF-8");
         return config;
     }
+
 }

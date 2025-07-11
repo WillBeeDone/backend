@@ -9,6 +9,7 @@ import freemarker.template.Configuration;
 import freemarker.template.Template;
 import jakarta.mail.internet.MimeMessage;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -32,7 +33,7 @@ public class EmailServiceImpl implements EmailService {
     @Value("${base.url}")
     private String baseUrl;
 
-    public EmailServiceImpl(JavaMailSender sender, Configuration mailConfig, ConfirmationService confirmationService, ResetService resetService) {
+    public EmailServiceImpl(JavaMailSender sender, @Qualifier("freemarkerConfiguration") Configuration mailConfig, ConfirmationService confirmationService, ResetService resetService) {
         this.sender = sender;
         this.mailConfig = mailConfig;
         this.confirmationService = confirmationService;
