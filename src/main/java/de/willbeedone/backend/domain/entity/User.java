@@ -22,7 +22,7 @@ import java.util.Set;
 @Setter
 @EqualsAndHashCode(exclude = {"offers", "favourites"})
 @NoArgsConstructor
-@Table(name = "user")
+@Table(name = "app_user")
 public class User implements UserDetails {
 
     @Id

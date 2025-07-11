@@ -36,7 +36,7 @@ public class Offer {
 
     @NotBlank
     @Size(min = 3, max = 4000, message = "Description must be between 10 and 1000 characters")
-    @Column(name = "description", columnDefinition = "MEDIUMTEXT")
+    @Column(name = "description", columnDefinition = "TEXT")
     private String description;
 
     @NotNull

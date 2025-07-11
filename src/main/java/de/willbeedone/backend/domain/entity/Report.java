@@ -43,7 +43,7 @@ public class Report {
 
     @NotNull
     @CreationTimestamp
-    @Column(updatable = false, name = "createdAt", columnDefinition = "DATETIME")
+    @Column(updatable = false, name = "created_at")
     private LocalDateTime createdAt;
 
     @NotNull
