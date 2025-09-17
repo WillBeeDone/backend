@@ -17,21 +17,26 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.UUID;
+import java.util.Optional;
 
 @Service
 public class ImageServiceImpl implements ImageService {
 
     private final AmazonS3 client;
-    @Autowired
     private final ImageGalleryMappingService imageGalleryMappingService;
 
-    public ImageServiceImpl(AmazonS3 client, ImageGalleryMappingService imageGalleryMappingService) {
-        this.client = client;
+    @Autowired
+    public ImageServiceImpl(Optional<AmazonS3> clientOpt, ImageGalleryMappingService imageGalleryMappingService) {
+        this.client = clientOpt.orElse(null);
         this.imageGalleryMappingService = imageGalleryMappingService;
     }
 
     @Override
     public String uploadImage(MultipartFile file) {
+        if (client == null) {
+            throw new ImageUploadException(new AmazonServiceException("S3 client not configured"));
+        }
+
         try {
             // Генерация уникального имени файла
             String uniqueName = generateUniqueFileName(file);
@@ -49,7 +54,6 @@ public class ImageServiceImpl implements ImageService {
             // Возвращаем URL изображения
             return client.getUrl("will-bee-done", uniqueName).toString();
         } catch (AmazonServiceException | IOException e) {
-            // Обработка ошибок загрузки (например, если S3 не доступен)
             throw new ImageUploadException((AmazonServiceException) e);
         }
     }
@@ -64,7 +68,6 @@ public class ImageServiceImpl implements ImageService {
     }
 
     private String generateUniqueFileName(MultipartFile file) {
-        // Генерация уникального имени файла
         String sourceFileName = file.getOriginalFilename();
         int dotIndex = sourceFileName.lastIndexOf(".");
         String filename = sourceFileName.substring(0, dotIndex);
